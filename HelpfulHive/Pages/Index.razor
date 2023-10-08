@@ -1,0 +1,16 @@
+﻿@page "/"
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+
+<h3>Main Page</h3>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        if (authState?.User?.Identity?.IsAuthenticated == false)
+        {
+            NavManager.NavigateTo("/Identity/Account/Login", forceLoad: true);
+        }
+    }
+}

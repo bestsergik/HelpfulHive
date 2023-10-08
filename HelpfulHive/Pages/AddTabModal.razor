@@ -1,0 +1,42 @@
+﻿@using HelpfulHive.Models;
+
+@if (IsVisible)
+{
+    <div class="modal" tabindex="-1" style="display:block!important;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Tab</h5>
+                </div>
+                <div class="modal-body">
+                    <input @bind="newTab.Name" type="text" class="form-control" placeholder="Tab name" />
+                    <input @bind="newTab.Uri" type="text" class="form-control mt-3" placeholder="Tab Uri (e.g., /newtab)" />
+                </div>
+                <div class="modal-footer">
+                    <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
+                    <button @onclick="Confirm" class="btn btn-primary">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public EventCallback<TabItem> OnConfirm { get; set; }
+    private TabItem newTab = new TabItem();
+
+    private async Task Confirm()
+    {
+        await OnConfirm.InvokeAsync(newTab);
+        newTab = new TabItem();
+        await IsVisibleChanged.InvokeAsync(false);
+    }
+
+    private async Task Cancel()
+    {
+        newTab = new TabItem();
+        await IsVisibleChanged.InvokeAsync(false);
+    }
+}

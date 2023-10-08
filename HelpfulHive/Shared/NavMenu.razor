@@ -1,0 +1,81 @@
+﻿@using HelpfulHive.ViewModels
+@using HelpfulHive.Models
+@inject TabViewModel TabVM
+
+@foreach (var tab in TabVM.Tabs)
+{
+    <div class="nav-item px-3">
+        <NavLink class="nav-link" href="@tab.Uri">
+            <span class="oi oi-list-rich" aria-hidden="true"></span> @tab.Name
+        </NavLink>
+    </div>
+}
+
+<div class="nav-item px-3">
+    <button @onclick="ToggleAddTabModal" class="btn btn-primary">
+        <span class="oi oi-plus" aria-hidden="true"></span> Add Tab
+    </button>
+</div>
+
+@if (isAddTabModalOpen)
+{
+    <div class="modal" style="display:block; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Tab</h5>
+                    <button type="button" class="btn-close" @onclick="ToggleAddTabModal"></button>
+                </div>
+                <div class="modal-body">
+                    <input @bind="newTabName" placeholder="Tab Name" class="form-control" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="ToggleAddTabModal">Close</button>
+                    <button type="button" class="btn btn-primary" @onclick="AddTab">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool isAddTabModalOpen = false;
+    private string newTabName = "";
+
+    // Вызывается при инициализации компонента
+    protected override void OnInitialized()
+    {
+
+        TabVM.OnTabAdded += UpdateUI;
+
+    }
+
+    // Обновляет UI, вызывая StateHasChanged()
+    private void UpdateUI()
+    {
+        StateHasChanged();
+    }
+
+    // Переключает модальное окно добавления вкладки
+    private void ToggleAddTabModal()
+    {
+        isAddTabModalOpen = !isAddTabModalOpen;
+    }
+
+    // Добавляет новую вкладку
+    private async void AddTab()
+    {
+        var newTab = new TabItem { Name = newTabName, Uri = $"/{newTabName.Replace(" ", "")}" };
+        // Так как AddTab теперь возвращает Task, используем _ = для игнорирования результата
+        _ = TabVM.AddTab(newTab);
+        newTabName = "";
+        ToggleAddTabModal();
+    }
+
+    // Вызывается при уничтожении компонента
+    public void Dispose()
+    {
+        TabVM.OnTabAdded -= UpdateUI;
+    }
+}
+
