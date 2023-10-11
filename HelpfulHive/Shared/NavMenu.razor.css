@@ -39,7 +39,11 @@
 
 
 
-
+.edit-button-position {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
 
 
 
@@ -89,15 +93,24 @@
         line-height: 3rem;
     }
 
+
+.active-tab {
+    background-color: lightblue;
+    color: white;
+}
+
+
 .nav-item ::deep a.active {
     background-color: rgba(255,255,255,0.25);
     color: white;
 }
 
+
 .nav-item ::deep a:hover {
     background-color: rgba(255,255,255,0.1);
     color: white;
 }
+
 
 @media (min-width: 641px) {
     .navbar-toggler {

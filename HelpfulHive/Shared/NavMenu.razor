@@ -1,13 +1,27 @@
 ﻿@using HelpfulHive.ViewModels
 @using HelpfulHive.Models
 @inject TabViewModel TabVM
+@inject NavigationManager NavManager
 
 @foreach (var tab in TabVM.Tabs)
 {
-    <div class="nav-item px-3">
-        <NavLink class="nav-link" href="@tab.Uri">
+    <div class="nav-item px-3" @onclick:preventDefault="true" @onclick="() => SelectTab(tab)">
+        <NavLink class="@GetNavLinkClass(tab)" href="@tab.Uri">
             <span class="oi oi-list-rich" aria-hidden="true"></span> @tab.Name
         </NavLink>
+        @if (tab.SubTabs != null && tab.SubTabs.Any())
+        {
+            <div class="sub-tabs">
+                @foreach (var subTab in tab.SubTabs)
+                {
+                    <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                        <NavLink class="@GetNavLinkClass(subTab)" href="@subTab.Uri" @onclick="() => SelectSubTab(subTab)">
+                            @subTab.Name
+                        </NavLink>
+                    </div>
+                }
+            </div>
+        }
     </div>
 }
 
@@ -16,6 +30,35 @@
         <span class="oi oi-plus" aria-hidden="true"></span> Add Tab
     </button>
 </div>
+
+@if (selectedTab != null)
+{
+    <div class="edit-button-position">
+        <button @onclick="EditSelectedTab" class="btn btn-primary">Edit tab</button>
+    </div>
+}
+
+@if (isEditModalOpen)
+{
+    <div class="modal" style="display:block; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Tab</h5>
+                    <button type="button" class="btn-close" @onclick="() => isEditModalOpen = false"></button>
+                </div>
+                <div class="modal-body">
+                    <input @bind="selectedTab.Name" placeholder="Tab Name" class="form-control" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => isEditModalOpen = false">Close</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteTab">Delete</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveTab">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
 
 @if (isAddTabModalOpen)
 {
@@ -28,6 +71,13 @@
                 </div>
                 <div class="modal-body">
                     <input @bind="newTabName" placeholder="Tab Name" class="form-control" />
+                    <select @bind="selectedParentTabId" class="form-control mt-2">
+                        <option value="0">No Parent Tab</option>
+                        @foreach (var tab in TabVM.Tabs)
+                        {
+                            <option value="@tab.Id">@tab.Name</option>
+                        }
+                    </select>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @onclick="ToggleAddTabModal">Close</button>
@@ -41,41 +91,92 @@
 @code {
     private bool isAddTabModalOpen = false;
     private string newTabName = "";
+    private TabItem? selectedTab;
+    private bool isEditModalOpen;
+  
+    private int selectedParentTabId = 0;
 
-    // Вызывается при инициализации компонента
     protected override void OnInitialized()
     {
-
         TabVM.OnTabAdded += UpdateUI;
-
     }
 
-    // Обновляет UI, вызывая StateHasChanged()
+    private void SelectTab(TabItem tab)
+    {
+        selectedTab = tab;
+        Console.WriteLine($"Tab selected: {tab.Name}");
+    }
+
+    private void SelectSubTab(TabItem subTab)
+    {
+        selectedTab = subTab;
+        Console.WriteLine($"SubTab selected: {subTab.Name}");
+    }
+
+    private string GetNavLinkClass(TabItem tab)
+    {
+        return selectedTab == tab ? "nav-link active" : "nav-link";
+    }
+
+
+
+
+    private void OnSubTabClick(TabItem subTab)
+    {
+        SelectSubTab(subTab);
+    }
+
+
+
+    private void EditSelectedTab()
+    {
+        isEditModalOpen = true;
+    }
+
+    private async void SaveTab()
+    {
+        await TabVM.UpdateTab(selectedTab); // вызываете метод обновления из ViewModel
+        isEditModalOpen = false; // Закрываете модальное окно после сохранения
+        StateHasChanged(); // Перерисовываете компонент
+    }
+
+    private async void DeleteTab()
+    {
+        if (await TabVM.DeleteTab(selectedTab)) // вызываете метод удаления из ViewModel
+        {
+            selectedTab = null; // Сбрасываете выбранную вкладку после удаления
+            isEditModalOpen = false; // Закрываете модальное окно после удаления
+            StateHasChanged(); // Перерисовываете компонент
+        }
+        else
+        {
+            // Показываете сообщение пользователю, что удаление невозможно (если это необходимо)
+        }
+    }
+
+
     private void UpdateUI()
     {
         StateHasChanged();
     }
 
-    // Переключает модальное окно добавления вкладки
     private void ToggleAddTabModal()
     {
         isAddTabModalOpen = !isAddTabModalOpen;
     }
 
-    // Добавляет новую вкладку
     private async void AddTab()
     {
+        var parentTab = (selectedParentTabId == 0) ? null : TabVM.Tabs.FirstOrDefault(t => t.Id == selectedParentTabId);
         var newTab = new TabItem { Name = newTabName, Uri = $"/{newTabName.Replace(" ", "")}" };
-        // Так как AddTab теперь возвращает Task, используем _ = для игнорирования результата
-        _ = TabVM.AddTab(newTab);
+        await TabVM.AddTab(newTab, parentTab);
         newTabName = "";
+        selectedParentTabId = 0;
         ToggleAddTabModal();
     }
 
-    // Вызывается при уничтожении компонента
     public void Dispose()
     {
         TabVM.OnTabAdded -= UpdateUI;
     }
 }
-

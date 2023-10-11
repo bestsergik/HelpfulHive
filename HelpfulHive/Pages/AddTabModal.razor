@@ -11,6 +11,13 @@
                 <div class="modal-body">
                     <input @bind="newTab.Name" type="text" class="form-control" placeholder="Tab name" />
                     <input @bind="newTab.Uri" type="text" class="form-control mt-3" placeholder="Tab Uri (e.g., /newtab)" />
+                    <select @bind="selectedParentTabId" class="form-control mt-2">
+                        <option value="">No Parent Tab</option>
+                        @foreach (var tab in ExistingTabs)
+                        {
+                            <option value="@tab.Id">@tab.Name</option>
+                        }
+                    </select>
                 </div>
                 <div class="modal-footer">
                     <button @onclick="Cancel" class="btn btn-secondary">Cancel</button>
@@ -24,19 +31,24 @@
 @code {
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
-    [Parameter] public EventCallback<TabItem> OnConfirm { get; set; }
+    [Parameter] public EventCallback<(TabItem NewTab, string? ParentTabId)> OnConfirm { get; set; }
+    [Parameter] public IEnumerable<TabItem> ExistingTabs { get; set; } = Enumerable.Empty<TabItem>();
+
     private TabItem newTab = new TabItem();
+    private string selectedParentTabId = "";
 
     private async Task Confirm()
     {
-        await OnConfirm.InvokeAsync(newTab);
+        await OnConfirm.InvokeAsync((newTab, selectedParentTabId));
         newTab = new TabItem();
+        selectedParentTabId = "";
         await IsVisibleChanged.InvokeAsync(false);
     }
 
     private async Task Cancel()
     {
         newTab = new TabItem();
+        selectedParentTabId = "";
         await IsVisibleChanged.InvokeAsync(false);
     }
 }
