@@ -7,17 +7,23 @@ namespace HelpfulHive.Services
     {
         private readonly ApplicationDbContext _dbContext;
 
+
         public TabService(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<TabItem>> GetRootTabsAsync()
+        public async Task<IEnumerable<TabItem>> GetRootTabsAsync(string userId)
         {
-            return await _dbContext.Tabs
-                .Include(t => t.SubTabs)  // Чтобы загрузить подвкладки
-                .Where(t => t.ParentTabId == null)
-                .ToListAsync();
+            var tabs = await _dbContext.Tabs
+       .Include(t => t.SubTabs)
+       .Where(t => t.ParentTabId == null && t.UserId == userId)
+       .ToListAsync();
+
+            // Добавьте вывод в консоль или логгирование здесь для отладки:
+            Console.WriteLine($"Found {tabs.Count} tabs for user {userId}");
+
+            return tabs;
         }
 
         public async Task<IEnumerable<TabItem>> GetTabsAsync()
@@ -25,21 +31,24 @@ namespace HelpfulHive.Services
             return await _dbContext.Tabs.ToListAsync();
         }
 
-        public async Task AddTabAsync(TabItem newTab, TabItem? parentTab = null)
+        public async Task AddTabAsync(TabItem newTab, string userId, TabItem? parentTab = null)
         {
             if (parentTab != null)
             {
                 newTab.ParentTabId = parentTab.Id;
             }
 
+            newTab.UserId = userId;
+
             // Транслитерация названия вкладки и замена пробелов дефисами
             newTab.Uri = Transliterate(newTab.Name?.Replace(" ", "-") ?? "");
 
             // Убедитесь, что URI уникален, добавив суффикс при необходимости
-            newTab.Uri = await EnsureUniqueUri(newTab.Uri);
+            newTab.Uri = await EnsureUniqueUri(newTab.Uri, userId);
 
             _dbContext.Tabs.Add(newTab);
             await _dbContext.SaveChangesAsync();
+          
         }
 
         public static string Transliterate(string str)
@@ -55,14 +64,13 @@ namespace HelpfulHive.Services
             return str;
         }
 
-
-        private async Task<string> EnsureUniqueUri(string baseUri)
+        private async Task<string> EnsureUniqueUri(string baseUri, string userId)
         {
             string uri = baseUri;
             int counter = 1;
 
-            // Проверка существования URI в БД
-            while (await UriExists(uri))
+            // Проверка существования URI только среди вкладок данного пользователя
+            while (await UriExists(uri, userId))
             {
                 uri = $"{baseUri}-{counter}";
                 counter++;
@@ -71,10 +79,9 @@ namespace HelpfulHive.Services
             return uri;
         }
 
-
-        private async Task<bool> UriExists(string uri)
+        private async Task<bool> UriExists(string uri, string userId)
         {
-            return await _dbContext.Tabs.AnyAsync(t => t.Uri == uri);
+            return await _dbContext.Tabs.AnyAsync(t => t.Uri == uri && t.UserId == userId);
         }
 
         public async Task DeleteTabAsync(TabItem tab)

@@ -5,7 +5,7 @@ namespace HelpfulHive
     {
 
         // добавление миграции
-        //     dotnet ef migrations add AddTabs -c HelpfulHive.ApplicationDbContext  
+        //     dotnet ef migrations add AddTabs2 -c HelpfulHive.ApplicationDbContext  
 
         // обновление после добавления миграции
         //  dotnet ef database update -c HelpfulHive.ApplicationDbContext
