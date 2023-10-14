@@ -64,6 +64,14 @@ namespace HelpfulHive.Services
             return str;
         }
 
+        public async Task<IEnumerable<RecordModel>> GetRecordsByTabIdAsync(int tabId)
+        {
+            return await _dbContext.Records
+                .Where(r => r.Id == tabId)
+                .ToListAsync();
+        }
+
+
         private async Task<string> EnsureUniqueUri(string baseUri, string userId)
         {
             string uri = baseUri;

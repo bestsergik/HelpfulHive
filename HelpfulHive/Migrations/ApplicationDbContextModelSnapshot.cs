@@ -22,6 +22,36 @@ namespace HelpfulHive.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("HelpfulHive.Models.RecordModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SubTabId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SubTabId");
+
+                    b.ToTable("Records");
+                });
+
             modelBuilder.Entity("HelpfulHive.Models.TabItem", b =>
                 {
                     b.Property<int>("Id")
@@ -249,6 +279,17 @@ namespace HelpfulHive.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HelpfulHive.Models.RecordModel", b =>
+                {
+                    b.HasOne("HelpfulHive.Models.TabItem", "SubTab")
+                        .WithMany("Records")
+                        .HasForeignKey("SubTabId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("SubTab");
+                });
+
             modelBuilder.Entity("HelpfulHive.Models.TabItem", b =>
                 {
                     b.HasOne("HelpfulHive.Models.TabItem", "ParentTab")
@@ -311,6 +352,8 @@ namespace HelpfulHive.Migrations
 
             modelBuilder.Entity("HelpfulHive.Models.TabItem", b =>
                 {
+                    b.Navigation("Records");
+
                     b.Navigation("SubTabs");
                 });
 #pragma warning restore 612, 618

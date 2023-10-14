@@ -1,0 +1,96 @@
+﻿@using HelpfulHive.Models;
+@using HelpfulHive.ViewModels
+@inject RecordViewModel RecordVM
+
+
+
+@if (IsVisible)
+{
+    <div class="modal" tabindex="-1" style="display:block!important;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Record</h5>
+                </div>
+                <div class="modal-body">
+                    <input @bind="NewRecordTitle" type="text" class="form-control" placeholder="Record Title" />
+                    <textarea @bind="NewRecordContent" class="form-control mt-3" placeholder="Record Content"></textarea>
+                    @if (AvailableSubTabs == null)
+                    {
+                        <p>Loading tabs...</p>
+                    }
+                    else if (!AvailableSubTabs.Any())
+                    {
+                        <p>No tabs available.</p>
+                    }
+                    else
+                    {
+                        <select @bind="SelectedSubTabId" class="form-control mt-3">
+                            @foreach (var subTab in AvailableSubTabs)
+                            {
+                                <option value="@subTab.Id">@subTab.Name</option>
+                            }
+                        </select>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button @onclick="Close" class="btn btn-secondary">Cancel</button>
+                    <button @onclick="AddRecord" class="btn btn-primary">Add Record</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool IsVisible { get; set; }
+    [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
+    [Parameter] public EventCallback<RecordModel> OnRecordAdded { get; set; }
+    [Parameter] public IEnumerable<TabItem> AvailableSubTabs { get; set; } = new List<TabItem>();
+    [Parameter] public EventCallback OnCloseDialog { get; set; }
+     [Parameter] public TabItem SelectedTab { get; set; }
+
+
+
+    private string NewRecordTitle { get; set; } = string.Empty;
+    private string NewRecordContent { get; set; } = string.Empty;
+    private int SelectedSubTabId { get; set; }
+
+    private async Task Close()
+    {
+        Console.WriteLine("Close method triggered");
+        IsVisible = false;  // Добавьте эту строку
+        await IsVisibleChanged.InvokeAsync(false);
+        await InvokeAsync(StateHasChanged);
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        Console.WriteLine($"OnInitialized: AddRecordDialog received {AvailableSubTabs.Count()} tabs");
+    }
+
+    //protected override void OnParametersSet()
+    //{
+    //    base.OnParametersSet();
+    //    Console.WriteLine($"AddRecordDialog received {AvailableSubTabs.Count()} tabs");
+    //}
+
+    private async Task AddRecord()
+    {
+        var newRecord = new RecordModel
+            {
+                Title = NewRecordTitle,
+                Content = NewRecordContent,
+                SubTabId = SelectedSubTabId 
+            };
+
+        await RecordVM.AddRecordAsync(newRecord);
+        await OnRecordAdded.InvokeAsync(newRecord);
+
+        // Очистка полей формы, если диалог остается открытым.
+        NewRecordTitle = string.Empty;
+        NewRecordContent = string.Empty;
+        await Close(); // Также закроет диалог после добавления записи
+    }
+}

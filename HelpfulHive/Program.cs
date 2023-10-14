@@ -20,6 +20,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 
 builder.Services.AddScoped<TabViewModel>();
 builder.Services.AddScoped<TabService>();
+builder.Services.AddScoped<RecordService>();
+builder.Services.AddScoped<RecordViewModel>();
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";

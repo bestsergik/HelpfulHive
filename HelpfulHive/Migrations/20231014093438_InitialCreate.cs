@@ -57,12 +57,19 @@ namespace HelpfulHive.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Uri = table.Column<string>(type: "text", nullable: false)
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Uri = table.Column<string>(type: "text", nullable: true),
+                    ParentTabId = table.Column<int>(type: "integer", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Tabs", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Tabs_Tabs_ParentTabId",
+                        column: x => x.ParentTabId,
+                        principalTable: "Tabs",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -171,6 +178,28 @@ namespace HelpfulHive.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Records",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Title = table.Column<string>(type: "text", nullable: false),
+                    Content = table.Column<string>(type: "text", nullable: false),
+                    SubTabId = table.Column<int>(type: "integer", nullable: false),
+                    ImagePath = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Records", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Records_Tabs_SubTabId",
+                        column: x => x.SubTabId,
+                        principalTable: "Tabs",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -207,6 +236,16 @@ namespace HelpfulHive.Migrations
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Records_SubTabId",
+                table: "Records",
+                column: "SubTabId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Tabs_ParentTabId",
+                table: "Tabs",
+                column: "ParentTabId");
         }
 
         /// <inheritdoc />
@@ -228,13 +267,16 @@ namespace HelpfulHive.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Tabs");
+                name: "Records");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Tabs");
         }
     }
 }

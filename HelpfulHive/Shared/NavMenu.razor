@@ -1,7 +1,11 @@
 ﻿@using HelpfulHive.ViewModels
 @using HelpfulHive.Models
+@using HelpfulHive.Services
+@using HelpfulHive.Pages
 @inject TabViewModel TabVM
 @inject NavigationManager NavManager
+@inject RecordViewModel RecordVM
+@inject TabService TabSrv
 
 @foreach (var tab in TabVM.Tabs)
 {
@@ -30,6 +34,26 @@
         <span class="oi oi-plus" aria-hidden="true"></span> Add Tab
     </button>
 </div>
+
+<div class="content-area">
+    <div class="controls-area">
+        <button @onclick="OpenAddRecordDialog">Add Record</button>
+    </div>
+    <div class="dynamic-content-area">
+        @if (selectedTab != null && tabRecords != null)
+        {
+            @foreach (var record in tabRecords)
+            {
+                <p>@record.Content</p>
+            }
+        }
+    </div>
+</div>
+
+
+
+
+
 
 @if (selectedTab != null)
 {
@@ -88,11 +112,19 @@
     </div>
 }
 
+@if (isAddRecordDialogOpen)
+{
+    <AddRecordDialog IsVisible="true" AvailableSubTabs="@TabVM.Tabs" OnRecordAdded="HandleRecordAdded" OnCloseDialog="CloseAddRecordDialog" SelectedTab="selectedTab"></AddRecordDialog>
+}
+
 @code {
     private bool isAddTabModalOpen = false;
     private string newTabName = "";
-    private TabItem? selectedTab;
+    private TabItem? selectedTab = null;
     private bool isEditModalOpen;
+    private bool isAddRecordDialogOpen = false;
+
+    private IEnumerable<RecordModel>? tabRecords = null;
   
     private int selectedParentTabId = 0;
 
@@ -101,10 +133,16 @@
         TabVM.OnTabAdded += UpdateUI;
     }
 
-    private void SelectTab(TabItem tab)
+    private async void SelectTab(TabItem tab)
     {
         selectedTab = tab;
+        tabRecords = await TabSrv.GetRecordsByTabIdAsync(tab.Id);
         Console.WriteLine($"Tab selected: {tab.Name}");
+    }
+
+    private async Task AddRecord()
+    {
+        // Логика добавления новой записи
     }
 
     private void SelectSubTab(TabItem subTab)
@@ -119,13 +157,10 @@
     }
 
 
-
-
     private void OnSubTabClick(TabItem subTab)
     {
         SelectSubTab(subTab);
     }
-
 
 
     private void EditSelectedTab()
@@ -137,7 +172,7 @@
     {
         await TabVM.UpdateTab(selectedTab); // вызываете метод обновления из ViewModel
         isEditModalOpen = false; // Закрываете модальное окно после сохранения
-       // StateHasChanged(); // Перерисовываете компонент
+        StateHasChanged(); // Перерисовываете компонент
     }
 
     private async void DeleteTab()
@@ -146,7 +181,7 @@
         {
             selectedTab = null; // Сбрасываете выбранную вкладку после удаления
             isEditModalOpen = false; // Закрываете модальное окно после удаления
-          //  StateHasChanged(); // Перерисовываете компонент
+            StateHasChanged(); // Перерисовываете компонент
         }
         else
         {
@@ -179,4 +214,34 @@
     {
         TabVM.OnTabAdded -= UpdateUI;
     }
+
+    private void CloseAddRecordDialog()
+    {
+        Console.WriteLine("CloseddRecordDialog");
+        isAddRecordDialogOpen = false;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OpenAddRecordDialog()
+    {
+        Console.WriteLine("OpenAddRecordDialog");
+        isAddRecordDialogOpen = true;
+        InvokeAsync(StateHasChanged); // Используйте InvokeAsync для вызова StateHasChanged
+    }
+
+
+
+    private async Task HandleRecordAdded(RecordModel newRecord)
+    {
+        CloseAddRecordDialog();
+
+        // Возможно, обновить tabRecords и UI.
+        // Здесь я предполагаю, что вам нужно добавить новую запись в tabRecords и обновить UI.
+        if (tabRecords != null && selectedTab?.Id == newRecord.Id)
+        {
+            tabRecords = tabRecords.Append(newRecord);
+        }
+        // Если есть другая логика, которую нужно выполнить после добавления записи, добавьте ее здесь.
+    }
+
 }

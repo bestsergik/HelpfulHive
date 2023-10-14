@@ -43,6 +43,7 @@ namespace HelpfulHive.ViewModels
         public async Task LoadTabs()
         {
             var rootTabs = await _tabService.GetRootTabsAsync(UserId);
+            Console.WriteLine($"Loaded {rootTabs.Count()} root tabs for user {UserId}");
             foreach (var tab in rootTabs)
             {
                 Tabs.Add(tab);
@@ -64,6 +65,7 @@ namespace HelpfulHive.ViewModels
             OnTabAdded?.Invoke();
         }
 
+       
         public async Task<bool> DeleteTab(TabItem tab)
         {
             if (_tabService.CanDeleteTab(tab))

@@ -10,8 +10,6 @@
         public ICollection<TabItem>? SubTabs { get; set; } // Подвкладки
 
         public string? UserId { get; set; } // Cвойство для связи с пользователем
-
+        public ICollection<RecordModel> Records { get; set; }
     }
-
-
 }

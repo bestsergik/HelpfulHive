@@ -1,7 +1,9 @@
 
 .modal {
-    display: none; /* По умолчанию скрыто */
-    position: fixed; /* Оставаться на одном месте */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
     z-index: 1; /* Сидеть сверху */
     left: 0;
     top: 0;
@@ -16,9 +18,9 @@
 /* Модальное содержимое/коробка */
 .modal-content {
     background-color: #fefefe;
-    margin: 5% auto 15% auto; /* 5% сверху, 15% снизу и центрировано */
     border: 1px solid #888;
-    width: 80%; /* Шириной в 80% */
+    margin: auto !important;
+    width: 80% !important;
 }
 
 /* Закрыть кнопку */
