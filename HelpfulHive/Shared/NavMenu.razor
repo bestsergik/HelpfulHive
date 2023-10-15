@@ -110,7 +110,7 @@
 
 @if (isAddRecordDialogOpen)
 {
-    <AddRecordDialog IsVisible="true" AvailableSubTabs="@TabVM.Tabs" OnRecordAdded="HandleRecordAdded" OnCloseDialog="CloseAddRecordDialog" SelectedTab="selectedTab"></AddRecordDialog>
+    <AddRecordDialog IsVisible="true" AvailableSubTabs="@GetAllSubTabs()" OnRecordAdded="HandleRecordAdded" OnCloseDialog="CloseAddRecordDialog" SelectedTab="selectedTab"></AddRecordDialog>
 }
 
 @code {
@@ -135,8 +135,15 @@
     {
         selectedTab = tab;
         tabRecords = await TabSrv.GetRecordsByTabIdAsync(tab.Id);
-       // Console.WriteLine($"Tab selected: {tab.Name}");
+        Console.WriteLine($"Tab selected: {tab.Name}, SubTabs: {tab?.SubTabs?.Count ?? 0}");
+
     }
+
+    private IEnumerable<TabItem> GetAllSubTabs()
+    {
+        return TabVM.Tabs.SelectMany(tab => tab.SubTabs ?? new List<TabItem>());
+    }
+
 
     private async Task SelectSubTab(TabItem subTab)
     {
@@ -218,7 +225,7 @@
 
     private void OpenAddRecordDialog()
     {
-        Console.WriteLine("OpenAddRecordDialog");
+        Console.WriteLine($"OpenAddRecordDialog with selectedTab: {selectedTab?.Name}, SubTabs: {selectedTab?.SubTabs?.Count ?? 0}");
         isAddRecordDialogOpen = true;
         InvokeAsync(StateHasChanged); // Используйте InvokeAsync для вызова StateHasChanged
     }

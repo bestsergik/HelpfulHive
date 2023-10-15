@@ -49,6 +49,7 @@ namespace HelpfulHive.ViewModels
                 Tabs.Add(tab);
             }
             OnTabAdded?.Invoke();
+
         }
 
         public async Task AddTab(TabItem newTab, TabItem? parentTab = null)
