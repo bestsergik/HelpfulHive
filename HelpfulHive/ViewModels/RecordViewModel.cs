@@ -17,6 +17,25 @@ namespace HelpfulHive.ViewModels
             await _recordService.AddRecordAsync(newRecord);
             // Можно добавить логику обновления UI или уведомления пользователя здесь
         }
+
+        //public async Task<IEnumerable<RecordModel>> GetRecordsBySubTabIdAsync(int subTabId)
+        //{
+        //    try
+        //    {
+        //        await Task.Delay(1000);
+        //        Console.WriteLine($"Fetching records for subtab {subTabId}");
+        //        return new List<RecordModel>
+        //{
+        //    new RecordModel { Title = $"Record for subtab {subTabId}", ImagePath = "icon1" }
+        //};
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error fetching records: {ex.Message}");
+        //        return Enumerable.Empty<RecordModel>();
+        //    }
+        //}
+
     }
 
 }

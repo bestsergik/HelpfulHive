@@ -95,6 +95,11 @@
         line-height: 3rem;
     }
 
+.img-preview {
+    max-width: 100px;
+    max-height: 100px;
+}
+
 
 .active-tab {
     background-color: lightblue;
@@ -130,3 +135,5 @@
         overflow-y: auto;
     }
 }
+
+

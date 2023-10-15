@@ -1,6 +1,9 @@
 ﻿@using HelpfulHive.Models;
 @using HelpfulHive.ViewModels
+@using HelpfulHive.Services
 @inject RecordViewModel RecordVM
+@inject ImageService ImageService
+
 
 
 
@@ -32,6 +35,27 @@
                             }
                         </select>
                     }
+                    @if (AvailableImages != null && AvailableImages.Any())
+                    {
+                        <div class="image-grid">
+                            @foreach (var image in AvailableImages)
+                            {
+                                <div @onclick="() => SelectImage(image)" class="image-container">
+                                    <img src="@($"images/{image}")" alt="@image" class="image-thumbnail" />
+                                    <div class="image-title">@image</div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    @if (!string.IsNullOrEmpty(SelectedImage))
+                    {
+                        <div class="selected-image-container">
+                            <h5>Selected Image:</h5>
+                            <img src="@($"images/{SelectedImage}")" alt="Selected Image" class="selected-image" />
+                        </div>
+                    }
+
                 </div>
                 <div class="modal-footer">
                     <button @onclick="Close" class="btn btn-secondary">Cancel</button>
@@ -48,13 +72,18 @@
     [Parameter] public EventCallback<RecordModel> OnRecordAdded { get; set; }
     [Parameter] public IEnumerable<TabItem> AvailableSubTabs { get; set; } = new List<TabItem>();
     [Parameter] public EventCallback OnCloseDialog { get; set; }
-     [Parameter] public TabItem SelectedTab { get; set; }
+    [Parameter] public TabItem SelectedTab { get; set; }
 
-
-
+    private List<string> AvailableImages { get; set; } = new List<string>();
+    private string SelectedImage { get; set; }
     private string NewRecordTitle { get; set; } = string.Empty;
     private string NewRecordContent { get; set; } = string.Empty;
     private int SelectedSubTabId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        AvailableImages = ImageService.GetImageNames();
+    }
 
     private async Task Close()
     {
@@ -64,17 +93,10 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    protected override void OnInitialized()
+    private void SelectImage(string imageName)
     {
-        base.OnInitialized();
-        Console.WriteLine($"OnInitialized: AddRecordDialog received {AvailableSubTabs.Count()} tabs");
+        SelectedImage = imageName;
     }
-
-    //protected override void OnParametersSet()
-    //{
-    //    base.OnParametersSet();
-    //    Console.WriteLine($"AddRecordDialog received {AvailableSubTabs.Count()} tabs");
-    //}
 
     private async Task AddRecord()
     {
@@ -82,7 +104,8 @@
             {
                 Title = NewRecordTitle,
                 Content = NewRecordContent,
-                SubTabId = SelectedSubTabId 
+                SubTabId = SelectedSubTabId, 
+                ImagePath = SelectedImage
             };
 
         await RecordVM.AddRecordAsync(newRecord);
@@ -91,6 +114,6 @@
         // Очистка полей формы, если диалог остается открытым.
         NewRecordTitle = string.Empty;
         NewRecordContent = string.Empty;
-        await Close(); // Также закроет диалог после добавления записи
+        await Close(); // 
     }
 }

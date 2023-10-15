@@ -16,14 +16,12 @@ namespace HelpfulHive
         // dotnet ef database update 0 --context HelpfulHive.ApplicationDbContext
 
 
-
-
         // *************************************************
 
 
 
         // git add .
         // git commit -m "????"
-        // git push origin  development
+        // git push origin development
     }
 }

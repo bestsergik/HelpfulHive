@@ -51,10 +51,6 @@
 </div>
 
 
-
-
-
-
 @if (selectedTab != null)
 {
     <div class="edit-button-position">
@@ -123,6 +119,8 @@
     private TabItem? selectedTab = null;
     private bool isEditModalOpen;
     private bool isAddRecordDialogOpen = false;
+    [Parameter]
+    public EventCallback<TabItem> OnTabSelected { get; set; }
 
     private IEnumerable<RecordModel>? tabRecords = null;
   
@@ -137,25 +135,22 @@
     {
         selectedTab = tab;
         tabRecords = await TabSrv.GetRecordsByTabIdAsync(tab.Id);
-        Console.WriteLine($"Tab selected: {tab.Name}");
+       // Console.WriteLine($"Tab selected: {tab.Name}");
     }
 
-    private async Task AddRecord()
-    {
-        // Логика добавления новой записи
-    }
-
-    private void SelectSubTab(TabItem subTab)
+    private async Task SelectSubTab(TabItem subTab)
     {
         selectedTab = subTab;
-        Console.WriteLine($"SubTab selected: {subTab.Name}");
+        await OnTabSelected.InvokeAsync(subTab);
+        //   Console.WriteLine($"SubTab selected: {subTab.Name}");
+        //  tabRecords = await RecordVM.GetRecordsBySubTabIdAsync(subTab.Id);
     }
+
 
     private string GetNavLinkClass(TabItem tab)
     {
         return selectedTab == tab ? "nav-link active" : "nav-link";
     }
-
 
     private void OnSubTabClick(TabItem subTab)
     {
@@ -188,7 +183,6 @@
             // Показываете сообщение пользователю, что удаление невозможно (если это необходимо)
         }
     }
-
 
     private void UpdateUI()
     {
@@ -228,8 +222,6 @@
         isAddRecordDialogOpen = true;
         InvokeAsync(StateHasChanged); // Используйте InvokeAsync для вызова StateHasChanged
     }
-
-
 
     private async Task HandleRecordAdded(RecordModel newRecord)
     {

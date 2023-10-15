@@ -1,0 +1,37 @@
+﻿.image-grid {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    max-height: 200px;
+    gap: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.image-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.image-thumbnail {
+    width: 48px;
+    height: 48px;
+}
+
+.image-title {
+    font-size: 10px;
+    text-align: center;
+}
+
+.selected-image-container {
+    margin-top: 20px;
+}
+
+.selected-image {
+    max-width: 200px;
+    max-height: 200px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+}
