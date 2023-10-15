@@ -1,0 +1,50 @@
+﻿@page "/record-list/{SelectedSubTabId}"
+@using HelpfulHive.Models
+@using HelpfulHive.Services
+@inject RecordService RecordSV
+
+
+@if (Records != null && Records.Any())
+{
+    <div class="record-list">
+        @foreach (var record in Records)
+        {
+            <div class="record-item">
+                <div class="record-icon">
+                    <img src="@record.ImagePath" alt="@record.Title" />
+                </div>
+                <div class="record-title">
+                    <span>@record.Title</span>
+                </div>
+                <div class="record-edit">
+                    <button @onclick="() => EditRecord(record)">✏️</button>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>No records available.</p>
+}
+
+@code {
+    [Parameter] public List<RecordModel> Records { get; set; }
+    [Parameter] public string SelectedSubTabId { get; set; }
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadRecords(SelectedSubTabId);
+    }
+
+    private async Task LoadRecords(string subTabUri)
+    {
+        Records = await RecordSV.GetRecordsBySubTabUriAsync(subTabUri);
+    }
+
+    private void EditRecord(RecordModel record)
+    {
+        // Navigate or open a modal to edit the record.
+    }
+}

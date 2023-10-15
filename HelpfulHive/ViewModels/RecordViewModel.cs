@@ -1,11 +1,14 @@
 ﻿using HelpfulHive.Models;
 using HelpfulHive.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace HelpfulHive.ViewModels
 {
     public class RecordViewModel
     {
         private readonly RecordService _recordService;
+        public List<RecordModel> Records { get; private set; }
+
 
         public RecordViewModel(RecordService recordService)
         {
@@ -18,23 +21,12 @@ namespace HelpfulHive.ViewModels
             // Можно добавить логику обновления UI или уведомления пользователя здесь
         }
 
-        //public async Task<IEnumerable<RecordModel>> GetRecordsBySubTabIdAsync(int subTabId)
+        //public async Task LoadRecordsAsync(int subTabId)
         //{
-        //    try
-        //    {
-        //        await Task.Delay(1000);
-        //        Console.WriteLine($"Fetching records for subtab {subTabId}");
-        //        return new List<RecordModel>
-        //{
-        //    new RecordModel { Title = $"Record for subtab {subTabId}", ImagePath = "icon1" }
-        //};
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine($"Error fetching records: {ex.Message}");
-        //        return Enumerable.Empty<RecordModel>();
-        //    }
+        //    Records = await _recordService.GetRecordsBySubTabIdAsync(subTabId);
+        //    // Уведомить подписчиков о том, что данные были обновлены (если вы используете такой подход)
         //}
+
 
     }
 

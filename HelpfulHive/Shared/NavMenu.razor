@@ -80,6 +80,8 @@
     </div>
 }
 
+
+
 @if (isAddTabModalOpen)
 {
     <div class="modal" style="display:block; background-color: rgba(0,0,0,0.5);">
@@ -119,12 +121,14 @@
     private TabItem? selectedTab = null;
     private bool isEditModalOpen;
     private bool isAddRecordDialogOpen = false;
+    private int selectedParentTabId = 0;
+
+    private IEnumerable<RecordModel>? tabRecords = null;
     [Parameter]
     public EventCallback<TabItem> OnTabSelected { get; set; }
 
-    private IEnumerable<RecordModel>? tabRecords = null;
-  
-    private int selectedParentTabId = 0;
+
+
 
     protected override void OnInitialized()
     {
@@ -135,7 +139,6 @@
     {
         selectedTab = tab;
         tabRecords = await TabSrv.GetRecordsByTabIdAsync(tab.Id);
-        Console.WriteLine($"Tab selected: {tab.Name}, SubTabs: {tab?.SubTabs?.Count ?? 0}");
 
     }
 
@@ -145,13 +148,15 @@
     }
 
 
-    private async Task SelectSubTab(TabItem subTab)
+ 
+
+    private void SelectSubTab(TabItem subTab)
     {
-        selectedTab = subTab;
-        await OnTabSelected.InvokeAsync(subTab);
-        //   Console.WriteLine($"SubTab selected: {subTab.Name}");
-        //  tabRecords = await RecordVM.GetRecordsBySubTabIdAsync(subTab.Id);
+        var uri = $"/record-list/{subTab.Uri}";
+        Console.WriteLine($"Navigating to: {uri}");
+        NavManager.NavigateTo(uri);
     }
+
 
 
     private string GetNavLinkClass(TabItem tab)

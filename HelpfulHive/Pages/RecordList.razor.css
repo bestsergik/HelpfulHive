@@ -1,0 +1,23 @@
+﻿.record-list {
+    /* Styles for the record list */
+}
+
+.record-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* Additional styles */
+}
+
+.record-icon img {
+    width: 40px; /* Adjust size as needed */
+    height: 40px; /* Adjust size as needed */
+}
+
+.record-title {
+    /* Styles for the title area */
+}
+
+.record-edit {
+    /* Styles for the edit button */
+}

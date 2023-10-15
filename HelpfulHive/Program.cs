@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using HelpfulHive;
 using HelpfulHive.ViewModels;
 using HelpfulHive.Services;
+using Microsoft.AspNetCore.Components;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ImageService>();
+
 
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
