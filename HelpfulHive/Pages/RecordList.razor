@@ -1,37 +1,38 @@
 ﻿@page "/record-list/{SelectedSubTabId}"
 @using HelpfulHive.Models
 @using HelpfulHive.Services
+@using HelpfulHive.ViewModels
 @inject RecordService RecordSV
-
+@inject TabViewModel TabVM
 
 @if (Records != null && Records.Any())
 {
     <div class="record-list">
         @foreach (var record in Records)
         {
-            <div class="record-item">
-                <div class="record-icon">
-                    <img src="@record.ImagePath" alt="@record.Title" />
-                </div>
-                <div class="record-title">
-                    <span>@record.Title</span>
-                </div>
-                <div class="record-edit">
-                    <button @onclick="() => EditRecord(record)">✏️</button>
-                </div>
+            <div class="record-item" @onclick="() => EditRecord(record)">
+                <img src="@($"images/{record.ImagePath}")" alt="Record image" class="record-img" />
+                <div class="record-content">@record.Title</div>
+                <span class="edit-icon" @onclick="() => EditRecord(record)">
+                    <i class="oi oi-pencil"></i>
+                </span>
             </div>
         }
     </div>
 }
 else
 {
-    <p>No records available.</p>
+    <p>No records available.</p>    
 }
+
+<EditRecordDialog IsVisible="@isEditDialogVisible" RecordToEdit="@selectedRecord" OnEditDialogClosed="@ReloadRecords" AvailableSubTabs="@GetAllSubTabs()" />
 
 @code {
     [Parameter] public List<RecordModel> Records { get; set; }
     [Parameter] public string SelectedSubTabId { get; set; }
 
+    private bool isEditDialogVisible = false;
+    private RecordModel? selectedRecord;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -45,6 +46,22 @@ else
 
     private void EditRecord(RecordModel record)
     {
-        // Navigate or open a modal to edit the record.
+        selectedRecord = record; // Set the record to be edited
+        isEditDialogVisible = true; // Open the edit dialog
+    }
+
+    private IEnumerable<TabItem> GetAllSubTabs()
+    {
+        return TabVM.Tabs.SelectMany(tab => tab.SubTabs ?? new List<TabItem>());
+    }
+
+
+    private void ReloadRecords()
+    {
+        isEditDialogVisible = false; // Close the edit dialog
+        _ = LoadRecords(SelectedSubTabId); // Reload records (assuming it updates the UI)
+        StateHasChanged(); // Перерисовываете компонент
+
     }
 }
+

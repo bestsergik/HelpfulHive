@@ -25,6 +25,20 @@ namespace HelpfulHive.Services
                 .Where(r => r.SubTab.Uri == subTabUri)
                 .ToListAsync();
         }
+
+
+        public async Task UpdateRecordAsync(RecordModel updatedRecord)
+        {
+            _dbContext.Records.Update(updatedRecord);
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteRecordAsync(RecordModel recordToDelete)
+        {
+            _dbContext.Records.Remove(recordToDelete);
+            await _dbContext.SaveChangesAsync();
+        }
+
     }
 
 }

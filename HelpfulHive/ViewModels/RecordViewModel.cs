@@ -7,8 +7,9 @@ namespace HelpfulHive.ViewModels
     public class RecordViewModel
     {
         private readonly RecordService _recordService;
-        public List<RecordModel> Records { get; private set; }
+        public List<RecordModel> Records { get; private set; } 
 
+        public event Action? OnRecordChanged;
 
         public RecordViewModel(RecordService recordService)
         {
@@ -21,11 +22,32 @@ namespace HelpfulHive.ViewModels
             // Можно добавить логику обновления UI или уведомления пользователя здесь
         }
 
-        //public async Task LoadRecordsAsync(int subTabId)
-        //{
-        //    Records = await _recordService.GetRecordsBySubTabIdAsync(subTabId);
-        //    // Уведомить подписчиков о том, что данные были обновлены (если вы используете такой подход)
-        //}
+        public async Task UpdateRecordAsync(RecordModel updatedRecord)
+        {
+            await _recordService.UpdateRecordAsync(updatedRecord);
+
+            if (Records != null)
+            {
+                var index = Records.FindIndex(r => r.Id == updatedRecord.Id);
+                if (index != -1)
+                {
+                    Records[index] = updatedRecord;
+                }
+            }
+            OnRecordChanged?.Invoke();
+        }
+
+        public async Task DeleteRecordAsync(RecordModel recordToDelete)
+        {
+            await _recordService.DeleteRecordAsync(recordToDelete);
+
+            if (Records != null)
+            {
+                Records.Remove(recordToDelete);
+            }
+
+            OnRecordChanged?.Invoke();
+        }
 
 
     }
