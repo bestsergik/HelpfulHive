@@ -4,6 +4,7 @@
 @using HelpfulHive.ViewModels
 @inject RecordService RecordSV
 @inject TabViewModel TabVM
+@inject RecordViewModel RecordVM
 
 @if (Records != null && Records.Any())
 {
@@ -26,13 +27,21 @@ else
 }
 
 <EditRecordDialog IsVisible="@isEditDialogVisible" RecordToEdit="@selectedRecord" OnEditDialogClosed="@ReloadRecords" AvailableSubTabs="@GetAllSubTabs()" />
+<AddRecordDialog OnRecordAdded="HandleNewRecordAdded" AvailableSubTabs="@GetAllSubTabs()"  />
+
+
 
 @code {
     [Parameter] public List<RecordModel> Records { get; set; }
     [Parameter] public string SelectedSubTabId { get; set; }
+    [Parameter]
+    public EventCallback<RecordModel> OnRecordAddedFromNavMenu { get; set; }
+
 
     private bool isEditDialogVisible = false;
     private RecordModel? selectedRecord;
+
+
 
     protected override async Task OnParametersSetAsync()
     {
@@ -56,12 +65,21 @@ else
     }
 
 
-    private void ReloadRecords()
+
+
+    private async Task HandleNewRecordAdded(RecordModel newRecord)
+    {
+        Records.Add(newRecord);
+        StateHasChanged();
+    }
+
+
+    private async Task ReloadRecords()
     {
         isEditDialogVisible = false; // Close the edit dialog
-        _ = LoadRecords(SelectedSubTabId); // Reload records (assuming it updates the UI)
-        StateHasChanged(); // Перерисовываете компонент
-
+        await LoadRecords(SelectedSubTabId); // Wait for records to load
+        StateHasChanged(); // Update the UI
     }
+
 }
 

@@ -9,9 +9,9 @@
 
 @if (IsVisible)
 {
-    <div class="modal" tabindex="-1" style="display:block!important;">
+    <div class="add-record-modal" tabindex="-1" style="display:block!important;" >
         <div class="modal-dialog">
-            <div class="modal-content">
+            <div class="add-record-modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Add New Record</h5>
                 </div>
@@ -66,6 +66,7 @@
     </div>
 }
 
+
 @code {
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
@@ -87,9 +88,9 @@
 
     private async Task Close()
     {
-        Console.WriteLine("Close method triggered");
         IsVisible = false;  // Добавьте эту строку
         await IsVisibleChanged.InvokeAsync(false);
+        await OnCloseDialog.InvokeAsync(); // Это событие должно вызываться
         await InvokeAsync(StateHasChanged);
     }
 

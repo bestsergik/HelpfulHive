@@ -1,4 +1,8 @@
-﻿@inherits LayoutComponentBase
+﻿@using HelpfulHive.ViewModels
+@using HelpfulHive.Models
+@using HelpfulHive.Pages
+@inject TabViewModel TabVM
+@inherits LayoutComponentBase
 
 <PageTitle>HelpfulHive</PageTitle>
 
@@ -6,10 +10,9 @@
     <div class="sidebar">
         <NavMenu />
     </div>
-
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <button @onclick="OpenAddRecordDialog">Add Record</button>
         </div>
 
         <article class="content px-4">
@@ -17,3 +20,46 @@
         </article>
     </main>
 </div>
+
+
+@if (isAddRecordDialogOpen)
+{
+    <AddRecordDialog IsVisible="true" AvailableSubTabs="@GetAllSubTabs()" OnRecordAdded="HandleRecordAdded" OnCloseDialog="CloseAddRecordDialog" SelectedTab="selectedTab"></AddRecordDialog>
+}
+
+@code{
+
+    private bool isAddRecordDialogOpen = false;
+    private TabItem? selectedTab = null;
+    private IEnumerable<RecordModel>? tabRecords = null;
+
+    private IEnumerable<TabItem> GetAllSubTabs()
+    {
+        return TabVM.Tabs.SelectMany(tab => tab.SubTabs ?? new List<TabItem>());
+    }
+
+    private void CloseAddRecordDialog()
+    {
+        Console.WriteLine("CloseddRecordDialog");
+        isAddRecordDialogOpen = false;
+        InvokeAsync(StateHasChanged);
+
+    }
+
+    private void OpenAddRecordDialog()
+    {
+        Console.WriteLine("OpenAddRecordDialog");
+        isAddRecordDialogOpen = true;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HandleRecordAdded(RecordModel newRecord)
+    {
+        CloseAddRecordDialog();
+
+        if (tabRecords != null && selectedTab?.Id == newRecord.Id)
+        {
+            tabRecords = tabRecords.Append(newRecord);
+        }
+    }
+}

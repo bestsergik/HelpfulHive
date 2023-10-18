@@ -1,4 +1,33 @@
-﻿.image-grid {
+﻿.add-record-modal {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: fixed !important;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0);
+    padding-top: 60px;
+}
+
+    .add-record-modal, .add-record-modal * {
+        pointer-events: auto !important;
+    }
+
+.add-record-modal-content {
+    background-color: #fefefe;
+    border: 1px solid #888;
+    margin: auto;
+    width: 65%;
+    max-height: 50%;
+    overflow-y: auto;
+}
+
+
+.image-grid {
     display: flex;
     flex-wrap: wrap;
     overflow-y: auto;
@@ -7,8 +36,6 @@
     border: 1px solid #ddd;
     padding: 10px;
 }
-
-
 
 .image-container {
     display: flex;

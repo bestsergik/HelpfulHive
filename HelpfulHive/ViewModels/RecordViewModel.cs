@@ -19,8 +19,14 @@ namespace HelpfulHive.ViewModels
         public async Task AddRecordAsync(RecordModel newRecord)
         {
             await _recordService.AddRecordAsync(newRecord);
-            // Можно добавить логику обновления UI или уведомления пользователя здесь
+            if (Records == null)
+            {
+                Records = new List<RecordModel>();
+            }
+            Records.Add(newRecord);
+            OnRecordChanged?.Invoke();
         }
+
 
         public async Task UpdateRecordAsync(RecordModel updatedRecord)
         {
