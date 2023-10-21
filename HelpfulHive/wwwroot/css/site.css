@@ -12,6 +12,12 @@ a, .btn-link {
     color: #0071c1;
 }
 
+.monaco-editor-container {
+    height: 400px; /* или любая другая высота по вашему усмотрению */
+    width: 100%;
+}
+
+
 .btn-primary {
     color: #fff;
     background-color: #1b6ec2;

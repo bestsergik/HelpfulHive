@@ -1,8 +1,11 @@
 ﻿@using HelpfulHive.ViewModels
 @using HelpfulHive.Models
 @using HelpfulHive.Pages
+@using HelpfulHive.Services
 @inject TabViewModel TabVM
 @inherits LayoutComponentBase
+@inject NavigationManager NavManager
+
 
 <PageTitle>HelpfulHive</PageTitle>
 
@@ -13,18 +16,22 @@
     <main>
         <div class="top-row px-4">
             <button @onclick="OpenAddRecordDialog">Add Record</button>
+            <button @onclick="NavigateToXmlDisplay" class="btn">Go to XML</button>
         </div>
-
         <article class="content px-4">
             @Body
         </article>
+        <!-- Место для Monaco Editor -->
+        <div id="xmlEditor" style="height:400px;"></div>
     </main>
 </div>
 
 
+
+
 @if (isAddRecordDialogOpen)
 {
-    <AddRecordDialog IsVisible="true" AvailableSubTabs="@GetAllSubTabs()" OnRecordAdded="HandleRecordAdded" OnCloseDialog="CloseAddRecordDialog" SelectedTab="selectedTab"></AddRecordDialog>
+    <AddRecordDialog IsVisible="true" AvailableSubTabs="@GetAllSubTabs()"  OnRecordAdded="HandleRecordAdded" OnCloseDialog="CloseAddRecordDialog" SelectedTab="selectedTab"></AddRecordDialog>
 }
 
 @code{
@@ -62,4 +69,11 @@
             tabRecords = tabRecords.Append(newRecord);
         }
     }
+
+    private void NavigateToXmlDisplay()
+    {
+        NavManager.NavigateTo("/xml-display");
+    }
+
+
 }

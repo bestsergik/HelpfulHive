@@ -4,6 +4,8 @@ using HelpfulHive;
 using HelpfulHive.ViewModels;
 using HelpfulHive.Services;
 using Microsoft.AspNetCore.Components;
+using HelpfulHive.Models;
+using Microsoft.AspNetCore.Components.Forms;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
 
 builder.Services.AddScoped<TabViewModel>();
 builder.Services.AddScoped<TabService>();

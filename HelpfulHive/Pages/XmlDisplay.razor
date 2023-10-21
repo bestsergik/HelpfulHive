@@ -1,0 +1,95 @@
+﻿@page "/xml-display"
+@using BlazorMonaco
+@using BlazorMonaco.Editor
+@using BlazorMonaco.Languages
+@using System.Xml.Linq   @* <-- Добавьте это *@
+
+
+<div class="xml-tabs">
+    <!-- Верхние табы для XML документов -->
+    <ul class="nav nav-pills mb-3" id="xmlTabList" role="tablist">
+        @foreach (var tab in xmlTabs)
+        {
+            var tabId = $"xmlTab{tab.Id}";
+            <li class="nav-item">
+                <a class="nav-link @(tab.IsActive ? "active" : "")" id="@tabId-tab" @onclick="() => SetActiveTab(tab)" role="tab" aria-controls="@tabId" aria-selected="true">@tab.Name</a>
+            </li>
+        }
+        <li class="nav-item">
+            <button class="btn btn-primary" @onclick="AddTab">+</button>
+        </li>
+    </ul>
+
+    <!-- Содержимое табов для XML документов -->
+    <div class="tab-content" id="xmlTabContent">
+        @foreach (var tab in xmlTabs)
+        {
+            var tabId = $"xmlTab{tab.Id}";
+            <div class="tab-pane fade @(tab.IsActive ? "show active" : "")" id="@tabId" role="tabpanel" aria-labelledby="@tabId-tab">
+                <StandaloneCodeEditor @ref="tab.EditorRef" ConstructionOptions="EditorConstructionOptions" />
+                <button @onclick="() => FormatXml(tab)">Format XML</button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<XmlTab> xmlTabs = new List<XmlTab>
+    {
+        new XmlTab { Id = 1, Name = "Tab 1", Content = "...", IsActive = true }
+    };
+
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    {
+        return new StandaloneEditorConstructionOptions
+            {
+                Value = "<your-xml-here>",
+                Language = "xml",
+                Theme = "vs-dark"
+            };
+    }
+
+    private async Task FormatXml(XmlTab tab)
+    {
+        try
+        {
+            string currentXml = await tab.EditorRef.GetValue();
+            var xDoc = XDocument.Parse(currentXml);
+            string formattedXml = xDoc.ToString();
+            await tab.EditorRef.SetValue(formattedXml);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error formatting XML: {ex.Message}");
+            // Вы можете добавить какое-либо уведомление пользователю о том, что XML некорректен.
+        }
+    }
+
+    private void AddTab()
+    {
+        var newTab = new XmlTab
+            {
+                Id = xmlTabs.Max(t => t.Id) + 1,
+                Name = $"Tab {xmlTabs.Count + 1}",
+                Content = "", // начальный контент для нового XML документа
+                IsActive = true
+            };
+        xmlTabs.ForEach(t => t.IsActive = false);
+        xmlTabs.Add(newTab);
+    }
+
+    private void SetActiveTab(XmlTab activeTab)
+    {
+        xmlTabs.ForEach(t => t.IsActive = false);
+        activeTab.IsActive = true;
+    }
+
+    private class XmlTab
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Content { get; set; }
+        public bool IsActive { get; set; }
+        public StandaloneCodeEditor EditorRef { get; set; }
+    }
+}

@@ -22,6 +22,50 @@ namespace HelpfulHive.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("HelpfulHive.Models.ArticleRP", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("Articles");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.ImageRP", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.ToTable("Images");
+                });
+
             modelBuilder.Entity("HelpfulHive.Models.RecordModel", b =>
                 {
                     b.Property<int>("Id")
@@ -50,6 +94,29 @@ namespace HelpfulHive.Migrations
                     b.HasIndex("SubTabId");
 
                     b.ToTable("Records");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.SectionRP", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int?>("ParentSectionId")
+                        .IsRequired()
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentSectionId");
+
+                    b.ToTable("Sections");
                 });
 
             modelBuilder.Entity("HelpfulHive.Models.TabItem", b =>
@@ -279,6 +346,28 @@ namespace HelpfulHive.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HelpfulHive.Models.ArticleRP", b =>
+                {
+                    b.HasOne("HelpfulHive.Models.SectionRP", "Section")
+                        .WithMany("Articles")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.ImageRP", b =>
+                {
+                    b.HasOne("HelpfulHive.Models.ArticleRP", "Article")
+                        .WithMany("Images")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+                });
+
             modelBuilder.Entity("HelpfulHive.Models.RecordModel", b =>
                 {
                     b.HasOne("HelpfulHive.Models.TabItem", "SubTab")
@@ -288,6 +377,17 @@ namespace HelpfulHive.Migrations
                         .IsRequired();
 
                     b.Navigation("SubTab");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.SectionRP", b =>
+                {
+                    b.HasOne("HelpfulHive.Models.SectionRP", "ParentSection")
+                        .WithMany("Subsections")
+                        .HasForeignKey("ParentSectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ParentSection");
                 });
 
             modelBuilder.Entity("HelpfulHive.Models.TabItem", b =>
@@ -348,6 +448,18 @@ namespace HelpfulHive.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.ArticleRP", b =>
+                {
+                    b.Navigation("Images");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.SectionRP", b =>
+                {
+                    b.Navigation("Articles");
+
+                    b.Navigation("Subsections");
                 });
 
             modelBuilder.Entity("HelpfulHive.Models.TabItem", b =>

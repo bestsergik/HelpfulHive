@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using static System.Collections.Specialized.BitVector32;
 
 namespace HelpfulHive
 {
@@ -31,7 +32,7 @@ namespace HelpfulHive
                 .HasForeignKey(r => r.SubTabId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // Конфигурации для других моделей...
+      
         }
     }
 
