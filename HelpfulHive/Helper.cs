@@ -11,13 +11,10 @@ namespace HelpfulHive
         // обновление после добавления миграции
         //  dotnet ef database update -c HelpfulHive.ApplicationDbContext
 
-
         // полный откат
         // dotnet ef database update 0 --context HelpfulHive.ApplicationDbContext
 
-
         // *************************************************
-
 
         // git add .
         // git commit -m "????"

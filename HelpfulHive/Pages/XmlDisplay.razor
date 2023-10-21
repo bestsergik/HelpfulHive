@@ -2,7 +2,9 @@
 @using BlazorMonaco
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
-@using System.Xml.Linq   @* <-- Добавьте это *@
+@using System.Xml.Linq   
+@inject IJSRuntime JSRuntime
+
 
 
 <div class="xml-tabs">
@@ -26,7 +28,14 @@
         {
             var tabId = $"xmlTab{tab.Id}";
             <div class="tab-pane fade @(tab.IsActive ? "show active" : "")" id="@tabId" role="tabpanel" aria-labelledby="@tabId-tab">
-                <StandaloneCodeEditor @ref="tab.EditorRef" ConstructionOptions="EditorConstructionOptions" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <StandaloneCodeEditor @ref="tab.SendEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPaste(tab.SendEditorRef))" />
+                    </div>
+                    <div class="col-md-6">
+                        <StandaloneCodeEditor @ref="tab.CheckEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPaste(tab.CheckEditorRef))" />
+                    </div>
+                </div>
                 <button @onclick="() => FormatXml(tab)">Format XML</button>
             </div>
         }
@@ -35,35 +44,66 @@
 
 @code {
     private List<XmlTab> xmlTabs = new List<XmlTab>
-    {
-        new XmlTab { Id = 1, Name = "Tab 1", Content = "...", IsActive = true }
-    };
+{
+    new XmlTab { Id = 1, Name = "Tab 1", IsActive = true }
+};
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
         return new StandaloneEditorConstructionOptions
             {
-                Value = "<your-xml-here>",
+                Value = "",
                 Language = "xml",
                 Theme = "vs-dark"
             };
     }
 
+
+    private async Task FormatXmlOnPaste(StandaloneCodeEditor editor)
+    {
+
+        string xml = await editor.GetValue();
+
+        try
+        {
+            var doc = XDocument.Parse(xml);
+            string formattedXml = doc.ToString();
+
+            await editor.SetValue(formattedXml);
+        }
+        catch (Exception ex)
+        {
+            // Обработка ошибок парсинга XML
+            Console.WriteLine($"Error formatting XML: {ex.Message}");
+        }
+    }
+
+
+
+
+
+
     private async Task FormatXml(XmlTab tab)
     {
         try
         {
-            string currentXml = await tab.EditorRef.GetValue();
-            var xDoc = XDocument.Parse(currentXml);
-            string formattedXml = xDoc.ToString();
-            await tab.EditorRef.SetValue(formattedXml);
+            string sendXml = await tab.SendEditorRef.GetValue();
+            var sendDoc = XDocument.Parse(sendXml);
+            string formattedSendXml = sendDoc.ToString();
+            await tab.SendEditorRef.SetValue(formattedSendXml);
+
+            string checkXml = await tab.CheckEditorRef.GetValue();
+            var checkDoc = XDocument.Parse(checkXml);
+            string formattedCheckXml = checkDoc.ToString();
+            await tab.CheckEditorRef.SetValue(formattedCheckXml);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error formatting XML: {ex.Message}");
-            // Вы можете добавить какое-либо уведомление пользователю о том, что XML некорректен.
         }
     }
+
+
 
     private void AddTab()
     {
@@ -71,9 +111,9 @@
             {
                 Id = xmlTabs.Max(t => t.Id) + 1,
                 Name = $"Tab {xmlTabs.Count + 1}",
-                Content = "", // начальный контент для нового XML документа
                 IsActive = true
             };
+
         xmlTabs.ForEach(t => t.IsActive = false);
         xmlTabs.Add(newTab);
     }
@@ -88,8 +128,9 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Content { get; set; }
         public bool IsActive { get; set; }
-        public StandaloneCodeEditor EditorRef { get; set; }
+        public StandaloneCodeEditor SendEditorRef = new StandaloneCodeEditor();
+        public StandaloneCodeEditor CheckEditorRef = new StandaloneCodeEditor();
     }
+
 }
