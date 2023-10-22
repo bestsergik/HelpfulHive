@@ -3,6 +3,8 @@
 @using BlazorMonaco.Editor
 @using BlazorMonaco.Languages
 @using System.Xml.Linq   
+@using System.Text.RegularExpressions;
+
 @inject IJSRuntime JSRuntime
 
 
@@ -29,12 +31,14 @@
             var tabId = $"xmlTab{tab.Id}";
             <div class="tab-pane fade @(tab.IsActive ? "show active" : "")" id="@tabId" role="tabpanel" aria-labelledby="@tabId-tab">
                 <div class="row">
+
                     <div class="col-md-6">
-                        <StandaloneCodeEditor @ref="tab.SendEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPaste(tab.SendEditorRef))" />
+                        <StandaloneCodeEditor @ref="tab.SendEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPaste(tab.SendEditorRef, tab.SendEditorRef, tab.CheckEditorRef))" />
                     </div>
                     <div class="col-md-6">
-                        <StandaloneCodeEditor @ref="tab.CheckEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPaste(tab.CheckEditorRef))" />
+                        <StandaloneCodeEditor @ref="tab.CheckEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPaste(tab.CheckEditorRef, tab.SendEditorRef, tab.CheckEditorRef))" />
                     </div>
+
                 </div>
                 <button @onclick="() => FormatXml(tab)">Format XML</button>
             </div>
@@ -59,28 +63,72 @@
     }
 
 
-    private async Task FormatXmlOnPaste(StandaloneCodeEditor editor)
+    private async Task FormatXmlOnPaste(StandaloneCodeEditor editor, StandaloneCodeEditor sendEditor, StandaloneCodeEditor checkEditor)
     {
-
+        // Получение значения из буфера обмена или редактора
         string xml = await editor.GetValue();
 
-        try
-        {
-            var doc = XDocument.Parse(xml);
-            string formattedXml = doc.ToString();
+        Console.WriteLine($"Original XML: {xml}");
 
-            await editor.SetValue(formattedXml);
-        }
-        catch (Exception ex)
+        // Разделение XML документов
+        List<string> sendDocuments = new List<string>();
+        List<string> checkDocuments = new List<string>();
+
+        // Разделение входных данных на отдельные документы
+        string[] documents = Regex.Split(xml, @"(?=<Send)|(?=<Check)");
+        foreach (var doc in documents)
         {
-            // Обработка ошибок парсинга XML
-            Console.WriteLine($"Error formatting XML: {ex.Message}");
+            var trimmedDoc = doc.Trim();
+            Console.WriteLine($"Trimmed doc: {trimmedDoc}");
+
+            if (trimmedDoc.StartsWith("<Send"))
+            {
+                sendDocuments.Add(trimmedDoc);
+            }
+            else if (trimmedDoc.StartsWith("<Check"))
+            {
+                checkDocuments.Add(trimmedDoc);
+            }
+        }
+
+        // Обработка документов типа Send
+        foreach (var doc in sendDocuments)
+        {
+            try
+            {
+                Console.WriteLine($"Processing Send doc: {doc}");
+                var xDoc = XDocument.Parse(doc);
+                string formattedXml = xDoc.ToString();
+                Console.WriteLine($"Formatted Send doc: {formattedXml}");
+
+                string currentContent = await sendEditor.GetValue();
+                await sendEditor.SetValue(currentContent + "\n" + formattedXml);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error formatting Send XML: {ex.Message}");
+            }
+        }
+
+        // Обработка документов типа Check
+        foreach (var doc in checkDocuments)
+        {
+            try
+            {
+                Console.WriteLine($"Processing Check doc: {doc}");
+                var xDoc = XDocument.Parse(doc);
+                string formattedXml = xDoc.ToString();
+                Console.WriteLine($"Formatted Check doc: {formattedXml}");
+
+                string currentContent = await checkEditor.GetValue();
+                await checkEditor.SetValue(currentContent + "\n" + formattedXml);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error formatting Check XML: {ex.Message}");
+            }
         }
     }
-
-
-
-
 
 
     private async Task FormatXml(XmlTab tab)
