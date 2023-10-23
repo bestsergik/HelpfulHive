@@ -15,6 +15,8 @@
     <link rel="icon" type="image/png" href="favicon.png"/>
     <link href="~/vs/editor/editor.main.css" rel="stylesheet" />
     <link href="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.css" rel="stylesheet" />
+    <script src="_content/Microsoft.AspNetCore.Components.Web.Extensions/script.js"></script>
+
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
@@ -36,7 +38,8 @@
     <script src="_content/BlazorMonaco/jsInterop.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
     <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
-   
+    <script src="~/scripts/require.js"></script>
+    <script src="~/scripts/comparisonslider.js"></script>
 
  
 </body>

@@ -6,30 +6,28 @@
 @inject TabViewModel TabVM
 @inject RecordViewModel RecordVM
 
-@if (Records != null && Records.Any())
-{
-    <div class="record-list">
-        @foreach (var record in Records)
-        {
-            <div class="record-item" @onclick="() => EditRecord(record)">
+    @if (Records != null && Records.Any())
+    {
+        <div class="record-list">
+            @foreach (var record in Records)
+            {
+            <div class="record-item" @ondblclick="() => EditRecord(record)">
                 <img src="@($"images/{record.ImagePath}")" alt="Record image" class="record-img" />
-                <div class="record-content">@record.Title</div>
-                <span class="edit-icon" @onclick="() => EditRecord(record)">
-                    <i class="oi oi-pencil"></i>
-                </span>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <p>No records available.</p>    
-}
+                    <div class="record-content">@record.Title</div>
+                    <span class="edit-icon" @onclick="() => EditRecord(record)">
+                        <i class="oi oi-pencil"></i>
+                    </span>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No records available.</p>    
+    }
 
 <EditRecordDialog IsVisible="@isEditDialogVisible" RecordToEdit="@selectedRecord" OnEditDialogClosed="@ReloadRecords" AvailableSubTabs="@GetAllSubTabs()" />
 <AddRecordDialog OnRecordAdded="HandleNewRecordAdded" AvailableSubTabs="@GetAllSubTabs()"  />
-
-
 
 @code {
     [Parameter] public List<RecordModel> Records { get; set; }
@@ -40,8 +38,6 @@ else
 
     private bool isEditDialogVisible = false;
     private RecordModel? selectedRecord;
-
-
 
     protected override async Task OnParametersSetAsync()
     {
@@ -64,9 +60,6 @@ else
         return TabVM.Tabs.SelectMany(tab => tab.SubTabs ?? new List<TabItem>());
     }
 
-
-
-
     private async Task HandleNewRecordAdded(RecordModel newRecord)
     {
         Records.Add(newRecord);
@@ -80,14 +73,5 @@ else
         await LoadRecords(SelectedSubTabId); // Wait for records to load
         StateHasChanged(); // Update the UI
     }
-
-
-
-
-
-
-
-
-
 }
 

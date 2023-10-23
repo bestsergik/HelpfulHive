@@ -8,6 +8,23 @@ h1:focus {
     outline: none;
 }
 
+
+.slider-container {
+    display: flex;
+    height: 100%;
+}
+
+.editor-container {
+    flex-grow: 1;
+}
+
+.slider {
+    width: 5px;
+    background-color: #ccc;
+    cursor: col-resize;
+}
+
+
 a, .btn-link {
     color: #0071c1;
 }
@@ -72,3 +89,16 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
