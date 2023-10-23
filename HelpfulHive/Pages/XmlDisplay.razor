@@ -83,7 +83,7 @@
         List<string> checkDocuments = new List<string>();
 
         // Разделение входных данных на отдельные документы
-        string[] documents = Regex.Split(xml, @"(?=<Send)|(?=<Check)");
+        string[] documents = Regex.Split(xml, @"(?=<\?xml[^>]*\?>\s*<Send)|(?=<\?xml[^>]*\?>\s*<Check)|(?=<Send)|(?=<Check)");
         foreach (var doc in documents)
         {
             var trimmedDoc = doc.Trim();
