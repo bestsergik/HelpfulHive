@@ -48,6 +48,31 @@
 }
 
 
+.nav-tabs {
+    display: flex;
+    border-bottom: 2px solid #0071c1;
+    justify-content: space-between;
+}
+
+    .nav-tabs div {
+        padding: 10px;
+        cursor: pointer;
+        border: 1px solid #0071c1;
+        border-bottom: none;
+        background-color: #f8f9fa;
+    }
+
+        .nav-tabs div.active {
+            background-color: #0071c1;
+            color: white;
+        }
+
+/* Для вашего основного контейнера, который содержит список элементов и вкладки. */
+.main-container {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
 
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
@@ -105,6 +130,27 @@
     background-color: lightblue;
     color: white;
 }
+
+
+
+.nav-tabs {
+    display: flex;
+    border-bottom: 2px solid #0071c1;
+    justify-content: space-between;
+}
+
+    .nav-tabs div {
+        padding: 10px;
+        cursor: pointer;
+        border: 1px solid #0071c1;
+        border-bottom: none;
+        background-color: #f8f9fa;
+    }
+
+        .nav-tabs div.active {
+            background-color: #0071c1;
+            color: white;
+        }
 
 
 .nav-item ::deep a.active {

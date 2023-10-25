@@ -7,6 +7,10 @@
 @inject RecordViewModel RecordVM
 @inject TabService TabSrv
 
+
+
+
+
 @foreach (var tab in TabVM.Tabs)
 {
     <div class="nav-item px-3" @onclick:preventDefault="true" @onclick="() => SelectTab(tab)">
@@ -29,12 +33,6 @@
     </div>
 }
 
-<div class="nav-item px-3">
-    <button @onclick="ToggleAddTabModal" class="btn btn-primary">
-        <span class="oi oi-plus" aria-hidden="true"></span> Add Tab
-    </button>
-</div>
-
 <div class="content-area">
 
     <div class="dynamic-content-area">
@@ -47,6 +45,17 @@
         }
     </div>
 </div>
+
+
+<div class="nav-tabs">
+    <div class="@GetTabClass(TabType.Personal)" @onclick="() => LoadTabs(TabType.Personal)">
+        Personal Tabs
+    </div>
+    <div class="@GetTabClass(TabType.Common)" @onclick="() => LoadTabs(TabType.Common)">
+        Common Tabs
+    </div>
+</div>
+
 
 
 @if (selectedTab != null)
@@ -106,6 +115,7 @@
     </div>
 }
 
+<button @onclick="ToggleAddTabModal">Add Tab</button>
 
 
 @code {
@@ -118,9 +128,20 @@
     private IEnumerable<RecordModel>? tabRecords = null;
     [Parameter]
     public EventCallback<TabItem> OnTabSelected { get; set; }
+    private TabType activeTab = TabType.Personal;
 
 
+    private string GetTabClass(TabType tabType)
+    {
+        return activeTab == tabType ? "active" : "";
+    }
 
+    private async Task LoadTabs(TabType tabType)
+    {
+        activeTab = tabType;
+        TabVM.Tabs.Clear();
+        await TabVM.LoadTabs(tabType);
+    }
 
     protected override void OnInitialized()
     {
@@ -141,10 +162,12 @@
 
     private void SelectSubTab(TabItem subTab)
     {
+        selectedTab = subTab;  // обновляете выбранную вкладку
         var uri = $"/record-list/{subTab.Uri}";
         Console.WriteLine($"Navigating to: {uri}");
         NavManager.NavigateTo(uri);
     }
+
 
     private string GetNavLinkClass(TabItem tab)
     {
@@ -195,12 +218,19 @@
     private async void AddTab()
     {
         var parentTab = (selectedParentTabId == 0) ? null : TabVM.Tabs.FirstOrDefault(t => t.Id == selectedParentTabId);
-        var newTab = new TabItem { Name = newTabName, Uri = $"/{newTabName.Replace(" ", "")}" };
+        var newTab = new TabItem
+            {
+                Name = newTabName,
+                Uri = $"/{newTabName.Replace(" ", "")}",
+                TabType = activeTab,  // передаём тип вкладки
+                UserId = (activeTab == TabType.Personal) ? TabVM.UserId : null  // для личных вкладок передаём userId, для общих - null
+            };
         await TabVM.AddTab(newTab, parentTab);
         newTabName = "";
         selectedParentTabId = 0;
         ToggleAddTabModal();
     }
+
 
     public void Dispose()
     {

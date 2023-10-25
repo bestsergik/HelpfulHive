@@ -11,6 +11,4 @@ namespace HelpfulHive.Models
         public TabItem SubTab { get; set; } // Навигационное свойство
         public string ImagePath { get; set; }
     }
-
-
 }

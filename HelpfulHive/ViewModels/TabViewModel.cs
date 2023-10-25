@@ -3,6 +3,7 @@ using HelpfulHive.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.JSInterop;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Security.Claims;
 
 namespace HelpfulHive.ViewModels
@@ -15,6 +16,7 @@ namespace HelpfulHive.ViewModels
       
 
         public string UserId { get; set; }
+        public TabType ActiveTab { get; set; } // Добавляем переменную для текущего активного типа вкладки
 
         public ObservableCollection<TabItem> Tabs { get; set; } = new ObservableCollection<TabItem>();
 
@@ -32,7 +34,9 @@ namespace HelpfulHive.ViewModels
 
             if (!string.IsNullOrEmpty(UserId))
             {
-                await LoadTabs();
+                ActiveTab = TabType.Personal;
+                await LoadTabs(ActiveTab);
+
             }
             else
             {
@@ -40,24 +44,29 @@ namespace HelpfulHive.ViewModels
             }
         }
 
-        public async Task LoadTabs()
+        public async Task LoadTabs(TabType tabType)
         {
-            var rootTabs = await _tabService.GetRootTabsAsync(UserId);
+            Tabs.Clear();  // Очистите коллекцию перед добавлением новых вкладок.
+            var rootTabs = await _tabService.GetRootTabsAsync(UserId, tabType);
             Console.WriteLine($"Loaded {rootTabs.Count()} root tabs for user {UserId}");
             foreach (var tab in rootTabs)
             {
                 Tabs.Add(tab);
             }
             OnTabAdded?.Invoke();
-
         }
+
 
         public async Task AddTab(TabItem newTab, TabItem? parentTab = null)
         {
             await _tabService.AddTabAsync(newTab, UserId, parentTab);
             if (parentTab == null)
             {
-                Tabs.Add(newTab);
+                if ((newTab.TabType == ActiveTab && newTab.UserId == UserId) ||
+                    (ActiveTab == TabType.Common && newTab.UserId == null))
+                {
+                    Tabs.Add(newTab);
+                }
             }
             else
             {
@@ -66,7 +75,7 @@ namespace HelpfulHive.ViewModels
             OnTabAdded?.Invoke();
         }
 
-       
+
         public async Task<bool> DeleteTab(TabItem tab)
         {
             if (_tabService.CanDeleteTab(tab))
@@ -78,8 +87,8 @@ namespace HelpfulHive.ViewModels
             }
             else
             {
-                // Логика или сообщение, которое информирует пользователя о том, что удаление не возможно
-                return false; // Возвращает false, если удаление не было выполнено
+                
+                return false; 
             }
         }
 

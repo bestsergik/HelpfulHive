@@ -13,18 +13,20 @@ namespace HelpfulHive.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<TabItem>> GetRootTabsAsync(string userId)
+        public async Task<IEnumerable<TabItem>> GetRootTabsAsync(string userId, TabType tabType)
         {
             var tabs = await _dbContext.Tabs
-       .Include(t => t.SubTabs)
-       .Where(t => t.ParentTabId == null && t.UserId == userId)
-       .ToListAsync();
-
-            // Добавьте вывод в консоль или логгирование здесь для отладки:
-            Console.WriteLine($"Found {tabs.Count} tabs for user {userId}");
+                .Include(t => t.SubTabs)
+                .Where(t => t.ParentTabId == null &&
+                            (t.TabType == tabType &&
+                             (tabType == TabType.Common || t.UserId == userId)))
+                .ToListAsync();
 
             return tabs;
         }
+
+
+
 
         public async Task<IEnumerable<TabItem>> GetTabsAsync()
         {

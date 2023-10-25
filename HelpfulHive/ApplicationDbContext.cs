@@ -27,12 +27,10 @@ namespace HelpfulHive
             base.OnModelCreating(modelBuilder);  // Этот вызов очень важен!
 
             modelBuilder.Entity<RecordModel>()
-                .HasOne(r => r.SubTab)
-                .WithMany(t => t.Records)
-                .HasForeignKey(r => r.SubTabId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-      
+          .HasOne(r => r.SubTab)
+          .WithMany(t => t.Records)
+          .HasForeignKey(r => r.SubTabId)
+          .OnDelete(DeleteBehavior.Cascade);
         }
     }
 

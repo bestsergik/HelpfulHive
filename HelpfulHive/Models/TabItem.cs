@@ -11,5 +11,13 @@
 
         public string? UserId { get; set; } // Cвойство для связи с пользователем
         public ICollection<RecordModel> Records { get; set; }
+        public TabType TabType { get; set; }
+
     }
+    public enum TabType
+    {
+        Personal,
+        Common
+    }
+
 }
