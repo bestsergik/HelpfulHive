@@ -10,5 +10,8 @@ namespace HelpfulHive.Models
         public int SubTabId { get; set; }
         public TabItem SubTab { get; set; } // Навигационное свойство
         public string ImagePath { get; set; }
+        public bool IsFavorite { get; set; }
+        public int ClickCount { get; set; }
+
     }
 }

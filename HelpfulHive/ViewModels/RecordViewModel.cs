@@ -27,6 +27,14 @@ namespace HelpfulHive.ViewModels
             OnRecordChanged?.Invoke();
         }
 
+        public async Task HandleClick(RecordModel record)
+{
+    record.ClickCount++;
+    await UpdateRecordAsync(record);
+    OnRecordChanged?.Invoke();
+}
+
+
 
         public async Task UpdateRecordAsync(RecordModel updatedRecord)
         {
@@ -55,6 +63,10 @@ namespace HelpfulHive.ViewModels
             OnRecordChanged?.Invoke();
         }
 
+        public async Task<List<RecordModel>> GetTopNClickedRecordsAsync(int n)
+        {
+            return await _recordService.GetTopNClickedRecordsAsync(n);
+        }
 
     }
 

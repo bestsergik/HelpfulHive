@@ -30,6 +30,9 @@ namespace HelpfulHive.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ClickCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
@@ -37,6 +40,9 @@ namespace HelpfulHive.Migrations
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("IsFavorite")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("SubTabId")
                         .HasColumnType("integer");
@@ -287,7 +293,7 @@ namespace HelpfulHive.Migrations
                     b.HasOne("HelpfulHive.Models.TabItem", "SubTab")
                         .WithMany("Records")
                         .HasForeignKey("SubTabId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("SubTab");

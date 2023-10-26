@@ -5,40 +5,53 @@ namespace HelpfulHive.Services
 {
     public class RecordService
     {
-        private readonly ApplicationDbContext _dbContext;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public RecordService(ApplicationDbContext dbContext)
+        public RecordService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _dbContext = dbContext;
+            _contextFactory = contextFactory;
         }
 
         public async Task AddRecordAsync(RecordModel newRecord)
         {
-            _dbContext.Records.Add(newRecord);
-            await _dbContext.SaveChangesAsync();
+            using var context = _contextFactory.CreateDbContext();
+            context.Records.Add(newRecord);
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<RecordModel>> GetRecordsBySubTabUriAsync(string subTabUri)
         {
-            return await _dbContext.Records
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Records
                 .Include(r => r.SubTab)
                 .Where(r => r.SubTab.Uri == subTabUri)
                 .ToListAsync();
         }
 
-
         public async Task UpdateRecordAsync(RecordModel updatedRecord)
         {
-            _dbContext.Records.Update(updatedRecord);
-            await _dbContext.SaveChangesAsync();
+            using var context = _contextFactory.CreateDbContext();
+            context.Records.Update(updatedRecord);
+            await context.SaveChangesAsync();
         }
 
         public async Task DeleteRecordAsync(RecordModel recordToDelete)
         {
-            _dbContext.Records.Remove(recordToDelete);
-            await _dbContext.SaveChangesAsync();
+            using var context = _contextFactory.CreateDbContext();
+            context.Records.Remove(recordToDelete);
+            await context.SaveChangesAsync();
         }
 
+        public async Task<List<RecordModel>> GetTopNClickedRecordsAsync(int n)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.Records
+                .AsNoTracking()
+                .OrderByDescending(r => r.ClickCount)
+                .Take(n)
+                .ToListAsync();
+        }
     }
+
 
 }
