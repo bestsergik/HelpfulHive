@@ -31,6 +31,9 @@ namespace HelpfulHive
           .WithMany(t => t.Records)
           .HasForeignKey(r => r.SubTabId)
           .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<IdentityUser>().Property<bool>("IsCanEditTabsRecords");
+
         }
     }
 

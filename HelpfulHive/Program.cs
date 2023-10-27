@@ -14,16 +14,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ImageService>();
 
-
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>() // Добавляем поддержку ролей
     .AddEntityFrameworkStores<ApplicationDbContext>();
-
 
 
 builder.Services.AddScoped<TabViewModel>();
@@ -43,7 +40,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
-  //  app.UseDatabaseErrorPage(); // Enable database error page in development
+    //app.UseDatabaseErrorPage(); // Enable database error page in development
 }
 else
 {
@@ -61,5 +58,13 @@ app.UseAuthorization();
 app.MapRazorPages(); // Map the Razor pages
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var userManager = services.GetRequiredService<UserManager<IdentityUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+    await RoleInitializer.InitializeAsync(userManager, roleManager);
+}
 
 app.Run();
