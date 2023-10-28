@@ -13,9 +13,25 @@
         <input type="checkbox" @bind="isSearchAll" /> Все записи
     </div>
     <div class="actions-area">
-        <!-- Здесь можно добавить кнопки и другие элементы управления -->
+        @if (PopularRecords != null && PopularRecords.Any())
+        {
+            <div class="popular-record-list">
+                @foreach (var record in PopularRecords)
+                {
+                    <div class="popular-record-item" @onclick="() => HandleClick(record)">
+                        <img src="@($"images/{record.ImagePath}")" alt="Record image" class="record-img" />
+                    </div>
+
+                }
+            </div>
+        }
+        else
+        {
+            <p>No popular records available.</p>
+        }
     </div>
 </div>
+
 
 @if (Records != null && Records.Any())
 {
@@ -59,6 +75,21 @@ else
         Console.WriteLine($"Search query: {searchQuery}"); // Добавьте эту строку для отладки
 
         Records = await RecordVM.SearchRecordsAsync(searchQuery, isSearchAll);
+        StateHasChanged();
+    }
+
+
+    private List<RecordModel> PopularRecords { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Загрузка данных при инициализации компонента...
+        await LoadPopularRecords();
+    }
+
+    private async Task LoadPopularRecords()
+    {
+        PopularRecords = await RecordVM.GetTopNClickedRecordsAsync(5);
         StateHasChanged();
     }
 

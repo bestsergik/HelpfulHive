@@ -64,3 +64,34 @@
 .record-content {
     font-size: 16px;
 }
+
+
+
+
+.search-and-actions {
+    display: flex;
+    align-items: center;
+    margin: 15px;
+}
+
+.search-area {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+
+.actions-area {
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+}
+
+.popular-record-list {
+    display: flex;
+    overflow-x: auto;
+}
+
+.popular-record-item {
+    margin-right: 15px;
+}
