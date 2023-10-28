@@ -42,6 +42,65 @@ namespace HelpfulHive.Services
             await context.SaveChangesAsync();
         }
 
+
+        public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string userId)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return await GetRecordsByUserAndTabTypeAsync(isSearchAll, userId);
+            }
+
+            using var context = _contextFactory.CreateDbContext();
+            var records = context.Records
+                .Include(r => r.SubTab)
+                .ThenInclude(st => st.ParentTab)
+                .AsNoTracking()  // Добавляем AsNoTracking()
+                .AsQueryable();
+
+            if (!isSearchAll)
+            {
+                records = records.Where(r => r.SubTab.UserId == userId && r.SubTab.TabType == TabType.Personal);
+            }
+            else
+            {
+                records = records.Where(r => r.SubTab.TabType == TabType.Common || (r.SubTab.TabType == TabType.Personal && r.SubTab.UserId == userId));
+            }
+
+            var queryToExecute = records
+                .Where(r => EF.Functions.Like(r.Title, $"%{query}%") || EF.Functions.Like(r.Content, $"%{query}%"));
+
+            var sql = queryToExecute.ToQueryString();  // Выводим SQL-запрос
+
+            var filteredRecords = await queryToExecute.ToListAsync();
+
+
+            return filteredRecords;
+        }
+
+        public async Task<List<RecordModel>> GetRecordsByUserAndTabTypeAsync(bool isSearchAll, string userId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var records = context.Records
+                .Include(r => r.SubTab)
+                .ThenInclude(st => st.ParentTab)
+                .AsNoTracking()
+                .AsQueryable();
+
+            if (!isSearchAll)
+            {
+                records = records.Where(r => r.SubTab.UserId == userId && r.SubTab.TabType == TabType.Personal);
+            }
+            else
+            {
+                records = records.Where(r => r.SubTab.TabType == TabType.Common || (r.SubTab.TabType == TabType.Personal && r.SubTab.UserId == userId));
+            }
+
+            return await records.ToListAsync();
+        }
+
+
+
+
         public async Task<List<RecordModel>> GetTopNClickedRecordsAsync(int n)
         {
             using var context = _contextFactory.CreateDbContext();

@@ -7,6 +7,15 @@
 @inject RecordViewModel RecordVM
 @inject IJSRuntime JSRuntime
 
+<div class="search-and-actions">
+    <div class="search-area">
+        <input type="text" @bind="searchQuery" @oninput="HandleInput" placeholder="Search records..." />
+        <input type="checkbox" @bind="isSearchAll" /> Все записи
+    </div>
+    <div class="actions-area">
+        <!-- Здесь можно добавить кнопки и другие элементы управления -->
+    </div>
+</div>
 
 @if (Records != null && Records.Any())
 {
@@ -41,6 +50,18 @@ else
 
     private bool isEditDialogVisible = false;
     private RecordModel? selectedRecord;
+    private bool isSearchAll = false;
+
+    private string searchQuery = string.Empty;
+
+    private async Task SearchRecords()
+    {
+        Console.WriteLine($"Search query: {searchQuery}"); // Добавьте эту строку для отладки
+
+        Records = await RecordVM.SearchRecordsAsync(searchQuery, isSearchAll);
+        StateHasChanged();
+    }
+
 
     protected override void OnInitialized()
     {
@@ -51,6 +72,13 @@ else
     {
         await RecordVM.HandleClick(record);
         await scriptBuilder.BuildScriptAsync(record.Content);
+    }
+
+    private void HandleInput(ChangeEventArgs e)
+    {
+        searchQuery = e.Value.ToString();
+        StateHasChanged();
+        SearchRecords();
     }
 
 
@@ -80,7 +108,6 @@ else
         Records.Add(newRecord);
         StateHasChanged();
     }
-
 
     private async Task ReloadRecords()
     {

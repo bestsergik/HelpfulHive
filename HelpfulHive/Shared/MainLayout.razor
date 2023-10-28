@@ -29,16 +29,7 @@
                     </button>
 
                 </div>
-                <div class="popular-records">
-                    @if (topRecords != null)
-                    {
-                        foreach (var record in topRecords)
-                        {
-                            <p>@record.ImagePath</p>
-                            <img src="@record.ImagePath" alt="@record.Title" class="popular-record-img">
-                        }
-                    }
-                </div>
+        
             </div>
             <article class="content px-4">
                 @Body

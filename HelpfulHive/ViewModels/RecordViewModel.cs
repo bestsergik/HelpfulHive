@@ -1,6 +1,8 @@
 ﻿using HelpfulHive.Models;
 using HelpfulHive.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace HelpfulHive.ViewModels
 {
@@ -9,11 +11,27 @@ namespace HelpfulHive.ViewModels
         private readonly RecordService _recordService;
         public List<RecordModel> Records { get; private set; }
 
+
+
+
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        public string UserId { get; private set; }
+
         public event Action? OnRecordChanged;
 
-        public RecordViewModel(RecordService recordService)
+        public RecordViewModel(RecordService recordService, AuthenticationStateProvider authenticationStateProvider)
         {
             _recordService = recordService ?? throw new ArgumentNullException(nameof(recordService));
+            _authenticationStateProvider = authenticationStateProvider ?? throw new ArgumentNullException(nameof(authenticationStateProvider));
+            InitializeUserId();
+        }
+
+        private async Task InitializeUserId()
+        {
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            UserId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            // Вы можете здесь вызвать метод загрузки записей или другие методы, которые зависят от UserId
         }
 
         public async Task AddRecordAsync(RecordModel newRecord)
@@ -32,6 +50,11 @@ namespace HelpfulHive.ViewModels
             record.ClickCount++;
             await UpdateRecordAsync(record);
             OnRecordChanged?.Invoke();
+        }
+
+        public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll)
+        {
+            return await _recordService.SearchRecordsAsync(query, isSearchAll, UserId);
         }
 
 
