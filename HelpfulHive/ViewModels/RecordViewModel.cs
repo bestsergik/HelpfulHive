@@ -7,7 +7,7 @@ namespace HelpfulHive.ViewModels
     public class RecordViewModel
     {
         private readonly RecordService _recordService;
-        public List<RecordModel> Records { get; private set; } 
+        public List<RecordModel> Records { get; private set; }
 
         public event Action? OnRecordChanged;
 
@@ -28,11 +28,11 @@ namespace HelpfulHive.ViewModels
         }
 
         public async Task HandleClick(RecordModel record)
-{
-    record.ClickCount++;
-    await UpdateRecordAsync(record);
-    OnRecordChanged?.Invoke();
-}
+        {
+            record.ClickCount++;
+            await UpdateRecordAsync(record);
+            OnRecordChanged?.Invoke();
+        }
 
 
 

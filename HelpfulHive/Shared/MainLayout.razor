@@ -2,6 +2,7 @@
 @using HelpfulHive.Models
 @using HelpfulHive.Pages
 @using HelpfulHive.Services
+@using Microsoft.AspNetCore.Identity;
 @inject TabViewModel TabVM
 @inject RecordService rSRV
 @inject RecordViewModel rVM
@@ -23,7 +24,10 @@
                     <button @onclick="NavigateToXmlDisplay" class="btn">Go to XML</button>
                     <button>3</button>
                     <button>4</button>
-                    <button>5</button>
+                    <button @onclick="Logout" class="btn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+
                 </div>
                 <div class="popular-records">
                     @if (topRecords != null)
@@ -66,6 +70,20 @@
         topRecords = await rVM.GetTopNClickedRecordsAsync(8);
     }
 
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    [Inject]
+    private IHttpContextAccessor HttpContextAccessor { get; set; }
+    [Inject]
+    private SignInManager<IdentityUser> SignInManager { get; set; }
+
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/Identity/Account/Logout", forceLoad: true);
+    }
 
 
 

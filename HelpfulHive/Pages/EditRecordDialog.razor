@@ -3,6 +3,7 @@
 @using HelpfulHive.Services
 @inject RecordViewModel RecordVM
 @inject ImageService ImageService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if (IsVisible)
 {
@@ -57,9 +58,15 @@
 
                 </div>
                 <div class="modal-footer">
-                    <button @onclick="DeleteRecord" class="btn btn-danger">Delete</button>
+                    @if (ShowDeleteButton())
+                    {
+                        <button @onclick="DeleteRecord" class="btn btn-danger">Delete</button>
+                    }
                     <button @onclick="CloseDialog" class="btn btn-secondary">Cancel</button>
-                    <button @onclick="SaveChanges" class="btn btn-primary">Save Changes</button>
+                    @if (ShowSaveButton())
+                    {
+                        <button @onclick="SaveChanges" class="btn btn-primary">Save Changes</button>
+                    }
                 </div>
 
             </div>
@@ -100,6 +107,35 @@
     private void DeleteRecord()
     {
         ShowConfirmationDialog = true;
+    }
+
+
+    private async Task<bool> IsUserInRole(string role)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        return user.IsInRole(role);
+    }
+
+    private bool ShowDeleteButton()
+    {
+        if (RecordToEdit.SubTab.TabType == TabType.Personal)
+        {
+            return true;
+        }
+
+        if (RecordToEdit.SubTab.TabType == TabType.Common && IsUserInRole("Admin").Result)
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    private bool ShowSaveButton()
+    {
+        return ShowDeleteButton();
     }
 
     private List<string> AvailableImages { get; set; } = new List<string>();
