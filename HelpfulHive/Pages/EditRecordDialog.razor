@@ -4,6 +4,7 @@
 @inject RecordViewModel RecordVM
 @inject ImageService ImageService
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserPreferencesViewModel upVM
 
 @if (IsVisible)
 {
@@ -12,7 +13,12 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Edit Record</h5>
+                    <button type="button" class="btn btn-link" @onclick="() => ToggleFavorite(RecordToEdit.Id)">
+                        <img class="favorite-icon" src="@(isFavorite ? "/serviceimages/favoritRecord.png" : "/serviceimages/notFavoritRecord.png")" alt="Favorite" />
+                    </button>
                 </div>
+
+
                 <div class="modal-body">
                     <input @bind="RecordToEdit.Title" type="text" class="form-control" placeholder="Record Title" />
                     <textarea @bind="RecordToEdit.Content" class="form-control mt-3" placeholder="Record Content"></textarea>
@@ -113,6 +119,10 @@
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public IEnumerable<TabItem> AvailableSubTabs { get; set; } = new List<TabItem>();
 
+   
+    private bool isFavorite;
+
+
     private Dictionary<string, List<string>> AvailableImagesByFolders { get; set; }
     private string SelectedFolder { get; set; } 
     private bool ShowConfirmationDialog { get; set; } = false;
@@ -131,7 +141,22 @@
         }
     }
 
+    private async Task ToggleFavorite(int recordId)
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
+        if (userId != null)
+        {
+            await upVM.ToggleFavoriteAsync(userId, recordId);
+
+            // Обновите состояние "isFavorite"
+            isFavorite = await upVM.IsFavoriteAsync(userId, recordId);
+
+            StateHasChanged();
+        }
+    }
 
     private string FindFolderForImage(string imageName)
     {
@@ -145,7 +170,27 @@
         return null;
     }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
+        if (user.Identity.IsAuthenticated)
+        {
+            if (RecordToEdit != null)
+            {
+                isFavorite = await upVM.IsFavoriteAsync(user.Identity.Name, RecordToEdit.Id);
+            }
+            else
+            {
+                // Обработка случая, когда RecordToEdit равно null
+            }
+        }
+        else
+        {
+            isFavorite = false;
+        }
+    }
 
     private void SelectFolder(string folder)
     {

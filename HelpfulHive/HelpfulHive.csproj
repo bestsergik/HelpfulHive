@@ -28,6 +28,7 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Migrations\ApplicationDb\" />
+    <Folder Include="wwwroot\serviceimages\" />
   </ItemGroup>
 
 </Project>

@@ -21,5 +21,17 @@ namespace HelpfulHive.ViewModels
         {
             return await _userPreferencesService.GetTopNClickedRecordsAsync(n, userId);
         }
+
+        public async Task ToggleFavoriteAsync(string userId, int recordId)
+        {
+            await _userPreferencesService.ToggleFavoriteAsync(userId, recordId);
+        }
+
+        public async Task<bool> IsFavoriteAsync(string userId, int recordId)
+        {
+            return await _userPreferencesService.IsFavoriteAsync(userId, recordId);
+        }
+
+
     }
 }

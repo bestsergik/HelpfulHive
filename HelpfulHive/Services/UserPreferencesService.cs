@@ -44,6 +44,52 @@ namespace HelpfulHive.Services
                 .Select(up => up.Record)
                 .ToListAsync();
         }
+
+        public async Task<bool> IsFavoriteAsync(string userId, int recordId)
+        {
+            var preference = await _context.UserPreferences
+                .FirstOrDefaultAsync(up => up.UserId == userId && up.RecordId == recordId);
+
+            return preference?.IsFavorite ?? false;
+        }
+
+
+        public async Task ToggleFavoriteAsync(string userId, int recordId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new ArgumentException("UserId cannot be null or empty");
+            }
+
+            var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+            if (!userExists)
+            {
+                throw new InvalidOperationException($"User with Id {userId} does not exist");
+            }
+            var preference = await _context.UserPreferences
+                .FirstOrDefaultAsync(up => up.UserId == userId && up.RecordId == recordId);
+
+            if (preference == null)
+            {
+                var newUserPreference = new UserPreferences
+                {
+                    UserId = userId,
+                    RecordId = recordId,
+                    IsFavorite = true,
+                    ClickCount = 0
+                };
+                _context.UserPreferences.Add(newUserPreference);
+            }
+            else
+            {
+                preference.IsFavorite = !preference.IsFavorite;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+
+
     }
 
 
