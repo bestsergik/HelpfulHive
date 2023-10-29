@@ -23,7 +23,7 @@
                 @foreach (var record in PopularRecords)
                 {
                     <div class="popular-record-item" @onclick="() => HandleClick(record)">
-                        <img src="@($"images/{record.ImagePath}")" alt="Record image" class="record-img" />
+                        <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
                     </div>
                 }
             </div>

@@ -1,10 +1,13 @@
 ﻿@using HelpfulHive.Models
 @using HelpfulHive.ViewModels
 @using HelpfulHive.Services
+@using System.Security.Claims
 @inject RecordViewModel RecordVM
 @inject ImageService ImageService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserPreferencesViewModel upVM
+
+
 
 @if (IsVisible)
 {
@@ -134,10 +137,24 @@
         if (RecordToEdit != null && !string.IsNullOrEmpty(RecordToEdit.ImagePath))
         {
             SelectedFolder = FindFolderForImage(RecordToEdit.ImagePath) ?? AvailableImagesByFolders.Keys.FirstOrDefault();
+            UpdateFavoriteStatus();
         }
         else
         {
             SelectedFolder = AvailableImagesByFolders.Keys.FirstOrDefault();
+        }
+    }
+
+
+    private async void UpdateFavoriteStatus()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            isFavorite = await upVM.IsFavoriteAsync(user.FindFirst(ClaimTypes.NameIdentifier)?.Value, RecordToEdit.Id);
+            StateHasChanged();
         }
     }
 

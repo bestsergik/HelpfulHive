@@ -5,16 +5,17 @@ namespace HelpfulHive.Services
 {
     public class UserPreferencesService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IDbContextFactory<ApplicationDbContext> _contextFactory;
 
-        public UserPreferencesService(ApplicationDbContext context)
+        public UserPreferencesService(IDbContextFactory<ApplicationDbContext> contextFactory)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _contextFactory = contextFactory ?? throw new ArgumentNullException(nameof(contextFactory));
         }
 
         public async Task UpdateOrCreateUserPreference(string userId, int recordId)
         {
-            var preference = await _context.UserPreferences
+            using var context = _contextFactory.CreateDbContext();
+            var preference = await context.UserPreferences
                 .FirstOrDefaultAsync(up => up.UserId == userId && up.RecordId == recordId);
 
             if (preference == null)
@@ -25,19 +26,20 @@ namespace HelpfulHive.Services
                     RecordId = recordId,
                     ClickCount = 1
                 };
-                _context.UserPreferences.Add(newUserPreference);
+                context.UserPreferences.Add(newUserPreference);
             }
             else
             {
                 preference.ClickCount++;
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
 
         public async Task<List<RecordModel>> GetTopNClickedRecordsAsync(int n, string userId)
         {
-            return await _context.UserPreferences
+            using var context = _contextFactory.CreateDbContext();
+            return await context.UserPreferences
                 .Where(up => up.UserId == userId)
                 .OrderByDescending(up => up.ClickCount)
                 .Take(n)
@@ -45,14 +47,15 @@ namespace HelpfulHive.Services
                 .ToListAsync();
         }
 
+
         public async Task<bool> IsFavoriteAsync(string userId, int recordId)
         {
-            var preference = await _context.UserPreferences
+            using var context = _contextFactory.CreateDbContext();
+            var preference = await context.UserPreferences
                 .FirstOrDefaultAsync(up => up.UserId == userId && up.RecordId == recordId);
 
             return preference?.IsFavorite ?? false;
         }
-
 
         public async Task ToggleFavoriteAsync(string userId, int recordId)
         {
@@ -61,12 +64,13 @@ namespace HelpfulHive.Services
                 throw new ArgumentException("UserId cannot be null or empty");
             }
 
-            var userExists = await _context.Users.AnyAsync(u => u.Id == userId);
+            using var context = _contextFactory.CreateDbContext();
+            var userExists = await context.Users.AnyAsync(u => u.Id == userId);
             if (!userExists)
             {
                 throw new InvalidOperationException($"User with Id {userId} does not exist");
             }
-            var preference = await _context.UserPreferences
+            var preference = await context.UserPreferences
                 .FirstOrDefaultAsync(up => up.UserId == userId && up.RecordId == recordId);
 
             if (preference == null)
@@ -78,19 +82,17 @@ namespace HelpfulHive.Services
                     IsFavorite = true,
                     ClickCount = 0
                 };
-                _context.UserPreferences.Add(newUserPreference);
+                context.UserPreferences.Add(newUserPreference);
             }
             else
             {
                 preference.IsFavorite = !preference.IsFavorite;
             }
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
-
-
-
     }
+
 
 
 
