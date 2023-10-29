@@ -5,7 +5,11 @@
 @inject RecordService RecordSV
 @inject TabViewModel TabVM
 @inject RecordViewModel RecordVM
+@inject ImageService imageSRV
 @inject IJSRuntime JSRuntime
+@inject UserPreferencesService upVM
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
 
 <div class="search-and-actions">
     <div class="search-area">
@@ -21,7 +25,6 @@
                     <div class="popular-record-item" @onclick="() => HandleClick(record)">
                         <img src="@($"images/{record.ImagePath}")" alt="Record image" class="record-img" />
                     </div>
-
                 }
             </div>
         }
@@ -39,7 +42,7 @@
         @foreach (var record in Records)
         {
             <div class="record-item" @ondblclick="() => EditRecord(record)" @onclick="() => HandleClick(record)">
-                <img src="@($"images/{record.ImagePath}")" alt="Record image" class="record-img" />
+                <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
                 <div class="record-content">@record.Title</div>
                 <span class="edit-icon" @onclick="() => EditRecord(record)">
                     <i class="oi oi-pencil"></i>
@@ -70,6 +73,9 @@ else
 
     private string searchQuery = string.Empty;
 
+    private List<RecordModel> PopularRecords { get; set; }
+
+
     private async Task SearchRecords()
     {
         Console.WriteLine($"Search query: {searchQuery}"); // Добавьте эту строку для отладки
@@ -78,19 +84,45 @@ else
         StateHasChanged();
     }
 
+    private string FindFolderForImage(string imageName)
+    {
+        var imagesByFolders = imageSRV.GetImagesByFolders();
 
-    private List<RecordModel> PopularRecords { get; set; }
+        foreach (var folder in imagesByFolders)
+        {
+            var folderName = folder.Key;
+            var imagesList = folder.Value;
+
+            if (imagesList.Contains(imageName))
+            {
+                return folderName;
+            }
+        }
+
+        // Если изображение не найдено во всех папках, можно вернуть значение по умолчанию, например, пустую строку
+        // или выбросить исключение, в зависимости от того, что лучше подходит для вашего проекта.
+        return string.Empty;
+    }
+
+
 
     protected override async Task OnInitializedAsync()
     {
-        // Загрузка данных при инициализации компонента...
         await LoadPopularRecords();
     }
 
+
     private async Task LoadPopularRecords()
     {
-        PopularRecords = await RecordVM.GetTopNClickedRecordsAsync(5);
-        StateHasChanged();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId != null)
+        {
+            PopularRecords = await upVM.GetTopNClickedRecordsAsync(5, userId);
+            StateHasChanged();
+        }
     }
 
 

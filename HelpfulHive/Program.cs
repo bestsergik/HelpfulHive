@@ -23,7 +23,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddTransient<UserPreferencesService>();
+builder.Services.AddTransient<UserPreferencesViewModel>();
 builder.Services.AddScoped<TabViewModel>();
 builder.Services.AddScoped<TabService>();
 builder.Services.AddScoped<RecordService>();

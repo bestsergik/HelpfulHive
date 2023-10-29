@@ -19,7 +19,7 @@ namespace HelpfulHive
                 }
             }
 
-            // Создаем пользователя с ролью Admin, если такого еще нет
+        //    Создаем пользователя с ролью Admin, если такого еще нет
             IdentityUser admin = await userManager.FindByEmailAsync("sergynia88@mail.ru");
             if (admin == null)
             {

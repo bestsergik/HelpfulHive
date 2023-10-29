@@ -18,9 +18,15 @@ namespace HelpfulHive.ViewModels
         public string UserId { get; private set; }
 
         public event Action? OnRecordChanged;
+        private readonly UserPreferencesViewModel _userPreferencesVM;
 
-        public RecordViewModel(RecordService recordService, AuthenticationStateProvider authenticationStateProvider)
+        public RecordViewModel(
+        RecordService recordService,
+        AuthenticationStateProvider authenticationStateProvider,
+        UserPreferencesViewModel userPreferencesVM)
         {
+            _userPreferencesVM = userPreferencesVM ?? throw new ArgumentNullException(nameof(userPreferencesVM));
+
             _recordService = recordService ?? throw new ArgumentNullException(nameof(recordService));
             _authenticationStateProvider = authenticationStateProvider ?? throw new ArgumentNullException(nameof(authenticationStateProvider));
             InitializeUserId();
@@ -47,11 +53,10 @@ namespace HelpfulHive.ViewModels
 
         public async Task HandleClick(RecordModel record)
         {
-            record.ClickCount++;
+            await _userPreferencesVM.UpdateOrCreateUserPreference(UserId, record.Id);
             await UpdateRecordAsync(record);
             OnRecordChanged?.Invoke();
         }
-
         public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll)
         {
             return await _recordService.SearchRecordsAsync(query, isSearchAll, UserId);
@@ -88,7 +93,7 @@ namespace HelpfulHive.ViewModels
 
         public async Task<List<RecordModel>> GetTopNClickedRecordsAsync(int n)
         {
-            return await _recordService.GetTopNClickedRecordsAsync(n);
+            return await _recordService.GetTopNClickedRecordsAsync(n, UserId);
         }
 
     }

@@ -35,15 +35,27 @@
                         </select>
                     }
 
-                    @if (AvailableImages != null && AvailableImages.Any())
+                    @if (AvailableImagesByFolders != null && AvailableImagesByFolders.Any())
                     {
-                        <div class="image-grid">
-                            @foreach (var image in AvailableImages)
+                        <div class="tab-container">
+                            @foreach (var folder in AvailableImagesByFolders.Keys)
                             {
-                                <div @onclick="() => SelectImage(image)" class="image-container">
-                                    <img src="@($"images/{image}")" alt="@image" class="image-thumbnail" />
-                                    <div class="image-title">@image</div>
-                                </div>
+                                <button class="tab" @onclick="() => SelectFolder(folder)">
+                                    @folder
+                                </button>
+                            }
+                        </div>
+
+                        <div class="image-grid">
+                            @if (AvailableImagesByFolders.ContainsKey(SelectedFolder))
+                            {
+                                @foreach (var image in AvailableImagesByFolders[SelectedFolder])
+                                {
+                                    <div @onclick="() => SelectImage(image)" class="image-container">
+                                        <img src="@($"images/{SelectedFolder}/{image}")" alt="@image" class="image-thumbnail" />
+                                        <div class="image-title">@image</div>
+                                    </div>
+                                }
                             }
                         </div>
                     }
@@ -52,7 +64,7 @@
                     {
                         <div class="selected-image-container">
                             <h5>Selected Image:</h5>
-                            <img src="@($"images/{RecordToEdit.ImagePath}")" alt="Selected Image" class="selected-image" />
+                            <img src="@($"images/{SelectedFolder}/{RecordToEdit.ImagePath}")" alt="Selected Image" class="selected-image" />
                         </div>
                     }
 
@@ -101,14 +113,49 @@
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public IEnumerable<TabItem> AvailableSubTabs { get; set; } = new List<TabItem>();
 
+    private Dictionary<string, List<string>> AvailableImagesByFolders { get; set; }
+    private string SelectedFolder { get; set; } 
     private bool ShowConfirmationDialog { get; set; } = false;
 
+    protected override void OnParametersSet()
+    {
+        AvailableImagesByFolders = ImageService.GetImagesByFolders();
+
+        if (RecordToEdit != null && !string.IsNullOrEmpty(RecordToEdit.ImagePath))
+        {
+            SelectedFolder = FindFolderForImage(RecordToEdit.ImagePath) ?? AvailableImagesByFolders.Keys.FirstOrDefault();
+        }
+        else
+        {
+            SelectedFolder = AvailableImagesByFolders.Keys.FirstOrDefault();
+        }
+    }
+
+
+
+    private string FindFolderForImage(string imageName)
+    {
+        foreach (var folder in AvailableImagesByFolders)
+        {
+            if (folder.Value.Contains(imageName))
+            {
+                return folder.Key;
+            }
+        }
+        return null;
+    }
+
+
+
+    private void SelectFolder(string folder)
+    {
+        SelectedFolder = folder;
+    }
 
     private void DeleteRecord()
     {
         ShowConfirmationDialog = true;
     }
-
 
     private async Task<bool> IsUserInRole(string role)
     {
@@ -138,13 +185,6 @@
         return ShowDeleteButton();
     }
 
-    private List<string> AvailableImages { get; set; } = new List<string>();
-
-    protected override void OnInitialized()
-    {
-        AvailableImages = ImageService.GetImageNames();
-    }
-
     private void SelectImage(string imageName)
     {
         RecordToEdit.ImagePath = imageName;
@@ -168,10 +208,11 @@
         ShowConfirmationDialog = false;
     }
 
-
     private void CloseDialog()
     {
         IsVisible = false;
         OnEditDialogClosed.InvokeAsync(null);
     }
 }
+
+

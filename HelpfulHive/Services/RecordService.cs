@@ -101,13 +101,14 @@ namespace HelpfulHive.Services
 
 
 
-        public async Task<List<RecordModel>> GetTopNClickedRecordsAsync(int n)
+        public async Task<List<RecordModel>> GetTopNClickedRecordsAsync(int n, string userId)
         {
             using var context = _contextFactory.CreateDbContext();
-            return await context.Records
-                .AsNoTracking()
-                .OrderByDescending(r => r.ClickCount)
+            return await context.UserPreferences
+                .Where(up => up.UserId == userId)
+                .OrderByDescending(up => up.ClickCount)
                 .Take(n)
+                .Select(up => up.Record)
                 .ToListAsync();
         }
     }

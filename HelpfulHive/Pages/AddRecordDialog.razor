@@ -9,7 +9,7 @@
 
 @if (IsVisible)
 {
-    <div class="add-record-modal" tabindex="-1" style="display:block!important;" >
+    <div class="add-record-modal" tabindex="-1" style="display:block!important;">
         <div class="modal-dialog">
             <div class="add-record-modal-content">
                 <div class="modal-header">
@@ -17,7 +17,15 @@
                 </div>
                 <div class="modal-body">
                     <input @bind="NewRecordTitle" type="text" class="form-control" placeholder="Record Title" />
+                    @if (string.IsNullOrEmpty(NewRecordTitle) && showErrorMessage)
+                    {
+                        <div class="text-danger">Please enter the title.</div>
+                    }
                     <textarea @bind="NewRecordContent" class="form-control mt-3" placeholder="Record Content"></textarea>
+                    @if (string.IsNullOrEmpty(NewRecordContent) && showErrorMessage)
+                    {
+                        <div class="text-danger">Please enter the content.</div>
+                    }
                     @if (AvailableSubTabs == null)
                     {
                         <p>Loading tabs...</p>
@@ -34,25 +42,45 @@
                                 <option value="@subTab.Id">@subTab.Name</option>
                             }
                         </select>
+                        @if (SelectedSubTabId == 0 && showErrorMessage)
+                        {
+                            <div class="text-danger">Please select a sub-tab.</div>
+                        }
                     }
-                    @if (AvailableImages != null && AvailableImages.Any())
+                    @if (AvailableImagesByFolders != null && AvailableImagesByFolders.Any())
                     {
-                        <div class="image-grid">
-                            @foreach (var image in AvailableImages)
+                        <div class="tab-container">
+                            @foreach (var folder in AvailableImagesByFolders.Keys)
                             {
-                                <div @onclick="() => SelectImage(image)" class="image-container">
-                                    <img src="@($"images/{image}")" alt="@image" class="image-thumbnail" />
-                                    <div class="image-title">@image</div>
-                                </div>
+                                <button class="tab" @onclick="() => SelectFolder(folder)">
+                                    @folder
+                                </button>
                             }
                         </div>
+
+                        <div class="image-grid">
+                            @if (AvailableImagesByFolders.ContainsKey(SelectedFolder))
+                            {
+                                @foreach (var image in AvailableImagesByFolders[SelectedFolder])
+                                {
+                                    <div @onclick="() => SelectImage(image)" class="image-container">
+                                        <img src="@($"images/{SelectedFolder}/{image}")" alt="@image" class="image-thumbnail" />
+                                        <div class="image-title">@image</div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        @if (string.IsNullOrEmpty(SelectedImage) && showErrorMessage)
+                        {
+                            <div class="text-danger">Please select an image.</div>
+                        }
                     }
 
                     @if (!string.IsNullOrEmpty(SelectedImage))
                     {
                         <div class="selected-image-container">
                             <h5>Selected Image:</h5>
-                            <img src="@($"images/{SelectedImage}")" alt="Selected Image" class="selected-image" />
+                            <img src="@($"images/{SelectedFolder}/{SelectedImage}")" alt="Selected Image" class="selected-image" />
                         </div>
                     }
 
@@ -66,7 +94,6 @@
     </div>
 }
 
-
 @code {
     [Parameter] public bool IsVisible { get; set; }
     [Parameter] public EventCallback<bool> IsVisibleChanged { get; set; }
@@ -75,18 +102,20 @@
     [Parameter] public EventCallback OnCloseDialog { get; set; }
     [Parameter] public TabItem SelectedTab { get; set; }
 
-    private List<string> AvailableImages { get; set; } = new List<string>();
-    private string SelectedImage { get; set; }
+    private Dictionary<string, List<string>> AvailableImagesByFolders { get; set; }
+    private string SelectedFolder { get; set; }
+    private string SelectedImage { get; set; } = "";
     private string NewRecordTitle { get; set; } = string.Empty;
     private string NewRecordContent { get; set; } = string.Empty;
     private int SelectedSubTabId { get; set; }
-
+    private bool showErrorMessage = false;
 
 
 
     protected override void OnInitialized()
     {
-        AvailableImages = ImageService.GetImageNames();
+        AvailableImagesByFolders = ImageService.GetImagesByFolders();
+        SelectedFolder = AvailableImagesByFolders.Keys.First();
     }
 
     private async Task Close()
@@ -97,19 +126,35 @@
         await InvokeAsync(StateHasChanged);
     }
 
+    private void SelectFolder(string folder)
+    {
+        SelectedFolder = folder;
+    }
+
     private void SelectImage(string imageName)
     {
-        SelectedImage = imageName;
+        SelectedImage = imageName ?? "";  // Если imageName равно null, использовать пустую строку
     }
+  
 
     private async Task AddRecord()
     {
+        if (string.IsNullOrEmpty(NewRecordTitle) ||
+            string.IsNullOrEmpty(NewRecordContent) ||
+            SelectedSubTabId == 0 ||
+            string.IsNullOrEmpty(SelectedImage))  // Проверяем, не пустая ли строка
+        {
+            showErrorMessage = true;
+            StateHasChanged();
+            return;
+        }
+
         var newRecord = new RecordModel
             {
                 Title = NewRecordTitle,
                 Content = NewRecordContent,
-                SubTabId = SelectedSubTabId, 
-                ImagePath = SelectedImage
+                SubTabId = SelectedSubTabId,
+                ImagePath = SelectedImage  // Теперь SelectedImage не может быть null
             };
 
         await RecordVM.AddRecordAsync(newRecord);
@@ -118,6 +163,8 @@
         // Очистка полей формы, если диалог остается открытым.
         NewRecordTitle = string.Empty;
         NewRecordContent = string.Empty;
-        await Close(); // 
+        SelectedImage = "";  // Сброс выбранного изображения на пустую строку
+        showErrorMessage = false;  // Сбросить флаг ошибки после успешного добавления записи
+        await Close();
     }
 }

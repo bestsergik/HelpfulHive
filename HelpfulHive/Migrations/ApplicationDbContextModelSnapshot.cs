@@ -30,9 +30,6 @@ namespace HelpfulHive.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("ClickCount")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Content")
                         .IsRequired()
                         .HasColumnType("text");
@@ -40,9 +37,6 @@ namespace HelpfulHive.Migrations
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<bool>("IsFavorite")
-                        .HasColumnType("boolean");
 
                     b.Property<int>("SubTabId")
                         .HasColumnType("integer");
@@ -86,6 +80,36 @@ namespace HelpfulHive.Migrations
                     b.HasIndex("ParentTabId");
 
                     b.ToTable("Tabs");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.UserPreferences", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ClickCount")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsFavorite")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("RecordId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecordId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserPreferences");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -151,6 +175,10 @@ namespace HelpfulHive.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("text");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -204,6 +232,10 @@ namespace HelpfulHive.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUser");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -291,6 +323,13 @@ namespace HelpfulHive.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HelpfulHive.ApplicationUser", b =>
+                {
+                    b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
             modelBuilder.Entity("HelpfulHive.Models.RecordModel", b =>
                 {
                     b.HasOne("HelpfulHive.Models.TabItem", "SubTab")
@@ -309,6 +348,25 @@ namespace HelpfulHive.Migrations
                         .HasForeignKey("ParentTabId");
 
                     b.Navigation("ParentTab");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.UserPreferences", b =>
+                {
+                    b.HasOne("HelpfulHive.Models.RecordModel", "Record")
+                        .WithMany()
+                        .HasForeignKey("RecordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HelpfulHive.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Record");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
