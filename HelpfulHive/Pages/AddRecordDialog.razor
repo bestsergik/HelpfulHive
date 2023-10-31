@@ -1,15 +1,22 @@
 ﻿@using HelpfulHive.Models;
 @using HelpfulHive.ViewModels
+@using Newtonsoft.Json;
 @using HelpfulHive.Services
+@using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+@using System.Text.RegularExpressions;
+@using System.Text.Json;
+@using Microsoft.EntityFrameworkCore;
+@using Microsoft.EntityFrameworkCore.ChangeTracking;
 @inject RecordViewModel RecordVM
 @inject ImageService ImageService
+@inject IJSRuntime JSRuntime
 
 
 
 
 @if (IsVisible)
 {
-    <div class="add-record-modal" tabindex="-1" style="display:block!important;">
+    <div class="add-record-modal" tabindex="-1" >
         <div class="modal-dialog">
             <div class="add-record-modal-content">
                 <div class="modal-header">
@@ -21,11 +28,14 @@
                     {
                         <div class="text-danger">Please enter the title.</div>
                     }
-                    <textarea @bind="NewRecordContent" class="form-control mt-3" placeholder="Record Content"></textarea>
-                    @if (string.IsNullOrEmpty(NewRecordContent) && showErrorMessage)
+                    <div class="editor">
+                        <div id="content" contenteditable="true" @ref="editorRef" class="form-control mt-3" style="height: 200px;" @onpaste="HandlePaste"></div>
+                    </div>
+                    @if (string.IsNullOrEmpty(NewRecordContentObject.Text) && showErrorMessage)
                     {
                         <div class="text-danger">Please enter the content.</div>
                     }
+
                     @if (AvailableSubTabs == null)
                     {
                         <p>Loading tabs...</p>
@@ -109,8 +119,24 @@
     private string NewRecordContent { get; set; } = string.Empty;
     private int SelectedSubTabId { get; set; }
     private bool showErrorMessage = false;
+    private RecordContent NewRecordContentObject { get; set; } = new RecordContent();
+
+    private ElementReference editorRef;
 
 
+    private async Task HandlePaste(Microsoft.AspNetCore.Components.Web.ClipboardEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("insertImageFromClipboard", editorRef, e);
+    }
+
+
+    private async Task UpdateContentText()
+    {
+        var text = await JSRuntime.InvokeAsync<string>("getContentText", editorRef);
+        NewRecordContentObject.Text = text;
+    }
+
+  
 
     protected override void OnInitialized()
     {
@@ -135,36 +161,95 @@
     {
         SelectedImage = imageName ?? "";  // Если imageName равно null, использовать пустую строку
     }
-  
 
+    public async Task<string> SaveImageAsync(string base64Image, string imagePath)
+    {
+        // Проверка на валидность Base64 строки
+        if (!Regex.IsMatch(base64Image, @"^data:image\/[a-zA-Z]+;base64,[A-Za-z0-9+/=]+$"))
+        {
+            return base64Image;
+        }
+
+        var fileName = Guid.NewGuid().ToString() + ".png";
+        var filePath = Path.Combine(imagePath, fileName);
+
+        var bytes = Convert.FromBase64String(base64Image.Split(',')[1]);
+        await File.WriteAllBytesAsync(filePath, bytes);
+
+        return fileName;
+    }
+
+  
     private async Task AddRecord()
     {
+        await UpdateContentText();  // Обновите текст перед проверкой
+
         if (string.IsNullOrEmpty(NewRecordTitle) ||
-            string.IsNullOrEmpty(NewRecordContent) ||
-            SelectedSubTabId == 0 ||
-            string.IsNullOrEmpty(SelectedImage))  // Проверяем, не пустая ли строка
+            string.IsNullOrEmpty(NewRecordContentObject.Text) ||
+            SelectedSubTabId == 0)
         {
             showErrorMessage = true;
             StateHasChanged();
             return;
         }
 
+        // Путь, куда будут сохраняться картинки на сервере
+        var imagePath = "/content_images";
+
+        // Обработка base64 строк картинок
+        var contentText = NewRecordContentObject.Text;
+        var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,[^\s]+";
+        var matches = Regex.Matches(contentText, base64ImagePattern);
+        var imageUrls = new List<string>();  // Изменено с string[] на List<string>
+        Console.WriteLine($"------------------Content text: {NewRecordContentObject.Text}");
+
+        foreach (Match match in matches)
+        {
+            var base64Image = match.Value;
+            var imageUrl = await SaveImageAsync(base64Image, imagePath);
+            contentText = contentText.Replace(base64Image, imageUrl);
+            imageUrls.Add(imageUrl);  // Добавьте эту строку
+        }
+
+        // Обновление текста после обработки картинок
+        NewRecordContentObject.Text = contentText;
+        NewRecordContentObject.ImageUrls = imageUrls.ToList();  // Конвертируйте список в массив
+
         var newRecord = new RecordModel
             {
                 Title = NewRecordTitle,
-                Content = NewRecordContent,
+                Content = NewRecordContentObject,
                 SubTabId = SelectedSubTabId,
-                ImagePath = SelectedImage  // Теперь SelectedImage не может быть null
+                ImagePath = SelectedImage
             };
+        Console.WriteLine("Saving record with content: " + Newtonsoft.Json.JsonConvert.SerializeObject(newRecord.Content));
 
         await RecordVM.AddRecordAsync(newRecord);
         await OnRecordAdded.InvokeAsync(newRecord);
 
-        // Очистка полей формы, если диалог остается открытым.
+
         NewRecordTitle = string.Empty;
-        NewRecordContent = string.Empty;
-        SelectedImage = "";  // Сброс выбранного изображения на пустую строку
-        showErrorMessage = false;  // Сбросить флаг ошибки после успешного добавления записи
+        NewRecordContentObject.Text = string.Empty;  // Используйте Text вместо NewRecordContent
+        NewRecordContentObject.ImageUrls = imageUrls.ToList();  // Конвертируйте список в массив
+        SelectedImage = "";
+        showErrorMessage = false;
         await Close();
     }
+
+    public class JsonbListConverter : ValueConverter<List<string>, string>
+    {
+        public JsonbListConverter() : base(
+            v => JsonConvert.SerializeObject(v),
+            v => JsonConvert.DeserializeObject<List<string>>(v))
+        { }
+    }
+
+
+
+
+
+
+
+
 }
+

@@ -22,6 +22,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="7.0.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
   </ItemGroup>
 
@@ -29,6 +30,7 @@
     <Folder Include="Data\" />
     <Folder Include="Migrations\ApplicationDb\" />
     <Folder Include="wwwroot\serviceimages\" />
+    <Folder Include="wwwroot\content_images\" />
   </ItemGroup>
 
 </Project>

@@ -6,6 +6,7 @@
 @inject ImageService ImageService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserPreferencesViewModel upVM
+@inject IJSRuntime JSRuntime
 
 
 
@@ -24,7 +25,9 @@
 
                 <div class="modal-body">
                     <input @bind="RecordToEdit.Title" type="text" class="form-control" placeholder="Record Title" />
-                    <textarea @bind="RecordToEdit.Content" class="form-control mt-3" placeholder="Record Content"></textarea>
+                    <div class="editor">
+                        <div id="content" contenteditable="true" @ref="editorRef" class="form-control mt-3" style="height: 200px;" @onpaste="HandlePaste"></div>
+                    </div>
 
                     @if (AvailableSubTabs == null)
                     {
@@ -124,6 +127,13 @@
 
    
     private bool isFavorite;
+    private ElementReference editorRef;
+
+
+    private async Task HandlePaste(Microsoft.AspNetCore.Components.Web.ClipboardEventArgs e)
+    {
+        await JSRuntime.InvokeVoidAsync("insertImageFromClipboard", editorRef, e);
+    }
 
 
     private Dictionary<string, List<string>> AvailableImagesByFolders { get; set; }

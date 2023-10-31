@@ -1,0 +1,38 @@
+﻿@inject IJSRuntime JSRuntime
+
+<div id="editor"></div>
+
+@code {
+    private string editorContent;
+
+    [Parameter]
+    public string Content
+    {
+        get => editorContent;
+        set
+        {
+            if (editorContent != value)
+            {
+                editorContent = value;
+                ContentChanged.InvokeAsync(value);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<string> ContentChanged { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("initCKEditor", "editor", DotNetObjectReference.Create(this));
+        }
+    }
+
+    [JSInvokable]
+    public void UpdateContent(string content)
+    {
+        Content = content;
+    }
+}

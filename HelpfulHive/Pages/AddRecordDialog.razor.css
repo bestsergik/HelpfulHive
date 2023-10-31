@@ -21,8 +21,8 @@
     background-color: #fefefe;
     border: 1px solid #888;
     margin: auto;
-    width: 65%;
-    max-height: 50%;
+    width: 100% !important; /* изменено на 100% */
+    max-width: 100% !important; /* изменено на 100% */
     overflow-y: auto;
 }
 
@@ -63,4 +63,17 @@
     max-height: 200px;
     border: 2px solid #ddd;
     border-radius: 8px;
+}
+
+.editor {
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    padding: .375rem .75rem;
+    overflow-y: auto;
+    height: 400px; /* установим фиксированную высоту для области контента */
+}
+
+#content img {
+    max-width: 100%;
+    height: auto;
 }

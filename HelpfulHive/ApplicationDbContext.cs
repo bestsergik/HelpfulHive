@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using static HelpfulHive.Pages.AddRecordDialog;
 using static System.Collections.Specialized.BitVector32;
 
 namespace HelpfulHive
@@ -20,6 +22,7 @@ namespace HelpfulHive
 
         public DbSet<RecordModel> Records { get; set; }
         public DbSet<TabItem> Tabs { get; set; }
+        public DbSet<RecordContent> RecordsContent { get; set; }
         public DbSet<UserPreferences> UserPreferences { get; set; }  // Добавить эту строку
 
 
@@ -34,12 +37,26 @@ namespace HelpfulHive
           .HasForeignKey(r => r.SubTabId)
           .OnDelete(DeleteBehavior.Cascade);
 
+
+            modelBuilder.Entity<RecordContent>()
+         .Property(e => e.ImageUrls)
+         .HasColumnType("jsonb")
+         .HasConversion(new JsonbListConverter())
+         .Metadata
+         .SetValueComparer(new ValueComparer<List<string>>(
+             (c1, c2) => Enumerable.SequenceEqual(c1, c2),
+             c => c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())),
+             c => c.ToList()));
+
+
+
+
             modelBuilder.Entity<UserPreferences>()
-        .HasOne(up => up.User)
-        .WithMany()
-        .HasForeignKey(up => up.UserId)
-        .IsRequired()
-        .OnDelete(DeleteBehavior.Cascade);
+ .HasOne(up => up.User)
+ .WithMany()
+ .HasForeignKey(up => up.UserId)
+ .IsRequired()
+ .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<UserPreferences>()
                 .HasOne(up => up.Record)

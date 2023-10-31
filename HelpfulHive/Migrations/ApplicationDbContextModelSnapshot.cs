@@ -22,6 +22,27 @@ namespace HelpfulHive.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("HelpfulHive.Models.RecordContent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrls")
+                        .IsRequired()
+                        .HasColumnType("text[]");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RecordsContent");
+                });
+
             modelBuilder.Entity("HelpfulHive.Models.RecordModel", b =>
                 {
                     b.Property<int>("Id")
@@ -30,9 +51,8 @@ namespace HelpfulHive.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("ContentId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ImagePath")
                         .IsRequired()
@@ -46,6 +66,8 @@ namespace HelpfulHive.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ContentId");
 
                     b.HasIndex("SubTabId");
 
@@ -332,11 +354,19 @@ namespace HelpfulHive.Migrations
 
             modelBuilder.Entity("HelpfulHive.Models.RecordModel", b =>
                 {
+                    b.HasOne("HelpfulHive.Models.RecordContent", "Content")
+                        .WithMany()
+                        .HasForeignKey("ContentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HelpfulHive.Models.TabItem", "SubTab")
                         .WithMany("Records")
                         .HasForeignKey("SubTabId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Content");
 
                     b.Navigation("SubTab");
                 });

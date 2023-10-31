@@ -15,10 +15,17 @@ namespace HelpfulHive.Services
         public async Task AddRecordAsync(RecordModel newRecord)
         {
             using var context = _contextFactory.CreateDbContext();
-            context.Records.Add(newRecord);
-            await context.SaveChangesAsync();
+            try
+            {
+                context.Records.Add(newRecord);
+                await context.SaveChangesAsync();
+                Console.WriteLine("Record added successfully");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error adding record: " + ex.ToString());
+            }
         }
-
         public async Task<List<RecordModel>> GetRecordsBySubTabUriAsync(string subTabUri)
         {
             using var context = _contextFactory.CreateDbContext();
@@ -67,7 +74,7 @@ namespace HelpfulHive.Services
             }
 
             var queryToExecute = records
-                .Where(r => EF.Functions.Like(r.Title, $"%{query}%") || EF.Functions.Like(r.Content, $"%{query}%"));
+     .Where(r => EF.Functions.Like(r.Title, $"%{query}%") || EF.Functions.Like(r.Content.Text, $"%{query}%"));
 
             var sql = queryToExecute.ToQueryString();  // Выводим SQL-запрос
 
@@ -75,6 +82,7 @@ namespace HelpfulHive.Services
 
 
             return filteredRecords;
+
         }
 
         public async Task<List<RecordModel>> GetRecordsByUserAndTabTypeAsync(bool isSearchAll, string userId)
@@ -97,8 +105,6 @@ namespace HelpfulHive.Services
 
             return await records.ToListAsync();
         }
-
-
 
 
         public async Task<List<RecordModel>> GetTopNClickedRecordsAsync(int n, string userId)
