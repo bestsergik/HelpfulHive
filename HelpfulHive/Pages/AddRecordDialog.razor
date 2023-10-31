@@ -159,30 +159,35 @@
 
     private void SelectImage(string imageName)
     {
-        SelectedImage = imageName ?? "";  // Если imageName равно null, использовать пустую строку
+        SelectedImage = imageName ?? ""; 
     }
 
-    public async Task<string> SaveImageAsync(string base64Image, string imagePath)
+
+   
+
+
+
+    // Функция для проверки валидности Base64 строки
+    public bool IsValidBase64String(string s)
     {
-        // Проверка на валидность Base64 строки
-        if (!Regex.IsMatch(base64Image, @"^data:image\/[a-zA-Z]+;base64,[A-Za-z0-9+/=]+$"))
+        s = s.Trim();
+        try
         {
-            return base64Image;
+            // Попробуйте конвертировать строку в массив байтов
+            var bytes = Convert.FromBase64String(s);
+            return true;
         }
-
-        var fileName = Guid.NewGuid().ToString() + ".png";
-        var filePath = Path.Combine(imagePath, fileName);
-
-        var bytes = Convert.FromBase64String(base64Image.Split(',')[1]);
-        await File.WriteAllBytesAsync(filePath, bytes);
-
-        return fileName;
+        catch (FormatException)
+        {
+            // Если возникла ошибка формата, значит строка не является валидной Base64 строкой
+            return false;
+        }
     }
 
   
     private async Task AddRecord()
     {
-        await UpdateContentText();  // Обновите текст перед проверкой
+        await UpdateContentText();
 
         if (string.IsNullOrEmpty(NewRecordTitle) ||
             string.IsNullOrEmpty(NewRecordContentObject.Text) ||
@@ -193,27 +198,37 @@
             return;
         }
 
-        // Путь, куда будут сохраняться картинки на сервере
-        var imagePath = "/content_images";
+        var imagePath = "content_images";
 
-        // Обработка base64 строк картинок
         var contentText = NewRecordContentObject.Text;
-        var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,[^\s]+";
+        var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,([A-Za-z0-9+/=]+)";
         var matches = Regex.Matches(contentText, base64ImagePattern);
-        var imageUrls = new List<string>();  // Изменено с string[] на List<string>
-        Console.WriteLine($"------------------Content text: {NewRecordContentObject.Text}");
+        var imageUrls = new List<string>();
+        Console.WriteLine($"1-----------------------------Found {matches.Count} base64 images");
 
         foreach (Match match in matches)
         {
-            var base64Image = match.Value;
-            var imageUrl = await SaveImageAsync(base64Image, imagePath);
-            contentText = contentText.Replace(base64Image, imageUrl);
-            imageUrls.Add(imageUrl);  // Добавьте эту строку
+            // Извлекаем группу, содержащую только Base64 строку
+            var base64Image = match.Groups[1].Value;
+            Console.WriteLine($"2-------------------------------Checking if base64 string is valid");
+
+            if (IsValidBase64String(base64Image))
+            {
+                Console.WriteLine($"-------------Base64 image content: {base64Image}");
+
+                var imageUrl = await ImageService.SaveImageAsync(base64Image, imagePath);
+                contentText = contentText.Replace(match.Value, imageUrl);
+                imageUrls.Add(imageUrl);
+            }
+            else
+            {
+                Console.WriteLine("----------------Base64 string is invalid");
+            }
         }
 
-        // Обновление текста после обработки картинок
+      
         NewRecordContentObject.Text = contentText;
-        NewRecordContentObject.ImageUrls = imageUrls.ToList();  // Конвертируйте список в массив
+        NewRecordContentObject.ImageUrls = imageUrls.ToList();  
 
         var newRecord = new RecordModel
             {
@@ -222,7 +237,6 @@
                 SubTabId = SelectedSubTabId,
                 ImagePath = SelectedImage
             };
-        Console.WriteLine("Saving record with content: " + Newtonsoft.Json.JsonConvert.SerializeObject(newRecord.Content));
 
         await RecordVM.AddRecordAsync(newRecord);
         await OnRecordAdded.InvokeAsync(newRecord);
