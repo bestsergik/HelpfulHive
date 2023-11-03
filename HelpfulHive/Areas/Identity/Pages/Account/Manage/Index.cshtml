@@ -1,27 +1,59 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = "";
     ViewData["ActivePage"] = ManageNavPages.Index;
 }
 
+
 <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
+
 <div class="row">
     <div class="col-md-6">
         <form id="profile-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Поле для отображения текущего логина пользователя -->
             <div class="form-floating mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Please choose your username." disabled />
-                <label asp-for="Username" class="form-label"></label>
+                <input asp-for="Input.NewUsername" class="form-control" placeholder="Введите ваш новый логин." />
+                <label asp-for="Input.NewUsername">Новый логин</label>
+                <span asp-validation-for="Input.NewUsername" class="text-danger"></span>
             </div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.PhoneNumber" class="form-control" placeholder="Please enter your phone number."/>
-                <label asp-for="Input.PhoneNumber" class="form-label"></label>
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+
+
+            <!-- Поле для выбора изображения профиля -->
+            <div class="mb-3">
+                <label>Выберите изображение профиля:</label>
+                <div class="profile-image-selector" style="height: 150px; overflow-y: auto;">
+                    <div class="d-flex flex-wrap">
+                        @foreach (var image in Model.AvailableProfileImages)
+                        {
+                            <div class="p-2">
+                                <label>
+                                    <input type="radio" asp-for="Input.SelectedProfileImagePath" value="@image" />
+                                    <img src="@Url.Content($"~/profileimg/{image}")" alt="Profile Image" class="img-thumbnail" style="height: 100px; cursor: pointer;" />
+                                </label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <span asp-validation-for="Input.SelectedProfileImagePath" class="text-danger"></span>
             </div>
-            <button id="update-profile-button" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+
+            <!-- Кнопка сохранения -->
+            <button type="submit" class="btn btn-primary">Сохранить</button>
         </form>
+    </div>
+
+    <!-- Область для отображения текущей картинки пользователя -->
+    <div class="col-md-6">
+        <div class="current-profile-image">
+            <label>Текущая картинка профиля:</label>
+            <div>
+                <img src="@Url.Content($"~/profileimg/{Model.Input.SelectedProfileImagePath}")" alt="Current Profile Image" class="img-thumbnail" style="max-height: 200px;" />
+            </div>
+        </div>
     </div>
 </div>
 

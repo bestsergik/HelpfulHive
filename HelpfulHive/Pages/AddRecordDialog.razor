@@ -204,25 +204,17 @@
         var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,([A-Za-z0-9+/=]+)";
         var matches = Regex.Matches(contentText, base64ImagePattern);
         var imageUrls = new List<string>();
-        Console.WriteLine($"1-----------------------------Found {matches.Count} base64 images");
 
         foreach (Match match in matches)
         {
             // Извлекаем группу, содержащую только Base64 строку
             var base64Image = match.Groups[1].Value;
-            Console.WriteLine($"2-------------------------------Checking if base64 string is valid");
 
             if (IsValidBase64String(base64Image))
             {
-                Console.WriteLine($"-------------Base64 image content: {base64Image}");
-
                 var imageUrl = await ImageService.SaveImageAsync(base64Image, imagePath);
                 contentText = contentText.Replace(match.Value, imageUrl);
                 imageUrls.Add(imageUrl);
-            }
-            else
-            {
-                Console.WriteLine("----------------Base64 string is invalid");
             }
         }
 

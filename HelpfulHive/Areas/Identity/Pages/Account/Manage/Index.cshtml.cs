@@ -14,53 +14,44 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IWebHostEnvironment _env;
 
         public IndexModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager)
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IWebHostEnvironment env) // Убедитесь, что этот параметр присутствует
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _env = env; // И инициализируйте _env здесь
         }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+
+
         public string Username { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [TempData]
         public string StatusMessage { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
+        // Список доступных изображений профиля
+        public List<string> AvailableProfileImages { get; set; }
+
         public class InputModel
         {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+            public string NewUsername { get; set; }
+            public IFormFile ProfileImage { get; set; } // Если вы хотите загружать новое изображение
+            public string SelectedProfileImagePath { get; set; } // Путь к выбранному изображению
         }
 
-        private async Task LoadAsync(IdentityUser user)
+        private async Task LoadAsync(ApplicationUser user)
         {
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
@@ -69,8 +60,21 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                // Предполагаем, что у вас есть свойство для хранения пути изображения в InputModel
+                NewUsername = userName, // Если вы хотите загрузить и текущее имя пользователя
+                SelectedProfileImagePath = user.ProfileImagePath // Добавьте это для загрузки изображения
             };
+        }
+
+
+        // Метод для получения доступных изображений
+        private void LoadAvailableProfileImages()
+        {
+            var profileImagesFolder = Path.Combine(_env.WebRootPath,  "profileimg");
+            AvailableProfileImages = Directory.GetFiles(profileImagesFolder)
+                                             .Select(Path.GetFileName)
+                                             .ToList();
         }
 
         public async Task<IActionResult> OnGetAsync()
@@ -81,6 +85,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            LoadAvailableProfileImages(); // Загрузка доступных изображений
             await LoadAsync(user);
             return Page();
         }
@@ -93,26 +98,39 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
 
+            // Приведение типа user к ApplicationUser
+            var appUser = user as ApplicationUser;
+            if (appUser == null)
+            {
+                throw new InvalidOperationException("The user is not of type ApplicationUser.");
+            }
+
             if (!ModelState.IsValid)
             {
                 await LoadAsync(user);
                 return Page();
             }
 
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
+            // Остальная логика...
+            if (Input.SelectedProfileImagePath != appUser.ProfileImagePath)
             {
-                var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
-                if (!setPhoneResult.Succeeded)
+                appUser.ProfileImagePath = Input.SelectedProfileImagePath;
+                var updateResult = await _userManager.UpdateAsync(appUser);
+                if (!updateResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set phone number.";
+                    StatusMessage = "Unexpected error when trying to set profile image.";
                     return RedirectToPage();
                 }
             }
 
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.RefreshSignInAsync(appUser);
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }
+
+
+        // Вам нужно добавить IWebHostEnvironment в конструктор, чтобы использовать _env.WebRootPath
+
     }
+
 }

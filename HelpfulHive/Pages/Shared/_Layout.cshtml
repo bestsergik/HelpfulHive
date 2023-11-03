@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - HelpfulHive</title>
- 
+    <link rel="stylesheet" href="~/css/identity.css" />
 
     <environment include="Development">
         <link rel="stylesheet" href="~/Identity/lib/bootstrap/dist/css/bootstrap.css" />
@@ -91,6 +91,7 @@
         </script>
         <script src="~/Identity/js/site.js" asp-append-version="true"></script>
     </environment>
+    <script src="~/scripts/identity.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

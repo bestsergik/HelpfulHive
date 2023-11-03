@@ -1,27 +1,15 @@
 
-.modal {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    position: fixed !important;
-    z-index: 1; /* Сидеть сверху */
-    left: 0;
-    top: 0;
-    width: 100%; /* Полная ширина */
-    height: 100%; /* Полная высота */
-    overflow: auto; /* Включить прокрутку, если нужно */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Черный с небольшой прозрачностью */
-    padding-top: 60px;
+
+
+.modal-dialog {
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: 200px;
+    width: 100%;
+    pointer-events: auto;
 }
 
-/* Модальное содержимое/коробка */
-.modal-content {
-    background-color: #fefefe;
-    border: 1px solid #888;
-    margin: auto !important;
-    width: 80% !important;
-}
 
 /* Закрыть кнопку */
 .close {

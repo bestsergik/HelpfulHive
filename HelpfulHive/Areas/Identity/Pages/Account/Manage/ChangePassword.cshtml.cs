@@ -49,31 +49,31 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            ///     Этот API поддерживает инфраструктуру UI по умолчанию для ASP.NET Core Identity и не предназначен
+            ///     для прямого использования в вашем коде. Этот API может измениться или быть удалён в будущих релизах.
             /// </summary>
-            [Required]
+            [Required(ErrorMessage = "Поле 'Текущий пароль' обязательно для заполнения.")]
             [DataType(DataType.Password)]
-            [Display(Name = "Current password")]
+            [Display(Name = "Текущий пароль")]
             public string OldPassword { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            ///     Этот API поддерживает инфраструктуру UI по умолчанию для ASP.NET Core Identity и не предназначен
+            ///     для прямого использования в вашем коде. Этот API может измениться или быть удалён в будущих релизах.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "Поле 'Новый пароль' обязательно для заполнения.")]
+            [StringLength(100, ErrorMessage = "Поле {0} должно быть длиной минимум {2} и максимум {1} символов.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "New password")]
+            [Display(Name = "Новый пароль")]
             public string NewPassword { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            ///     Этот API поддерживает инфраструктуру UI по умолчанию для ASP.NET Core Identity и не предназначен
+            ///     для прямого использования в вашем коде. Этот API может измениться или быть удалён в будущих релизах.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm new password")]
-            [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+            [Display(Name = "Подтвердите новый пароль")]
+            [Compare("NewPassword", ErrorMessage = "Пароли не совпадают.")]
             public string ConfirmPassword { get; set; }
         }
 
@@ -82,7 +82,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Не удалось загрузить пользователя с ID '{_userManager.GetUserId(User)}'.");
             }
 
             var hasPassword = await _userManager.HasPasswordAsync(user);
@@ -104,7 +104,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Не удалось загрузить пользователя с ID '{_userManager.GetUserId(User)}'.");
             }
 
             var changePasswordResult = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
@@ -118,10 +118,11 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
             }
 
             await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "Your password has been changed.";
+            _logger.LogInformation("Пароль успешно изменён.");
+            StatusMessage = "Ваш пароль был изменён.";
 
             return RedirectToPage();
         }
+
     }
 }

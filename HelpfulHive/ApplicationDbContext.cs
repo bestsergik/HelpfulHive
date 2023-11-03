@@ -11,6 +11,7 @@ namespace HelpfulHive
 
     public class ApplicationUser : IdentityUser
     {
+        public string ProfileImagePath { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<IdentityUser>

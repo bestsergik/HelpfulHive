@@ -26,7 +26,9 @@
                 <div class="modal-body">
                     <input @bind="RecordToEdit.Title" type="text" class="form-control" placeholder="Record Title" />
                     <div class="editor">
-                        <div id="content" contenteditable="true" @ref="editorRef" class="form-control mt-3" style="height: 200px;" @onpaste="HandlePaste"></div>
+                        <div id="content" contenteditable="true" @ref="editorRef" class="form-control mt-3" style="height: 200px;" @onpaste="HandlePaste">
+                            @((MarkupString)RecordToEdit.Content.Text)
+                        </div>
                     </div>
 
                     @if (AvailableSubTabs == null)

@@ -32,7 +32,7 @@ namespace HelpfulHive.Migrations
 
                     b.Property<string>("ImageUrls")
                         .IsRequired()
-                        .HasColumnType("text[]");
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Text")
                         .IsRequired()
@@ -348,6 +348,10 @@ namespace HelpfulHive.Migrations
             modelBuilder.Entity("HelpfulHive.ApplicationUser", b =>
                 {
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
+
+                    b.Property<string>("ProfileImagePath")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
                 });

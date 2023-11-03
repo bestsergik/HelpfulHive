@@ -30,10 +30,12 @@ namespace HelpfulHive.Services
         {
             using var context = _contextFactory.CreateDbContext();
             return await context.Records
-                .Include(r => r.SubTab)
+                .Include(r => r.Content) // Добавляем подгрузку связанного свойства Content
+                .Include(r => r.SubTab)  // Если нужно, подгружаем и другие связанные свойства
                 .Where(r => r.SubTab.Uri == subTabUri)
                 .ToListAsync();
         }
+
 
         public async Task UpdateRecordAsync(RecordModel updatedRecord)
         {
