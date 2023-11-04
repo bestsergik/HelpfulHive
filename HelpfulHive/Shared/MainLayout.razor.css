@@ -159,3 +159,31 @@ button {
     width: calc(12.5% - 10px); /* 100% divided by 8 minus a small margin */
     margin: 5px;
 }
+
+
+
+
+
+.user-btn {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    border: none;
+    background-color: #007bff; /* Или другой цвет в соответствии с вашим дизайном */
+    color: white;
+    border-radius: 5px;
+    text-align: left;
+}
+
+    .user-btn .user-img {
+        width: 30px; /* Или любой другой размер, который вам подходит */
+        height: 30px;
+        border-radius: 50%;
+        margin-right: 10px;
+        object-fit: cover;
+    }
+
+    .user-btn .user-name {
+        margin: 0;
+        font-size: 16px; /* Или другой размер, который вам подходит */
+    }

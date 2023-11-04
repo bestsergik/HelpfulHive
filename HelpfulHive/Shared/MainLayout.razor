@@ -8,6 +8,8 @@
 @inject RecordViewModel rVM
 @inherits LayoutComponentBase
 @inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserService uSRV
 
 
 <PageTitle>HelpfulHive</PageTitle>
@@ -24,8 +26,19 @@
                     <button @onclick="NavigateToXmlDisplay" class="btn">Go to XML</button>
                     <button>3</button>
                     <button>4</button>
-                    <button @onclick="Logout" class="btn">
-                        <i class="fas fa-sign-out-alt"></i> Профиль
+                    <button @onclick="Logout" class="btn user-btn">
+                        @if (!string.IsNullOrEmpty(userName))
+                        {
+                            if (!string.IsNullOrEmpty(profileImagePath) && profileImagePath != "/default-profile.png")
+                            {
+                                <img src="@profileImagePath" alt="Profile Image" class="user-img" />
+                            }
+                            <span class="user-name">@userName</span>
+                        }
+                        else
+                        {
+                            <span class="user-name">Профиль</span>
+                        }
                     </button>
 
                 </div>
@@ -56,9 +69,26 @@
     private IEnumerable<RecordModel>? tabRecords = null;
     private List<RecordModel>? topRecords;
 
+    private string userName;
+    private string profileImagePath;
+
+  
+
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            userName = user.Identity.Name;
+
+            // Здесь предполагается, что у вас есть DI для UserService
+            profileImagePath = await uSRV.GetUserProfileImagePath(userName);
+        }
+
         topRecords = await rVM.GetTopNClickedRecordsAsync(8);
+
     }
 
 

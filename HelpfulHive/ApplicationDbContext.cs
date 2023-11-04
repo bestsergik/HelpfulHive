@@ -9,10 +9,10 @@ using static System.Collections.Specialized.BitVector32;
 namespace HelpfulHive
 {
 
-    public class ApplicationUser : IdentityUser
-    {
-        public string ProfileImagePath { get; set; }
-    }
+        public class ApplicationUser : IdentityUser
+        {
+            public string ProfileImagePath { get; set; }
+        }
 
     public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     {
@@ -66,9 +66,15 @@ namespace HelpfulHive
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<IdentityUser>().Property<bool>("IsCanEditTabsRecords");
+
+            modelBuilder.Entity<IdentityUser>()
+            .Property<string>("ProfileImagePath")
+            .IsRequired(false); // У
 
         }
+
+       
+
     }
 
 }

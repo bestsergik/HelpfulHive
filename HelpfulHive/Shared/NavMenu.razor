@@ -7,7 +7,7 @@
 @inject RecordViewModel RecordVM
 @inject TabService TabSrv
 @inject AuthenticationStateProvider AuthenticationStateProvider
-
+@inject UserService uSRV
 
 
 
@@ -118,7 +118,12 @@
 
 @if (activeTab == TabType.Personal || (activeTab == TabType.Common && IsUserInRole("Admin").Result) || (activeTab == TabType.Common && IsUserInRole("Moderator").Result))
 {
-    <button @onclick="ToggleAddTabModal">Add Tab</button>
+    <button @onclick="ToggleAddTabModal" class="fab-button" aria-label="Добавить вкладку">
+        <span class="fab-icon"></span>
+        <span class="tooltip">Добавить вкладку</span>
+    </button>
+
+
 }
 
 @code {
@@ -132,6 +137,9 @@
     [Parameter]
     public EventCallback<TabItem> OnTabSelected { get; set; }
     private TabType activeTab = TabType.Personal;
+
+
+   
 
 
     private async Task<bool> IsUserInRole(string role)

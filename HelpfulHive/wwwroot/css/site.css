@@ -104,3 +104,35 @@ a, .btn-link {
 }
 
 
+
+
+
+
+
+/* Стили для кнопки остаются прежними */
+
+/* Стили для подсказки */
+.tooltip {
+    visibility: hidden;
+    width: auto; /* Автоматическая ширина */
+    background-color: black;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 10px; /* Добавлены отступы по бокам для улучшения читаемости */
+    /* Позиционирование */
+    position: absolute;
+    z-index: 1;
+    bottom: 125%; /* Подсказка появляется ниже кнопки */
+    left: 50%;
+    transform: translateX(-50%); /* Центрирование подсказки */
+    /* Анимация появления */
+    opacity: 0;
+    transition: opacity 0.3s, visibility 0.3s;
+}
+
+/* Стили для кнопки при наведении */
+.fab-button:hover .tooltip {
+    visibility: visible; /* Показываем подсказку */
+    opacity: 1;
+}

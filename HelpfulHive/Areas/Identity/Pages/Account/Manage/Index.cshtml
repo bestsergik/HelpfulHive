@@ -9,7 +9,10 @@
 <h3>@ViewData["Title"]</h3>
 <partial name="_StatusMessage" for="StatusMessage" />
 
+
+
 <div class="row">
+    <canvas id="canvas" class="canvas"></canvas>
     <div class="col-md-6">
         <form id="profile-form" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -42,7 +45,7 @@
             </div>
 
             <!-- Кнопка сохранения -->
-            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <button type="submit" class="w-100 btn btn-lg btn-primary change-password-btn">Сохранить</button>
         </form>
     </div>
 
@@ -51,7 +54,15 @@
         <div class="current-profile-image">
             <label>Текущая картинка профиля:</label>
             <div>
-                <img src="@Url.Content($"~/profileimg/{Model.Input.SelectedProfileImagePath}")" alt="Current Profile Image" class="img-thumbnail" style="max-height: 200px;" />
+                @if (!string.IsNullOrWhiteSpace(Model.Input.SelectedProfileImagePath))
+                {
+                    <img src="@Url.Content($"~/profileimg/{Model.Input.SelectedProfileImagePath}")" alt="Current Profile Image" class="img-thumbnail" style="max-height: 200px;" />
+
+                }
+                else
+                {
+                    <p>Изображение профиля не установлено.</p>
+                }
             </div>
         </div>
     </div>
@@ -59,4 +70,6 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+
 }

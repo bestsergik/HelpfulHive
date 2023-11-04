@@ -20,14 +20,18 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
     public class LoginModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly UserManager<IdentityUser> _userManager; // Добавление UserManager
         private readonly ILogger<LoginModel> _logger;
 
-        public LoginModel(SignInManager<IdentityUser> signInManager, ILogger<LoginModel> logger)
+        public LoginModel(
+            SignInManager<IdentityUser> signInManager,
+            UserManager<IdentityUser> userManager, // Инъекция UserManager через конструктор
+            ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
+            _userManager = userManager; // Инициализация _userManager
             _logger = logger;
         }
-
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
@@ -64,9 +68,9 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+
             [Required]
-            [EmailAddress]
-            public string Email { get; set; }
+            public string EmailOrUsername { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -100,7 +104,6 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
 
             ReturnUrl = returnUrl;
         }
-
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
@@ -109,9 +112,22 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+                // Попытка определить, является ли вводимое значение почтой
+                string userNameOrEmail = Input.EmailOrUsername;
+                string userName;
+
+                if (userNameOrEmail.Contains("@"))
+                {
+                    var userByEmail = await _userManager.FindByEmailAsync(userNameOrEmail);
+                    userName = userByEmail?.UserName ?? userNameOrEmail; // Если пользователь с таким email существует, используем его UserName
+                }
+                else
+                {
+                    userName = userNameOrEmail; // Если "@" нет, предполагаем, что это UserName
+                }
+
+                // Теперь попытка входа с использованием имени пользователя
+                var result = await _signInManager.PasswordSignInAsync(userName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
@@ -133,8 +149,10 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
                 }
             }
 
-            // If we got this far, something failed, redisplay form
+            // Если что-то пошло не так, снова отобразить форму
             return Page();
         }
+
+
     }
 }

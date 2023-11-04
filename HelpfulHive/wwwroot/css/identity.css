@@ -61,6 +61,7 @@
 
 .navbar-nav .nav-item + .nav-item {
     margin-left: 1rem; /* Отступ между кнопками */
+    z-index: 1000;
 }
 
 .nav-link {
@@ -104,6 +105,11 @@
 
 
 
+.nav-pills {
+    position: relative; /* Добавляем свойство position, чтобы z-index сработал */
+    z-index: 1000; /* Устанавливаем значение z-index */
+}
+
 
 .change-password-btn {
 
@@ -121,3 +127,10 @@
     .profile-image-selector img.img-thumbnail:hover {
         transform: scale(1.1); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
     }
+
+
+
+.profile-image-selector {
+    position: relative; /* или 'absolute', 'fixed', 'sticky' в зависимости от желаемого эффекта */
+    z-index: 1000; /* Убедитесь, что это значение выше, чем у других элементов на странице */
+}

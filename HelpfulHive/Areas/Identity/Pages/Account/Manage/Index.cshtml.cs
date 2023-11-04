@@ -9,27 +9,29 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+
 
 namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
 {
     public class IndexModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IApplicationUserAdapter _userAdapter;
+        private readonly UserManager<IdentityUser> _identityUserManager; // Используется для получения ID пользователя
+        private readonly SignInManager<IdentityUser> _signInManager;
         private readonly IWebHostEnvironment _env;
 
         public IndexModel(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager,
-            IWebHostEnvironment env) // Убедитесь, что этот параметр присутствует
+            IApplicationUserAdapter userAdapter,
+            UserManager<IdentityUser> identityUserManager,
+            SignInManager<IdentityUser> signInManager,
+            IWebHostEnvironment env)
         {
-            _userManager = userManager;
+            _userAdapter = userAdapter;
+            _identityUserManager = identityUserManager;
             _signInManager = signInManager;
-            _env = env; // И инициализируйте _env здесь
+            _env = env;
         }
-
-
-
         public string Username { get; set; }
 
         [TempData]
@@ -53,25 +55,25 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
 
         private async Task LoadAsync(ApplicationUser user)
         {
-            var userName = await _userManager.GetUserNameAsync(user);
-            var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+            var userName = await _userAdapter.GetUserNameAsync(user);
+            var phoneNumber = await _userAdapter.GetPhoneNumberAsync(user);
 
             Username = userName;
 
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
-                // Предполагаем, что у вас есть свойство для хранения пути изображения в InputModel
-                NewUsername = userName, // Если вы хотите загрузить и текущее имя пользователя
-                SelectedProfileImagePath = user.ProfileImagePath // Добавьте это для загрузки изображения
+                NewUsername = userName,
+                SelectedProfileImagePath = user.ProfileImagePath // Убедитесь, что ваш ApplicationUser имеет это свойство
             };
         }
+
 
 
         // Метод для получения доступных изображений
         private void LoadAvailableProfileImages()
         {
-            var profileImagesFolder = Path.Combine(_env.WebRootPath,  "profileimg");
+            var profileImagesFolder = Path.Combine(_env.WebRootPath, "profileimg");
             AvailableProfileImages = Directory.GetFiles(profileImagesFolder)
                                              .Select(Path.GetFileName)
                                              .ToList();
@@ -79,30 +81,28 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
 
         public async Task<IActionResult> OnGetAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var userId = _identityUserManager.GetUserId(User); // Используйте identityUserManager для получения ID пользователя
+            var user = await _userAdapter.FindByIdAsync(userId);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+                return NotFound($"Unable to load user with ID '{userId}'.");
             }
 
-            LoadAvailableProfileImages(); // Загрузка доступных изображений
+            LoadAvailableProfileImages();
             await LoadAsync(user);
             return Page();
         }
 
+
+
         public async Task<IActionResult> OnPostAsync()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var userId = _identityUserManager.GetUserId(User);
+
+            var user = await _userAdapter.FindByIdAsync(userId);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            // Приведение типа user к ApplicationUser
-            var appUser = user as ApplicationUser;
-            if (appUser == null)
-            {
-                throw new InvalidOperationException("The user is not of type ApplicationUser.");
+                return NotFound($"Unable to load user with ID '{userId}'.");
             }
 
             if (!ModelState.IsValid)
@@ -111,11 +111,23 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            // Остальная логика...
-            if (Input.SelectedProfileImagePath != appUser.ProfileImagePath)
+            // Обновление имени пользователя
+            if (Input.NewUsername != null && Input.NewUsername != user.UserName)
             {
-                appUser.ProfileImagePath = Input.SelectedProfileImagePath;
-                var updateResult = await _userManager.UpdateAsync(appUser);
+                user.UserName = Input.NewUsername;
+                var updateResult = await _userAdapter.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set username.";
+                    return RedirectToPage();
+                }
+            }
+
+            // Обновление изображения профиля
+            if (Input.SelectedProfileImagePath != user.ProfileImagePath)
+            {
+                user.ProfileImagePath = Input.SelectedProfileImagePath;
+                var updateResult = await _userAdapter.UpdateAsync(user);
                 if (!updateResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set profile image.";
@@ -123,14 +135,156 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
                 }
             }
 
-            await _signInManager.RefreshSignInAsync(appUser);
+            // Логирование успешного обновления
+
+            await _signInManager.RefreshSignInAsync(await _userAdapter.FindByIdAsync(user.Id));
             StatusMessage = "Your profile has been updated";
             return RedirectToPage();
         }
 
 
-        // Вам нужно добавить IWebHostEnvironment в конструктор, чтобы использовать _env.WebRootPath
 
     }
+
+    public interface IApplicationUserAdapter
+    {
+        Task<ApplicationUser> FindByIdAsync(string userId);
+        Task<ApplicationUser> FindByNameAsync(string userName);
+        Task<string> GetUserNameAsync(ApplicationUser user);
+        Task<IdentityResult> UpdateAsync(ApplicationUser user);
+        Task<string> GetPhoneNumberAsync(ApplicationUser user);
+        Task<IdentityResult> SetPhoneNumberAsync(ApplicationUser user, string phoneNumber);
+        Task<IList<string>> GetRolesAsync(ApplicationUser user);
+    }
+
+    public class ApplicationUserAdapter : IApplicationUserAdapter
+    {
+        private readonly UserManager<IdentityUser> _userManager;
+        ApplicationDbContext _context;
+
+        public ApplicationUserAdapter(UserManager<IdentityUser> userManager, ApplicationDbContext context)
+        {
+            _userManager = userManager;
+            _context = context;
+        }
+
+        public async Task<ApplicationUser> FindByIdAsync(string userId)
+        {
+            // Получение пользователя с использованием базового запроса UserManager
+            var user = await _userManager.FindByIdAsync(userId);
+
+            // Если требуется получить ProfileImagePath, можно выполнить отдельный запрос
+            var profileImagePath = await _context.Users
+                .Where(u => u.Id == userId)
+                .Select(u => (string)_context.Entry(u).Property("ProfileImagePath").CurrentValue)
+                .SingleOrDefaultAsync();
+
+            // Создание нового ApplicationUser с данными, полученными из UserManager и отдельного запроса
+            return new ApplicationUser
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Email = user.Email,
+                ProfileImagePath = profileImagePath
+            };
+        }
+
+
+        public async Task<ApplicationUser> FindByNameAsync(string userName)
+        {
+            var identityUser = await _userManager.FindByNameAsync(userName);
+            return identityUser?.ToApplicationUser();
+        }
+
+        public async Task<string> GetUserNameAsync(ApplicationUser user)
+        {
+            var identityUser = await _userManager.FindByIdAsync(user.Id);
+            return identityUser?.UserName;
+        }
+
+
+
+        public async Task<IdentityResult> UpdateAsync(ApplicationUser user)
+        {
+            var identityUser = await _userManager.FindByIdAsync(user.Id);
+            if (identityUser == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+
+            identityUser.UserName = user.UserName;
+            identityUser.Email = user.Email;
+            identityUser.PhoneNumber = user.PhoneNumber;
+
+            var result = await _userManager.UpdateAsync(identityUser);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                }
+                return result;
+            }
+
+            if (user.ProfileImagePath != null)
+            {
+                var sql = @"UPDATE ""AspNetUsers"" SET ""ProfileImagePath"" = {0} WHERE ""Id"" = {1}";
+                await _context.Database.ExecuteSqlRawAsync(sql, user.ProfileImagePath, user.Id);
+            }
+
+            return IdentityResult.Success;
+        }
+
+
+
+
+        public async Task<string> GetPhoneNumberAsync(ApplicationUser user)
+        {
+            var identityUser = await _userManager.FindByIdAsync(user.Id);
+            return identityUser?.PhoneNumber;
+        }
+
+        public async Task<IdentityResult> SetPhoneNumberAsync(ApplicationUser user, string phoneNumber)
+        {
+            var identityUser = await _userManager.FindByIdAsync(user.Id);
+            if (identityUser == null)
+            {
+                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+            }
+
+            return await _userManager.SetPhoneNumberAsync(identityUser, phoneNumber);
+        }
+
+        public async Task<IList<string>> GetRolesAsync(ApplicationUser user)
+        {
+            var identityUser = await _userManager.FindByIdAsync(user.Id);
+            if (identityUser == null)
+            {
+                return new List<string>();
+            }
+
+            return await _userManager.GetRolesAsync(identityUser);
+        }
+    }
+
+    public static class UserConversionExtensions
+    {
+        public static ApplicationUser ToApplicationUser(this IdentityUser identityUser)
+        {
+            if (identityUser == null) return null;
+
+            return new ApplicationUser
+            {
+                Id = identityUser.Id,
+                UserName = identityUser.UserName,
+                Email = identityUser.Email,
+                PhoneNumber = identityUser.PhoneNumber,
+
+                // Синхронизируйте другие свойства, которые вам нужны
+            };
+        }
+    }
+
+
+
 
 }

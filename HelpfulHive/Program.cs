@@ -6,6 +6,8 @@ using HelpfulHive.Services;
 using Microsoft.AspNetCore.Components;
 using HelpfulHive.Models;
 using Microsoft.AspNetCore.Components.Forms;
+using HelpfulHive.Areas.Identity.Pages.Account.Manage;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +20,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>() // Добавляем поддержку ролей
+
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+// В Program.cs или Startup.cs
+builder.Services.AddScoped<IApplicationUserAdapter, ApplicationUserAdapter>();
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<UserPreferencesService>();
@@ -28,6 +35,7 @@ builder.Services.AddTransient<UserPreferencesViewModel>();
 builder.Services.AddScoped<TabViewModel>();
 builder.Services.AddScoped<TabService>();
 builder.Services.AddScoped<RecordService>();
+builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RecordViewModel>();
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -68,5 +76,8 @@ using (var scope = app.Services.CreateScope())
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
     await RoleInitializer.InitializeAsync(userManager, roleManager);
 }
+
+
+
 
 app.Run();
