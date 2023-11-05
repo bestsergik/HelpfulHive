@@ -43,7 +43,12 @@ document.addEventListener('DOMContentLoaded', function () {
         if (e.target.matches('.dropdown-item')) {
             var text = e.target.textContent;
             var dropdown = e.target.closest('.dropdown');
-            dropdown.querySelector('.dropdown-select span').textContent = text;
+            var dropdownSelect = dropdown.querySelector('.dropdown-select');
+            dropdownSelect.querySelector('span').textContent = text;
+
+            // Добавляем класс 'dropdown-select-selected', когда выбран элемент
+            dropdownSelect.classList.add('dropdown-select-selected');
+
             dropdown.classList.remove('active');
             // Здесь необходимо обновить значение, которое используется в Blazor
             // Может потребоваться Blazor JS Interop
@@ -51,3 +56,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+

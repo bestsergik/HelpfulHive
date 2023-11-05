@@ -156,3 +156,29 @@
 .favorite-icon:hover {
     background-image: url('/serviceimages/hoverFavoritRecord.png');
 }
+
+
+
+
+
+.button-panel {
+    display: flex; /* Делаем кнопки флекс-элементами */
+    justify-content: stretch; /* Растягиваем кнопки на всё доступное пространство */
+    margin-bottom: 10px; /* Отступ снизу, чтобы не прилипало к следующему элементу */
+}
+
+    .button-panel button {
+        flex-grow: 1; /* Каждая кнопка растягивается на всё доступное пространство */
+        margin: 5px; /* Добавляем небольшой отступ между кнопками */
+        padding: 10px 15px; /* Паддинги для удобства клика */
+        border: 1px solid #ccc; /* Граница для красоты */
+        background-color: #f8f9fa; /* Цвет фона */
+        cursor: pointer; /* Курсор в виде руки при наведении */
+        border-radius: 4px; /* Скругление углов для эстетики */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Тень для кнопок, чтобы выглядели объёмнее */
+        transition: background-color 0.3s ease; /* Плавный переход цвета фона при наведении */
+    }
+
+        .button-panel button:hover {
+            background-color: #e2e6ea; /* Изменение фона при наведении */
+        }

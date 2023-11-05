@@ -25,10 +25,11 @@
                     <h5 class="modal-title">Новый шаблон</h5>
                 </div>
                 <div class="modal-body">
-                    <div class="floating-label">
-                        <input @bind="NewRecordTitle" type="text" id="NewRecordTitle" class="form-control" placeholder=" " />
+                    <div class="floating-label floating-label-title">
+                        <input @bind="NewRecordTitle" type="text" id="NewRecordTitle" class="floating-label-control" placeholder=" " />
                         <label for="NewRecordTitle">Название шаблона</label>
                     </div>
+
                     @if (string.IsNullOrEmpty(NewRecordTitle) && showErrorMessage)
                     {
                         <div class="text-danger">Введите название шаблона</div>
@@ -63,8 +64,8 @@
 
                         <!-- Добавьте дополнительные кнопки и функции для других команд форматирования -->
                     </div>
-                    <div class="floating-label">
-                        <div id="content" contenteditable="true" @ref="editorRef" class="form-control editable-content" placeholder=" " @onpaste="HandlePaste"></div>
+                    <div class="floating-label floating-label-content">
+                        <div id="content" contenteditable="true" @ref="editorRef" class="floating-label-control editable-content" placeholder=" " @onpaste="HandlePaste"></div>
                         <label for="content">Текст шаблона</label>
                     </div>
 
@@ -77,9 +78,9 @@
                         <button @onclick="@(() => InsertTextAtCursor("{SPECIFIC_VARCHAR}"))" class="btn btn-secondary">SPECIFIC_VARCHAR</button>
                         <button @onclick="@(() => InsertTextAtCursor("{NUMERIC_VARCHAR}"))" class="btn btn-secondary">NUMERIC_VARCHAR</button>
                     </div>
-
                     <br>
-            
+
+                    <div class="button-dropdown-container">
 
                     @if (AvailableSubTabs == null)
                     {
@@ -92,11 +93,11 @@
                     else
                     {
                             <div class="dropdown">
-                                <div class="dropdown-select">
+                                <div class="dropdown-select dropdown-select-default">
                                     <span>@(SelectedSubTabId != 0 ? AvailableSubTabs.FirstOrDefault(st => st.Id == SelectedSubTabId)?.Name : "Выберите вкладку")</span>
                                     <i class="fa fa-chevron-down"></i>
                                 </div>
-                                <div class="dropdown-list">
+                                <div class="dropdown-list ">
                                     @foreach (var subTab in AvailableSubTabs)
                                     {
                                         <div class="dropdown-item" @onclick="() => SelectSubTab(subTab.Id)" data-value="@subTab.Id">@subTab.Name</div>
@@ -105,21 +106,26 @@
                             </div>
 
 
-                            @if (SelectedSubTabId == 0 && showErrorMessage)
-                            {
-                                <div class="text-danger">Выберите вкладку</div>
-                            }
+                          
                     }
+
+                        <button @onclick="ShowImageSelection" class="btn btn-primary-3">Выбрать картинку</button>
+
+                    </div>
+
+                    @if (SelectedSubTabId == 0 && showErrorMessage)
+                    {
+                        <div class="text-danger">Выберите вкладку</div>
+                    }
+
                     <br>
-                        <button @onclick="ShowImageSelection" class="btn btn-primary-3" >Выбрать картинку</button>
-                    <br>
-                    <br>
+                    <div class="button-container">
+                        <button @onclick="Close" class="btn btn-primary-2">Отмена</button>
+                        <button @onclick="AddRecord" class="btn btn-primary">Сохранить шаблон</button>
+                    </div>
 
                 </div>
-                <div class="modal-footer">
-                    <button @onclick="Close" class="btn btn-primary-2">Отмена</button>
-                    <button @onclick="AddRecord" class="btn btn-primary">Сохранить шаблон</button>
-                </div>
+            
             </div>
         </div>
     </div>

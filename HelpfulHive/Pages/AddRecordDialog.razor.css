@@ -13,16 +13,29 @@
     animation: fadeInModal 0.5s ease-out;
 }
 
-.image-selection {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 0.75rem; /* Увеличен padding */
 
-
+.modal-dialog {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: none; /* Уберите ограничение максимальной ширины */
+    width: 70%; /* Установим ширину модального окна как 70% от ширины родительского элемента */
+    height: 85%; /* Установим высоту модального окна как 85% от высоты родительского элемента */
+    pointer-events: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease-out;
 }
 
-
-
+.add-record-modal-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
 @keyframes fadeInModal {
     from {
         opacity: 0;
@@ -33,20 +46,6 @@
     }
 }
 
-@keyframes fadeOutModal {
-    from {
-        opacity: 1;
-    }
-
-    to {
-        opacity: 0;
-    }
-}
-
-
-.close-record-modal {
-    animation: fadeOutModal 0.5s ease-out forwards;
-}
 
 
 
@@ -57,37 +56,10 @@
     animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); /* Пример кривой Безье */
 }
 
-@keyframes fadeOutModal {
-    from {
-        opacity: 1;
-    }
-
-    to {
-        opacity: 0;
-    }
-}
-
-.fadeOutModalAnimation {
-    animation-name: fadeOutModal;
-    animation-duration: 1s;
-    animation-fill-mode: both;
-    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); /* Пример кривой Безье */
-}
 
 
-.modal-dialog {
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    max-width: 950px; /* Установим максимальную ширину как 50% больше, чем исходные 600px */
-    width: 90%; /* Установим ширину модального окна относительно родительского элемента */
-    pointer-events: auto;
-    position: fixed; /* Используем fixed вместо absolute для позиционирования относительно окна браузера */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    transition: transform 0.3s ease-out;
-}
+
+
 
 
 .modal-header {
@@ -98,13 +70,26 @@
 
 .modal-title {
     margin: 0;
-    font-size: 1.875rem; /* Увеличен размер шрифта */
+    font-size: 1.5rem; /* Увеличен размер шрифта */
     font-weight: bold;
     color: #495057;
 }
 
 .modal-body {
-    padding: 1.5rem; /* Увеличен padding */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+#content {
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0.75rem;
+    min-height: 100px; /* Минимальная высота */
 }
 
 .form-control {
@@ -114,21 +99,14 @@
     border-radius: 4px;
     color: black !important;
     outline: none;
-    height:60px;
+    height: 60px;
 }
 
 .editor {
     position: relative;
 }
 
-#content {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 0.75rem; /* Увеличен padding */
-    overflow-y: auto;
-    max-height: 300px; /* Увеличена максимальная высота */    overflow-y: auto; /* добавит скроллбар, когда текста будет слишком много */
 
-}
 
 .text-danger {
     color: #d16060;
@@ -144,59 +122,18 @@
 }
 
 .tab {
-    flex-grow: 1; /* Заставляет вкладки растягиваться */
+    flex-grow: 1;
     background-color: #f8f9fa;
     border: 1px solid #ced4da;
     border-radius: 4px;
-    padding: 0.75rem; /* Увеличен padding */
+    padding: 0.75rem;
     cursor: pointer;
-    font-size: 1rem; /* Размер шрифта может быть адаптирован в зависимости от дизайна */
-    text-align: center; /* Выравнивание текста по центру */
-    overflow: hidden; /* Если текст слишком длинный, он не выйдет за пределы кнопки */
-    white-space: nowrap; /* Текст не будет переноситься на новую строку */
-    text-overflow: ellipsis; /* Добавить многоточие если текст не умещается */
+    font-size: 1rem;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
-
-/* Убедитесь, что нет дополнительных стилей, которые могут переопределить ширину или display вашего .tab */
-
-
-.image-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px; /* Увеличен gap */
-    overflow-y: auto;
-    max-height: 300px; /* Увеличена максимальная высота */
-    border: 1px solid #ced4da;
-    padding: 15px; /* Увеличен padding */
-    margin-top: 1.5rem; /* Увеличен margin */
-}
-
-.image-thumbnail {
-    width: 48px; /* Увеличены размеры */
-    height: 48px; /* Увеличены размеры */
-    border-radius: 6px; /* Увеличено скругление */
-    cursor: pointer;
-}
-
-.selected-image-container {
-    margin-top: 30px; /* Увеличен margin */
-}
-
-.selected-image {
-    max-width: 300px; /* Увеличены максимальные размеры */
-    max-height: 300px; /* Увеличены максимальные размеры */
-    border: 3px solid #ced4da; /* Увеличена толщина границы */
-    border-radius: 12px; /* Увеличено скругление */
-    display: block;
-    margin: 0 auto;
-}
-
-
-
-
-
-
-
 
 
 .modal-footer {
@@ -213,7 +150,7 @@
     margin: 5px;
     padding: 10px 15px;
     border: 1px solid #ccc;
-    background-color: #f8f9fa;
+    background-color: #bbb8b8;
     cursor: pointer;
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
@@ -227,7 +164,7 @@
 }
 
     .btn:hover {
-        background-color: #e2e6ea;
+        background-color: #d5d3d3;
     }
 
 /* Оставьте уникальные стили для каждого варианта кнопки */
@@ -241,30 +178,46 @@
 .btn-primary {
     background-color: #007bff;
     color: #fff;
-    height: 60px;
+    font-size: 17px;
+    max-height: 55px;
+    max-width: 300px;
 }
 
 .btn-primary-2 {
-    background-color: #a9a9a9;
+    background-color: #bbb8b8;
     color: #fff;
-    height: 60px;
+    font-size: 17px;
+    max-height: 55px;
+    max-width: 300px;
 }
 
 .btn-primary-3 {
-    background-color: #a9a9a9;
-    color: #2e96c4;
-    height: 45px;
-    float: right;
+    background-color: #bbb8b8;
+    color: #165b6d;
+    height: 55px; /* Устанавливаем высоту, равную высоте dropdown-select */
+    max-width: 180px; /* Устанавливаем ширину в 20% от общего пространства */
     padding: 10px;
     font-size: 14px;
+    margin-left: 15px; /* Отступ слева */
+    margin-right: 10px; /* Добавляем отступ справа для пространства между кнопкой и dropdown */
+    order: 2; /* Устанавливаем порядок следования во Flexbox */
+    z-index: 20; /* Устанавливаем z-index выше, чем у других элементов */
 }
 
+.btn-primary:hover {
+    background-color: #48abf5;
+}
+
+
+.btn:focus {
+    outline: none; /* Удаляет рамку полностью */
+}
 
 
 
 
 /* Стили для кнопок внутри .toolbar */
-.toolbar button {
+    .toolbar button {
     font-weight: normal; /* Сброс жирности для всех кнопок */
     font-style: normal; /* Сброс стиля шрифта для всех кнопок */
     text-decoration: none; /* Сброс подчеркивания для всех кнопок */
@@ -288,14 +241,15 @@
     .toolbar button[style*="font-weight: bold;"] {
         font-weight: bold; /* Жирный текст для кнопки B */
     }
-btn btn-secondary
-    .toolbar button[style*="font-style: italic;"] {
-        font-style: italic; /* Курсивный текст для кнопки К */
-    }
 
-    .toolbar button[style*="text-decoration: underline;"] {
-        text-decoration: underline; /* Подчеркнутый текст для кнопки Ч */
-    }
+btn btn-secondary
+.toolbar button[style*="font-style: italic;"] {
+    font-style: italic; /* Курсивный текст для кнопки К */
+}
+
+.toolbar button[style*="text-decoration: underline;"] {
+    text-decoration: underline; /* Подчеркнутый текст для кнопки Ч */
+}
 
 /* Стили для select и input[type=color] внутри .toolbar */
 .toolbar select,
@@ -358,38 +312,41 @@ btn btn-secondary
             background-color: #e2e6ea; /* Изменение фона при наведении */
         }
 
-/* Для .form-control зададим стили, чтобы высота совпадала с кнопками */
-.form-control.editable-content {
-    height: auto; /* Высота по содержимому */
-    min-height: 60px; /* Минимальная высота чтобы согласовывалась с высотой кнопок */
-    color:black !important;
+
+
+
+
+
+
+/* Общие стили для контролов внутри floating labels */
+.floating-label-control {
+    font-size: 1rem;
+    padding-top: 1.1rem;
+    padding-bottom: 0.9rem;
+    padding-left:10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    outline: none;
+    
+    width: 100%;
+    height:60px;
 }
 
-/* Если нужно задать стиль для плейсхолдера */
-.floating-label .form-control::placeholder {
-    color: #6c757d; /* Цвет текста плейсхолдера */
-}
-
+    /* Стиль для плейсхолдера */
+    .floating-label-control::placeholder {
+        color: #6c757d;
+    }
 
 /* Стили для плавающих подсказок */
 .floating-label {
     position: relative;
-    margin-bottom: 1rem; /* Пространство под floating label */
+    margin-bottom: 1rem;
     color: lightgray;
+    
+    
 }
 
-    .floating-label input,
-    .floating-label .editable-content {
-        font-size: 1rem;
-        padding-top: 1.1rem; /* Оставляем место для метки */
-        padding-bottom: 0.5rem; /* Опционально, может быть скорректировано */
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        outline: none;
-        width: 100%; /* Для заполнения доступного пространства */
-         color: lightgray;
-    }
-
+    /* Стиль для label внутри floating label */
     .floating-label label {
         position: absolute;
         top: 0;
@@ -397,63 +354,139 @@ btn btn-secondary
         padding-left: 1rem;
         padding-top: 0.5rem;
         transition: all 0.2s ease-in-out;
-        pointer-events: none; /* Позволяет кликнуть сквозь метку на поле ввода ниже */
+        pointer-events: none;
         color: lightgray;
     }
 
-    .floating-label input:placeholder-shown + label,
-    .floating-label .editable-content:empty + label {
-        top: 8px; /* Расположение метки когда поле не в фокусе и пустое */
-        font-size: 1rem;
-    }
-
-    .floating-label .editable-content {
-        /* Фиксированная высота */
-        height: 150px; /* Задайте желаемую высоту */
-        /* Добавление скролла для избыточного содержимого */
-        overflow-y: auto;
-        /* Другие стили */
-        padding: 0.75rem;
-        border: 1px solid #ced4da;
+    /* Стили для активного состояния label */
+    .floating-label .floating-label-control:focus + label,
+    .floating-label .floating-label-control:not(:placeholder-shown) + label {
+        margin-top: -1px;
+        top: -11px;
+        left: 10px;
+        font-size: 0.95rem;
+        color: lightgray;
+        background-color: #fff;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+        overflow: hidden;
+        padding-top: 1px;
+        padding-bottom: 2px;
         border-radius: 4px;
-        outline: none;
-        color: black; /* Удалите !important, если это возможно */
-        will-change: scroll-position;
     }
 
-        .floating-label input:focus + label,
-        .floating-label .editable-content:focus + label,
-        .floating-label input:not(:placeholder-shown) + label,
-        .floating-label .editable-content:not(:empty) + label {
-            /* Добавьте отрицательный margin, чтобы label не наезжал на границу */
-            margin-top: -1px; /* Скорректируйте в зависимости от толщины вашей границы */
-            /* Выставление позиции в соответствии с padding'ом вашего .form-control */
-            top: -11px;
-            left: 10px;
-            font-size: 0.95rem;
-            color: #90908d;
-            background-color: #fff;
-            padding-left: 0.25rem;
-            padding-right: 0.25rem;
-            /* Убедитесь, что label не выходит за пределы поля ввода */
-            overflow: hidden;
-            /* Добавляем padding, чтобы текст не касался границ поля ввода */
-            padding-top: 1px;
-            padding-bottom: 2px;
-            /* Скругление углов, чтобы соответствовать вашему input */
-            border-radius: 4px;
-        }
+/* Стили для контейнера заголовка */
+.floating-label-title {
+    flex-grow: 0; /* Не растягиваем заголовок */
+}
+
+/* Стили для контейнера текста */
+.floating-label-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Занимает все доступное пространство */
+    position: relative;
+}
+
+
+/* Стили для редактируемого контента */
+.editable-content {
+    position: absolute;
+    top: 0; /* или другое значение, если вам нужен отступ сверху */
+    bottom: 0; /* Аналогично, для нижней границы */
+    left: 0;
+    right: 0;
+    flex-grow: 1; /* Растягивается для заполнения контейнера */
+    flex-shrink: 0; /* Предотвращает сжатие элемента */
+    flex-basis: auto; /* Автоматический начальный размер */
+    overflow-y: auto; /* Скролл при переполнении */
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    outline: none;
+    color: black;
+    will-change: scroll-position;
+    min-height: 60px; /* Минимальная высота */
+    color: black !important;
+    height:auto;
+}
+
+
+.floating-label .editable-content {
+    font-size: 1rem;
+    padding-top: 1.1rem; /* Оставляем место для метки */
+    padding-bottom: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    outline: none;
+    width: 100%;
+    color: lightgray;
+}
+
+.floating-label label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    pointer-events: none;
+    color: lightgray;
+}
+
+/* Стили для метки, когда .editable-content пуст */
+.floating-label .editable-content:empty + label {
+    top: 8px; /* Позиция метки по умолчанию */
+    font-size: 1rem;
+}
+
+/* Стили для метки, когда .editable-content в фокусе или содержит текст */
+.floating-label .editable-content:focus + label,
+.floating-label .editable-content:not(:empty) + label {
+    margin-top: -1px;
+    top: -11px;
+    left: 10px;
+    font-size: 0.95rem;
+    color: #90908d;
+    background-color: #fff;
+    padding: 0.25rem;
+    overflow: hidden;
+    border-radius: 4px;
+}
 
 
 
+.floating-label-control::placeholder {
+    color: #6c757d;
+}
 
+
+.editable-content::placeholder {
+    color: #6c757d; /* Тот же цвет, что и у .floating-label-control::placeholder */
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Распределяет кнопки по бокам */
+    align-items: center; /* Выравнивает кнопки по центру по вертикали */
+}
+
+
+.button-dropdown-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%; /* Устанавливаем ширину контейнера */
+    padding-right: 15px; /* Добавляем padding, чтобы избежать скролла */
+}
 
 
 
 
 .dropdown {
-    position: relative;
-    user-select: none;
+    flex-grow: 1; /* Заполняет оставшееся пространство */
+    order: 1; /* Порядок перед кнопкой */
+    position: relative; /* Устанавливаем для контейнера выпадающего списка */
 }
 
 .dropdown-select {
@@ -465,23 +498,23 @@ btn btn-secondary
     display: flex;
     align-items: center;
     font-size: 17px;
-     
     justify-content: space-between;
     height: 55px;
 }
 
 .dropdown-list {
     position: absolute;
-    top: 100%;
+    bottom: 100%; /* Располагаем список над контейнером */
     left: 0;
     right: 0;
     background: #fff;
     border: 1px solid #ccc;
-    border-top: none;
-    z-index: 10;
+    z-index: 9999;
     display: none;
     font-size: 18px;
+    /* Удалить top: 100%; */
 }
+
 
     .dropdown-list .dropdown-item {
         padding: 10px;
@@ -501,4 +534,14 @@ btn btn-secondary
 /* Отображение выпадающего списка при клике */
 .dropdown.active .dropdown-list {
     display: block;
+}
+
+
+.dropdown-select-default {
+    color: lightgray; /* Серый цвет текста */
+    padding-left:14px;
+}
+
+.dropdown-select-selected {
+    color: #000000; /* Черный цвет текста */
 }

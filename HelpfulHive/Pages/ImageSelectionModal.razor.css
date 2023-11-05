@@ -134,23 +134,49 @@
 
 .tab-container {
     display: flex;
-    gap: 0.75rem; /* Увеличен gap */
-    margin-top: 1.5rem; /* Увеличен margin */
-    padding: 0; /* Убедитесь, что у контейнера нет внутреннего отступа, который мог бы влиять на ширину */
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    padding: 0;
 }
 
 .tab {
-    flex-grow: 1; /* Заставляет вкладки растягиваться */
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
+    flex-grow: 1;
+    background-color: #bbb8b8; /* Основной серый цвет */
+    border: 1px solid transparent;
     border-radius: 4px;
-    padding: 0.75rem; /* Увеличен padding */
+    padding: 0.75rem;
     cursor: pointer;
-    font-size: 1rem; /* Размер шрифта может быть адаптирован в зависимости от дизайна */
-    text-align: center; /* Выравнивание текста по центру */
-    overflow: hidden; /* Если текст слишком длинный, он не выйдет за пределы кнопки */
-    white-space: nowrap; /* Текст не будет переноситься на новую строку */
-    text-overflow: ellipsis; /* Добавить многоточие если текст не умещается */
+    font-size: 1rem;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: background-color 0.3s ease;
+    color: #fff; /* Цвет текста белый для контраста */
+}
+
+    .tab:hover {
+        background-color: #d5d3d3; /* Чуть более светлый серый при наведении */
+    }
+
+
+
+.tab-secondary {
+    background-color: #6c757d; /* Из .btn-secondary */
+}
+
+.tab-primary {
+    background-color: #007bff; /* Из .btn-primary */
+}
+
+
+
+.tab-secondary:hover {
+    background-color: #5a6268; /* Из .btn-secondary:hover */
+}
+
+.tab-primary:hover {
+    background-color: #d9cbcb; /* Из .btn-primary:hover */
 }
 
 /* Убедитесь, что нет дополнительных стилей, которые могут переопределить ширину или display вашего .tab */
@@ -176,6 +202,7 @@
 
 .selected-image-container {
     margin-top: 30px; /* Увеличен margin */
+    
 }
 
 .selected-image {
@@ -185,4 +212,62 @@
     border-radius: 12px; /* Увеличено скругление */
     display: block;
     margin: 0 auto;
+    padding:10px;
+   
+}
+
+
+.btn {
+    flex-grow: 1;
+    margin: 5px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease;
+    /* Оригинальные стили .btn */
+    font-size: 1rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    cursor: pointer;
+}
+    .btn:focus {
+        outline: none; /* Удаляет рамку полностью */
+    }
+
+
+/* Оставьте уникальные стили для каждого варианта кнопки */
+.btn-secondary {
+    color: #008000;
+    font-size: 16px;
+    height: 42px;
+    padding: 1px;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    height: 45px;
+}
+
+    .btn-primary:hover {
+        background-color: #48abf5;
+    }
+
+
+.btn-primary-2 {
+    background-color: #a9a9a9;
+    color: #fff;
+    height: 60px;
+}
+
+.btn-primary-3 {
+    background-color: #a9a9a9;
+    color: #2e96c4;
+    height: 45px;
+    float: right;
+    padding: 10px;
+    font-size: 14px;
 }
