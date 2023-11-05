@@ -26,3 +26,4 @@
 function getContentText(element) {
     return element.innerHTML;
 }
+

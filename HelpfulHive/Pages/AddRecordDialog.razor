@@ -16,93 +16,123 @@
 
 @if (IsVisible)
 {
-    <div class="add-record-modal" tabindex="-1" >
+    
+
+    <div class="add-record-modal" tabindex="-1">
         <div class="modal-dialog">
             <div class="add-record-modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add New Record</h5>
+                    <h5 class="modal-title">Новый шаблон</h5>
                 </div>
                 <div class="modal-body">
-                    <input @bind="NewRecordTitle" type="text" class="form-control" placeholder="Record Title" />
+                    <div class="floating-label">
+                        <input @bind="NewRecordTitle" type="text" id="NewRecordTitle" class="form-control" placeholder=" " />
+                        <label for="NewRecordTitle">Название шаблона</label>
+                    </div>
                     @if (string.IsNullOrEmpty(NewRecordTitle) && showErrorMessage)
                     {
-                        <div class="text-danger">Please enter the title.</div>
+                        <div class="text-danger">Введите название шаблона</div>
                     }
-                    <div class="editor">
-                        <div id="content" contenteditable="true" @ref="editorRef" class="form-control mt-3" style="height: 200px;" @onpaste="HandlePaste"></div>
+
+                    <div class="toolbar" style="white-space: nowrap;">
+                        <button style="font-weight: bold;" @onclick="@(() => ExecuteCommand("bold"))">B</button>
+                        <button style="font-style: italic;" @onclick="@(() => ExecuteCommand("italic"))">К</button>
+                        <button style="text-decoration: underline;" @onclick="@(() => ExecuteCommand("underline"))">Ч</button>
+                        <button @onclick="@(() => ChangeFontSize("increase"))">A+</button>
+                        <button @onclick="@(() => ChangeFontSize("decrease"))">A-</button>
+
+                        <!-- Выбор шрифта -->
+                        <select @onchange="@((ChangeEventArgs e) => ExecuteCommand("fontName", e.Value.ToString()))">
+                            <option value="Arial">Arial</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Palatino">Palatino</option>
+                            <option value="Garamond">Garamond</option>
+                            <option value="Bookman">Bookman</option>
+                            <option value="Comic Sans MS">Comic Sans MS</option>
+                            <option value="Trebuchet MS">Trebuchet MS</option>
+                            <option value="Arial Black">Arial Black</option>
+                            <!-- Добавьте другие шрифты по желанию -->
+                        </select>
+
+
+                        <!-- Выбор цвета текста -->
+                        <input type="color" @onchange="@((ChangeEventArgs e) => ExecuteCommand("foreColor", e.Value.ToString()))" />
+
+                        <!-- Добавьте дополнительные кнопки и функции для других команд форматирования -->
                     </div>
+                    <div class="floating-label">
+                        <div id="content" contenteditable="true" @ref="editorRef" class="form-control editable-content" placeholder=" " @onpaste="HandlePaste"></div>
+                        <label for="content">Текст шаблона</label>
+                    </div>
+
                     @if (string.IsNullOrEmpty(NewRecordContentObject.Text) && showErrorMessage)
                     {
-                        <div class="text-danger">Please enter the content.</div>
+                        <div class="text-danger">Введите текст шаблона</div>
                     }
+                    <div class="button-panel">
+                        <button @onclick="@(() => InsertTextAtCursor("{NUMERIC}"))" class="btn btn-secondary">NUMERIC</button>
+                        <button @onclick="@(() => InsertTextAtCursor("{SPECIFIC_VARCHAR}"))" class="btn btn-secondary">SPECIFIC_VARCHAR</button>
+                        <button @onclick="@(() => InsertTextAtCursor("{NUMERIC_VARCHAR}"))" class="btn btn-secondary">NUMERIC_VARCHAR</button>
+                    </div>
+
+                    <br>
+            
 
                     @if (AvailableSubTabs == null)
                     {
-                        <p>Loading tabs...</p>
+                        <p>Загрузка вкладок...</p>
                     }
                     else if (!AvailableSubTabs.Any())
                     {
-                        <p>No tabs available.</p>
+                        <p>Вкладки отсутствуют</p>
                     }
                     else
                     {
-                        <select @bind="SelectedSubTabId" class="form-control mt-3">
-                            @foreach (var subTab in AvailableSubTabs)
-                            {
-                                <option value="@subTab.Id">@subTab.Name</option>
-                            }
-                        </select>
-                        @if (SelectedSubTabId == 0 && showErrorMessage)
-                        {
-                            <div class="text-danger">Please select a sub-tab.</div>
-                        }
-                    }
-                    @if (AvailableImagesByFolders != null && AvailableImagesByFolders.Any())
-                    {
-                        <div class="tab-container">
-                            @foreach (var folder in AvailableImagesByFolders.Keys)
-                            {
-                                <button class="tab" @onclick="() => SelectFolder(folder)">
-                                    @folder
-                                </button>
-                            }
-                        </div>
+                            <div class="dropdown">
+                                <div class="dropdown-select">
+                                    <span>@(SelectedSubTabId != 0 ? AvailableSubTabs.FirstOrDefault(st => st.Id == SelectedSubTabId)?.Name : "Выберите вкладку")</span>
+                                    <i class="fa fa-chevron-down"></i>
+                                </div>
+                                <div class="dropdown-list">
+                                    @foreach (var subTab in AvailableSubTabs)
+                                    {
+                                        <div class="dropdown-item" @onclick="() => SelectSubTab(subTab.Id)" data-value="@subTab.Id">@subTab.Name</div>
+                                    }
+                                </div>
+                            </div>
 
-                        <div class="image-grid">
-                            @if (AvailableImagesByFolders.ContainsKey(SelectedFolder))
-                            {
-                                @foreach (var image in AvailableImagesByFolders[SelectedFolder])
-                                {
-                                    <div @onclick="() => SelectImage(image)" class="image-container">
-                                        <img src="@($"images/{SelectedFolder}/{image}")" alt="@image" class="image-thumbnail" />
-                                        <div class="image-title">@image</div>
-                                    </div>
-                                }
-                            }
-                        </div>
-                        @if (string.IsNullOrEmpty(SelectedImage) && showErrorMessage)
-                        {
-                            <div class="text-danger">Please select an image.</div>
-                        }
-                    }
 
-                    @if (!string.IsNullOrEmpty(SelectedImage))
-                    {
-                        <div class="selected-image-container">
-                            <h5>Selected Image:</h5>
-                            <img src="@($"images/{SelectedFolder}/{SelectedImage}")" alt="Selected Image" class="selected-image" />
-                        </div>
+                            @if (SelectedSubTabId == 0 && showErrorMessage)
+                            {
+                                <div class="text-danger">Выберите вкладку</div>
+                            }
                     }
+                    <br>
+                        <button @onclick="ShowImageSelection" class="btn btn-primary-3" >Выбрать картинку</button>
+                    <br>
+                    <br>
 
                 </div>
                 <div class="modal-footer">
-                    <button @onclick="Close" class="btn btn-secondary">Cancel</button>
-                    <button @onclick="AddRecord" class="btn btn-primary">Add Record</button>
+                    <button @onclick="Close" class="btn btn-primary-2">Отмена</button>
+                    <button @onclick="AddRecord" class="btn btn-primary">Сохранить шаблон</button>
                 </div>
             </div>
         </div>
     </div>
+      
 }
+
+
+<ImageSelectionModal IsVisible="@isImageSelectionVisible"
+                     IsVisibleChanged="OnImageModalVisibilityChanged"
+                     OnImageSelected="HandleImageSelected" />
+
+
+
 
 @code {
     [Parameter] public bool IsVisible { get; set; }
@@ -124,6 +154,61 @@
     private ElementReference editorRef;
 
 
+
+    private void HandleImageSelected(string selectedImagePath)
+    {
+        SelectedImage = selectedImagePath; // Обновите переменную с выбранным путем изображения
+                                           // Любая дополнительная логика
+    }
+
+
+    private bool isImageSelectionVisible = false;
+
+    private void ShowImageSelection()
+    {
+        isImageSelectionVisible = true;
+    }
+
+    private void OnImageModalVisibilityChanged(bool isVisible)
+    {
+        isImageSelectionVisible = isVisible;
+        StateHasChanged(); // Обновите состояние
+    }
+
+
+    private int fontSize = 3; // Начальный размер шрифта, предполагая, что это средний размер
+
+    private async Task ChangeFontSize(string changeType)
+    {
+        if (changeType == "increase" && fontSize < 7) fontSize++;
+        if (changeType == "decrease" && fontSize > 1) fontSize--;
+
+        await ExecuteCommand("fontSize", fontSize.ToString());
+    }
+
+    private async Task ExecuteCommand(string command, string argument)
+    {
+        await JSRuntime.InvokeVoidAsync("executeCommand", editorRef, command, argument);
+    }
+
+
+
+  
+
+    private async Task ExecuteCommand(string command)
+    {
+        await JSRuntime.InvokeVoidAsync("executeCommand", editorRef, command);
+    }
+
+    private async Task InsertTextAtCursor(string text)
+    {
+        // Создаем HTML со стилем для оранжевого текста
+        var styledText = $"<b><span style='color: green;'>{text}</span></b>";
+
+        // Вызываем JavaScript функцию для вставки HTML в текущую позицию курсора
+        await JSRuntime.InvokeVoidAsync("insertHtmlAtCursor", editorRef, styledText);
+    }
+
     private async Task HandlePaste(Microsoft.AspNetCore.Components.Web.ClipboardEventArgs e)
     {
         await JSRuntime.InvokeVoidAsync("insertImageFromClipboard", editorRef, e);
@@ -136,7 +221,7 @@
         NewRecordContentObject.Text = text;
     }
 
-  
+
 
     protected override void OnInitialized()
     {
@@ -159,12 +244,8 @@
 
     private void SelectImage(string imageName)
     {
-        SelectedImage = imageName ?? ""; 
+        SelectedImage = string.IsNullOrEmpty(imageName) ? "default_template.png" : imageName;
     }
-
-
-   
-
 
 
     // Функция для проверки валидности Base64 строки
@@ -183,12 +264,16 @@
             return false;
         }
     }
+    private void SelectSubTab(int subTabId)
+    {
+        SelectedSubTabId = subTabId;
+        // Тут ваша логика после выбора вкладки, возможно обновление состояния компонента или вызов StateHasChanged если это необходимо.
+    }
 
-  
+
     private async Task AddRecord()
     {
         await UpdateContentText();
-
         if (string.IsNullOrEmpty(NewRecordTitle) ||
             string.IsNullOrEmpty(NewRecordContentObject.Text) ||
             SelectedSubTabId == 0)
@@ -203,31 +288,29 @@
         var contentText = NewRecordContentObject.Text;
         var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,([A-Za-z0-9+/=]+)";
         var matches = Regex.Matches(contentText, base64ImagePattern);
-        var imageUrls = new List<string>();
+        var imageTasks = matches.Select(async match =>
+     {
+         var base64Image = match.Groups[1].Value;
+         if (IsValidBase64String(base64Image))
+         {
+             var imageUrl = await ImageService.SaveImageAsync(base64Image, imagePath);
+             contentText = contentText.Replace(match.Value, imageUrl);
+             return imageUrl;
+         }
+         return null;
+     }).ToList();
 
-        foreach (Match match in matches)
-        {
-            // Извлекаем группу, содержащую только Base64 строку
-            var base64Image = match.Groups[1].Value;
+        var imageUrls = (await Task.WhenAll(imageTasks)).Where(url => url != null).ToList();
 
-            if (IsValidBase64String(base64Image))
-            {
-                var imageUrl = await ImageService.SaveImageAsync(base64Image, imagePath);
-                contentText = contentText.Replace(match.Value, imageUrl);
-                imageUrls.Add(imageUrl);
-            }
-        }
-
-      
         NewRecordContentObject.Text = contentText;
-        NewRecordContentObject.ImageUrls = imageUrls.ToList();  
-
+        NewRecordContentObject.ImageUrls = imageUrls.ToList();
         var newRecord = new RecordModel
             {
                 Title = NewRecordTitle,
                 Content = NewRecordContentObject,
                 SubTabId = SelectedSubTabId,
-                ImagePath = SelectedImage
+                ImagePath = string.IsNullOrEmpty(SelectedImage) ? "default_template.png" : SelectedImage
+
             };
 
         await RecordVM.AddRecordAsync(newRecord);

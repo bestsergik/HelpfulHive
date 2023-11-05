@@ -10,40 +10,111 @@
     align-items: center;
     justify-content: center;
     pointer-events: none;
+    animation: fadeInModal 0.5s ease-out;
 }
+
+.image-selection {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0.75rem; /* Увеличен padding */
+
+
+}
+
+
+
+@keyframes fadeInModal {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOutModal {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+
+.close-record-modal {
+    animation: fadeOutModal 0.5s ease-out forwards;
+}
+
+
+
+.fadeInModalAnimation {
+    animation-name: fadeInModal;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); /* Пример кривой Безье */
+}
+
+@keyframes fadeOutModal {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+.fadeOutModalAnimation {
+    animation-name: fadeOutModal;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); /* Пример кривой Безье */
+}
+
 
 .modal-dialog {
     background-color: #fff;
     border-radius: 8px;
     overflow: hidden;
-    max-width: 600px;
-    width: 100%;
+    max-width: 950px; /* Установим максимальную ширину как 50% больше, чем исходные 600px */
+    width: 90%; /* Установим ширину модального окна относительно родительского элемента */
     pointer-events: auto;
+    position: fixed; /* Используем fixed вместо absolute для позиционирования относительно окна браузера */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease-out;
 }
+
 
 .modal-header {
     background-color: #f8f9fa;
     border-bottom: 1px solid #e9ecef;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem; /* Увеличен padding */
 }
 
 .modal-title {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.875rem; /* Увеличен размер шрифта */
     font-weight: bold;
     color: #495057;
 }
 
 .modal-body {
-    padding: 1rem;
+    padding: 1.5rem; /* Увеличен padding */
 }
 
 .form-control {
-    font-size: 1rem;
-    padding: 0.5rem;
+    font-size: 1.1rem !important; /* Увеличен размер шрифта */
+    padding-bottom: 20px !important;
     border: 1px solid #ced4da;
     border-radius: 4px;
+    color: black !important;
     outline: none;
+    height:60px;
 }
 
 .editor {
@@ -53,97 +124,381 @@
 #content {
     border: 1px solid #ced4da;
     border-radius: 4px;
-    padding: 0.5rem;
+    padding: 0.75rem; /* Увеличен padding */
     overflow-y: auto;
-    max-height: 200px;
+    max-height: 300px; /* Увеличена максимальная высота */    overflow-y: auto; /* добавит скроллбар, когда текста будет слишком много */
+
 }
 
 .text-danger {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+    color: #d16060;
+    font-size: 1rem; /* Увеличен размер шрифта */
+    margin-top: 0.375rem; /* Увеличен margin */
 }
 
 .tab-container {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    gap: 0.75rem; /* Увеличен gap */
+    margin-top: 1.5rem; /* Увеличен margin */
+    padding: 0; /* Убедитесь, что у контейнера нет внутреннего отступа, который мог бы влиять на ширину */
 }
 
 .tab {
+    flex-grow: 1; /* Заставляет вкладки растягиваться */
     background-color: #f8f9fa;
     border: 1px solid #ced4da;
     border-radius: 4px;
-    padding: 0.5rem;
+    padding: 0.75rem; /* Увеличен padding */
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 1rem; /* Размер шрифта может быть адаптирован в зависимости от дизайна */
+    text-align: center; /* Выравнивание текста по центру */
+    overflow: hidden; /* Если текст слишком длинный, он не выйдет за пределы кнопки */
+    white-space: nowrap; /* Текст не будет переноситься на новую строку */
+    text-overflow: ellipsis; /* Добавить многоточие если текст не умещается */
 }
 
-    .tab:hover {
-        background-color: #e9ecef;
-    }
+/* Убедитесь, что нет дополнительных стилей, которые могут переопределить ширину или display вашего .tab */
+
 
 .image-grid {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: 15px; /* Увеличен gap */
     overflow-y: auto;
-    max-height: 200px;
+    max-height: 300px; /* Увеличена максимальная высота */
     border: 1px solid #ced4da;
-    padding: 10px;
-    margin-top: 1rem;
+    padding: 15px; /* Увеличен padding */
+    margin-top: 1.5rem; /* Увеличен margin */
 }
 
 .image-thumbnail {
-    width: 64px;
-    height: 64px;
-    border-radius: 4px;
+    width: 48px; /* Увеличены размеры */
+    height: 48px; /* Увеличены размеры */
+    border-radius: 6px; /* Увеличено скругление */
+    cursor: pointer;
 }
 
 .selected-image-container {
-    margin-top: 20px;
+    margin-top: 30px; /* Увеличен margin */
 }
 
 .selected-image {
-    max-width: 200px;
-    max-height: 200px;
-    border: 2px solid #ced4da;
-    border-radius: 8px;
+    max-width: 300px; /* Увеличены максимальные размеры */
+    max-height: 300px; /* Увеличены максимальные размеры */
+    border: 3px solid #ced4da; /* Увеличена толщина границы */
+    border-radius: 12px; /* Увеличено скругление */
     display: block;
     margin: 0 auto;
 }
 
+
+
+
+
+
+
+
+
 .modal-footer {
     background-color: #f8f9fa;
     border-top: 1px solid #e9ecef;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem; /* Увеличен padding */
     display: flex;
     justify-content: flex-end;
-    gap: 0.5rem;
+    gap: 0.75rem; /* Увеличен gap */
 }
 
 .btn {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
+    flex-grow: 1;
+    margin: 5px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease;
+    /* Оригинальные стили .btn */
+    font-size: 1.5rem;
+    padding: 0.75rem 1.5rem;
     border: 1px solid transparent;
     border-radius: 4px;
     cursor: pointer;
 }
 
+    .btn:hover {
+        background-color: #e2e6ea;
+    }
+
+/* Оставьте уникальные стили для каждого варианта кнопки */
 .btn-secondary {
-    background-color: #6c757d;
-    color: #fff;
+    color: #008000;
+    font-size: 16px;
+    height: 42px;
+    padding: 1px;
 }
 
 .btn-primary {
     background-color: #007bff;
     color: #fff;
+    height: 60px;
 }
 
-.btn-secondary:hover {
-    background-color: #5a6268;
+.btn-primary-2 {
+    background-color: #a9a9a9;
+    color: #fff;
+    height: 60px;
 }
 
-.btn-primary:hover {
-    background-color: #0056b3;
+.btn-primary-3 {
+    background-color: #a9a9a9;
+    color: #2e96c4;
+    height: 45px;
+    float: right;
+    padding: 10px;
+    font-size: 14px;
+}
+
+
+
+
+
+/* Стили для кнопок внутри .toolbar */
+.toolbar button {
+    font-weight: normal; /* Сброс жирности для всех кнопок */
+    font-style: normal; /* Сброс стиля шрифта для всех кнопок */
+    text-decoration: none; /* Сброс подчеркивания для всех кнопок */
+    flex-grow: 1; /* Позволяет кнопкам расти, чтобы заполнить доступное пространство */
+    margin: 5px; /* Отступы вокруг кнопок */
+    padding: 10px 15px; /* Внутренние отступы кнопок */
+    border: 1px solid #ccc; /* Граница вокруг кнопок */
+    background-color: #f8f9fa; /* Цвет фона кнопок */
+    cursor: pointer; /* Изменение курсора при наведении на кнопки */
+    border-radius: 4px; /* Скругление углов кнопок */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Тень для кнопок */
+    transition: background-color 0.3s ease; /* Плавный переход цвета фона при наведении */
+}
+
+    /* Стили для кнопок при наведении */
+    .toolbar button:hover {
+        background-color: #e2e6ea; /* Цвет фона кнопок при наведении */
+    }
+
+    /* Специальные стили для кнопок с форматированием текста */
+    .toolbar button[style*="font-weight: bold;"] {
+        font-weight: bold; /* Жирный текст для кнопки B */
+    }
+btn btn-secondary
+    .toolbar button[style*="font-style: italic;"] {
+        font-style: italic; /* Курсивный текст для кнопки К */
+    }
+
+    .toolbar button[style*="text-decoration: underline;"] {
+        text-decoration: underline; /* Подчеркнутый текст для кнопки Ч */
+    }
+
+/* Стили для select и input[type=color] внутри .toolbar */
+.toolbar select,
+.toolbar input[type=color] {
+    flex-grow: 1; /* Позволяет элементам расти, чтобы заполнить доступное пространство */
+    margin: 5px; /* Отступы вокруг элементов */
+    border: 1px solid #ccc; /* Граница вокруг элементов */
+    border-radius: 4px; /* Скругление углов элементов */
+    height: 40px; /* Высота согласована с высотой кнопок */
+}
+
+/* Стили для select */
+.toolbar select {
+    padding: 5px 10px; /* Внутренние отступы для select */
+    cursor: pointer; /* Изменение курсора при наведении */
+}
+
+/* Стили для input[type=color] */
+.toolbar input[type=color] {
+    width: auto; /* Позволяем элементу решать о своей ширине */
+    padding: 0; /* Убираем padding */
+}
+
+/* Общие стили для .toolbar */
+.toolbar {
+    display: flex; /* Делаем .toolbar flex-контейнером */
+    flex-wrap: nowrap; /* Блокируем перенос элементов на новую строку */
+    align-items: center; /* Центрируем элементы по вертикали */
+    justify-content: flex-start; /* Располагаем элементы с начала */
+    margin-bottom: 10px; /* Отступ снизу для всего блока .toolbar */
+    white-space: nowrap; /* Запрет переноса элементов на новую строку */
+}
+
+
+
+
+
+
+
+
+.button-panel {
+    display: flex; /* Делаем кнопки флекс-элементами */
+    justify-content: stretch; /* Растягиваем кнопки на всё доступное пространство */
+    margin-bottom: 10px; /* Отступ снизу, чтобы не прилипало к следующему элементу */
+}
+
+    .button-panel button {
+        flex-grow: 1; /* Каждая кнопка растягивается на всё доступное пространство */
+        margin: 5px; /* Добавляем небольшой отступ между кнопками */
+        padding: 10px 15px; /* Паддинги для удобства клика */
+        border: 1px solid #ccc; /* Граница для красоты */
+        background-color: #f8f9fa; /* Цвет фона */
+        cursor: pointer; /* Курсор в виде руки при наведении */
+        border-radius: 4px; /* Скругление углов для эстетики */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Тень для кнопок, чтобы выглядели объёмнее */
+        transition: background-color 0.3s ease; /* Плавный переход цвета фона при наведении */
+    }
+
+        .button-panel button:hover {
+            background-color: #e2e6ea; /* Изменение фона при наведении */
+        }
+
+/* Для .form-control зададим стили, чтобы высота совпадала с кнопками */
+.form-control.editable-content {
+    height: auto; /* Высота по содержимому */
+    min-height: 60px; /* Минимальная высота чтобы согласовывалась с высотой кнопок */
+    color:black !important;
+}
+
+/* Если нужно задать стиль для плейсхолдера */
+.floating-label .form-control::placeholder {
+    color: #6c757d; /* Цвет текста плейсхолдера */
+}
+
+
+/* Стили для плавающих подсказок */
+.floating-label {
+    position: relative;
+    margin-bottom: 1rem; /* Пространство под floating label */
+    color: lightgray;
+}
+
+    .floating-label input,
+    .floating-label .editable-content {
+        font-size: 1rem;
+        padding-top: 1.1rem; /* Оставляем место для метки */
+        padding-bottom: 0.5rem; /* Опционально, может быть скорректировано */
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        outline: none;
+        width: 100%; /* Для заполнения доступного пространства */
+         color: lightgray;
+    }
+
+    .floating-label label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding-left: 1rem;
+        padding-top: 0.5rem;
+        transition: all 0.2s ease-in-out;
+        pointer-events: none; /* Позволяет кликнуть сквозь метку на поле ввода ниже */
+        color: lightgray;
+    }
+
+    .floating-label input:placeholder-shown + label,
+    .floating-label .editable-content:empty + label {
+        top: 8px; /* Расположение метки когда поле не в фокусе и пустое */
+        font-size: 1rem;
+    }
+
+    .floating-label .editable-content {
+        /* Фиксированная высота */
+        height: 150px; /* Задайте желаемую высоту */
+        /* Добавление скролла для избыточного содержимого */
+        overflow-y: auto;
+        /* Другие стили */
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        outline: none;
+        color: black; /* Удалите !important, если это возможно */
+        will-change: scroll-position;
+    }
+
+        .floating-label input:focus + label,
+        .floating-label .editable-content:focus + label,
+        .floating-label input:not(:placeholder-shown) + label,
+        .floating-label .editable-content:not(:empty) + label {
+            /* Добавьте отрицательный margin, чтобы label не наезжал на границу */
+            margin-top: -1px; /* Скорректируйте в зависимости от толщины вашей границы */
+            /* Выставление позиции в соответствии с padding'ом вашего .form-control */
+            top: -11px;
+            left: 10px;
+            font-size: 0.95rem;
+            color: #90908d;
+            background-color: #fff;
+            padding-left: 0.25rem;
+            padding-right: 0.25rem;
+            /* Убедитесь, что label не выходит за пределы поля ввода */
+            overflow: hidden;
+            /* Добавляем padding, чтобы текст не касался границ поля ввода */
+            padding-top: 1px;
+            padding-bottom: 2px;
+            /* Скругление углов, чтобы соответствовать вашему input */
+            border-radius: 4px;
+        }
+
+
+
+
+
+
+
+
+.dropdown {
+    position: relative;
+    user-select: none;
+}
+
+.dropdown-select {
+    background: linear-gradient(135deg, #ffffff, #f1f1f1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+     
+    justify-content: space-between;
+    height: 55px;
+}
+
+.dropdown-list {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-top: none;
+    z-index: 10;
+    display: none;
+    font-size: 18px;
+}
+
+    .dropdown-list .dropdown-item {
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+        .dropdown-list .dropdown-item:hover {
+            background: #f1f1f1;
+        }
+
+/* CSS для стрелки, если вы используете FontAwesome или аналогичную библиотеку */
+.fa-chevron-down {
+    font-size: 0.8em;
+}
+
+/* Отображение выпадающего списка при клике */
+.dropdown.active .dropdown-list {
+    display: block;
 }
