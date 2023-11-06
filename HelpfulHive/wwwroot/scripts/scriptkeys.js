@@ -15,16 +15,6 @@ function executeCommand(element, command, argument) {
     document.execCommand(command, false, argument || null);
 }
 
-function closeModal() {
-    var modal = document.querySelector('.add-record-modal');
-    // Добавляем класс анимации исчезновения
-    modal.classList.add('fadeOutModalAnimation');
-    // Удаляем модальное окно после завершения анимации
-    modal.addEventListener('animationend', function () {
-        modal.style.display = 'none';
-        modal.classList.remove('fadeOutModalAnimation'); // очищаем класс для следующего использования
-    }, { once: true });
-}
 
 
 // Проверяем, что DOM полностью загружен

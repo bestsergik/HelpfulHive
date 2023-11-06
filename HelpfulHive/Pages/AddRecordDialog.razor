@@ -16,8 +16,6 @@
 
 @if (IsVisible)
 {
-    
-
     <div class="add-record-modal" tabindex="-1">
         <div class="modal-dialog">
             <div class="add-record-modal-content">
@@ -104,9 +102,6 @@
                                     }
                                 </div>
                             </div>
-
-
-                          
                     }
 
                         <button @onclick="ShowImageSelection" class="btn btn-primary-3">Выбрать картинку</button>
@@ -132,12 +127,9 @@
       
 }
 
-
 <ImageSelectionModal IsVisible="@isImageSelectionVisible"
                      IsVisibleChanged="OnImageModalVisibilityChanged"
                      OnImageSelected="HandleImageSelected" />
-
-
 
 
 @code {
@@ -199,7 +191,7 @@
 
 
 
-  
+
 
     private async Task ExecuteCommand(string command)
     {

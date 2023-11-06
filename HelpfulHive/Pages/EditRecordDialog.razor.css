@@ -10,152 +10,300 @@
     align-items: center;
     justify-content: center;
     pointer-events: none;
+    animation: fadeInModal 0.5s ease-out;
 }
 
+
 .modal-dialog {
+    display: flex;
+    flex-direction: column;
     background-color: #fff;
     border-radius: 8px;
     overflow: hidden;
-    max-width: 600px;
-    width: 100%;
+    max-width: none; /* Уберите ограничение максимальной ширины */
+    width: 70%; /* Установим ширину модального окна как 70% от ширины родительского элемента */
+    height: 85%; /* Установим высоту модального окна как 85% от высоты родительского элемента */
     pointer-events: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease-out;
 }
 
-.modal-header {
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #e9ecef;
-    padding: 0.5rem 1rem;
+.add-record-modal-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
+
+@keyframes fadeInModal {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+
+
+
+.fadeInModalAnimation {
+    animation-name: fadeInModal;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); /* Пример кривой Безье */
+}
+
+
+
+
+
+
+
+.modal-header {
+    display: flex; /* Активируем flexbox */
+    align-items: center; /* Выравнивание элементов по вертикали */
+    justify-content: flex-start; /* Выравнивание элементов слева */
+}
+
+
+.spacer {
+    flex-grow: 1; /* "Spacer" занимает все доступное пространство */
+}
+
+.btn-delete-record {
+    border: none;
+    background: transparent;
+    font-size: 21px;
+    cursor: pointer;
+}
+
+    .btn-delete-record:hover {
+        color: red;
+    }
+
 
 .modal-title {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: 1.5rem; /* Увеличен размер шрифта */
     font-weight: bold;
     color: #495057;
+    
 }
 
 .modal-body {
-    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 1.5rem;
+}
+
+#content {
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 0.75rem;
+    min-height: 100px; /* Минимальная высота */
 }
 
 .form-control {
-    font-size: 1rem;
-    padding: 0.5rem;
+    font-size: 1.1rem !important; /* Увеличен размер шрифта */
+    padding-bottom: 20px !important;
     border: 1px solid #ced4da;
     border-radius: 4px;
+    color: black !important;
     outline: none;
+    height: 60px;
 }
 
 .editor {
     position: relative;
 }
 
-#content {
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    padding: 0.5rem;
-    overflow-y: auto;
-    max-height: 200px;
-}
+
 
 .text-danger {
-    color: #dc3545;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
+    color: #d16060;
+    font-size: 1rem; /* Увеличен размер шрифта */
+    margin-top: 0.375rem; /* Увеличен margin */
 }
 
 .tab-container {
     display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
+    gap: 0.75rem; /* Увеличен gap */
+    margin-top: 1.5rem; /* Увеличен margin */
+    padding: 0; /* Убедитесь, что у контейнера нет внутреннего отступа, который мог бы влиять на ширину */
 }
 
 .tab {
+    flex-grow: 1;
     background-color: #f8f9fa;
     border: 1px solid #ced4da;
     border-radius: 4px;
-    padding: 0.5rem;
+    padding: 0.75rem;
     cursor: pointer;
     font-size: 1rem;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
-    .tab:hover {
-        background-color: #e9ecef;
-    }
-
-.image-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    overflow-y: auto;
-    max-height: 200px;
-    border: 1px solid #ced4da;
-    padding: 10px;
-    margin-top: 1rem;
-}
-
-.image-thumbnail {
-    width: 64px;
-    height: 64px;
-    border-radius: 4px;
-}
-
-.selected-image-container {
-    margin-top: 20px;
-}
-
-.selected-image {
-    max-width: 200px;
-    max-height: 200px;
-    border: 2px solid #ced4da;
-    border-radius: 8px;
-    display: block;
-    margin: 0 auto;
-}
 
 .modal-footer {
     background-color: #f8f9fa;
     border-top: 1px solid #e9ecef;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem; /* Увеличен padding */
     display: flex;
     justify-content: flex-end;
-    gap: 0.5rem;
+    gap: 0.75rem; /* Увеличен gap */
 }
 
 .btn {
-    font-size: 1rem;
-    padding: 0.5rem 1rem;
+    flex-grow: 1;
+    margin: 5px;
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    background-color: #bbb8b8;
+    cursor: pointer;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: background-color 0.3s ease;
+    /* Оригинальные стили .btn */
+    font-size: 1.5rem;
+    padding: 0.75rem 1.5rem;
     border: 1px solid transparent;
     border-radius: 4px;
     cursor: pointer;
 }
 
+    .btn:hover {
+        background-color: #d5d3d3;
+    }
+
+/* Оставьте уникальные стили для каждого варианта кнопки */
 .btn-secondary {
-    background-color: #6c757d;
-    color: #fff;
+    color: #008000;
+    font-size: 16px;
+    height: 42px;
+    padding: 1px;
 }
 
 .btn-primary {
     background-color: #007bff;
     color: #fff;
+    font-size: 17px;
+    max-height: 55px;
+    max-width: 300px;
 }
 
-.btn-secondary:hover {
-    background-color: #5a6268;
+.btn-primary-2 {
+    background-color: #bbb8b8;
+    color: #fff;
+    font-size: 17px;
+    max-height: 55px;
+    max-width: 300px;
+}
+
+.btn-primary-3 {
+    background-color: #bbb8b8;
+    color: #165b6d;
+    height: 55px; /* Устанавливаем высоту, равную высоте dropdown-select */
+    max-width: 180px; /* Устанавливаем ширину в 20% от общего пространства */
+    padding: 10px;
+    font-size: 14px;
+    margin-left: 15px; /* Отступ слева */
+    margin-right: 10px; /* Добавляем отступ справа для пространства между кнопкой и dropdown */
+    order: 2; /* Устанавливаем порядок следования во Flexbox */
+    z-index: 20; /* Устанавливаем z-index выше, чем у других элементов */
 }
 
 .btn-primary:hover {
-    background-color: #0056b3;
+    background-color: #48abf5;
 }
 
-.favorite-icon {
 
-    transition: all 0.3s ease;
+.btn:focus {
+    outline: none; /* Удаляет рамку полностью */
 }
 
-.favorite-icon:hover {
-    background-image: url('/serviceimages/hoverFavoritRecord.png');
+
+
+
+/* Стили для кнопок внутри .toolbar */
+.toolbar button {
+    font-weight: normal; /* Сброс жирности для всех кнопок */
+    font-style: normal; /* Сброс стиля шрифта для всех кнопок */
+    text-decoration: none; /* Сброс подчеркивания для всех кнопок */
+    flex-grow: 1; /* Позволяет кнопкам расти, чтобы заполнить доступное пространство */
+    margin: 5px; /* Отступы вокруг кнопок */
+    padding: 10px 15px; /* Внутренние отступы кнопок */
+    border: 1px solid #ccc; /* Граница вокруг кнопок */
+    background-color: #f8f9fa; /* Цвет фона кнопок */
+    cursor: pointer; /* Изменение курсора при наведении на кнопки */
+    border-radius: 4px; /* Скругление углов кнопок */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Тень для кнопок */
+    transition: background-color 0.3s ease; /* Плавный переход цвета фона при наведении */
 }
+
+    /* Стили для кнопок при наведении */
+    .toolbar button:hover {
+        background-color: #e2e6ea; /* Цвет фона кнопок при наведении */
+    }
+
+    /* Специальные стили для кнопок с форматированием текста */
+    .toolbar button[style*="font-weight: bold;"] {
+        font-weight: bold; /* Жирный текст для кнопки B */
+    }
+
+btn btn-secondary
+.toolbar button[style*="font-style: italic;"] {
+    font-style: italic; /* Курсивный текст для кнопки К */
+}
+
+.toolbar button[style*="text-decoration: underline;"] {
+    text-decoration: underline; /* Подчеркнутый текст для кнопки Ч */
+}
+
+/* Стили для select и input[type=color] внутри .toolbar */
+.toolbar select,
+.toolbar input[type=color] {
+    flex-grow: 1; /* Позволяет элементам расти, чтобы заполнить доступное пространство */
+    margin: 5px; /* Отступы вокруг элементов */
+    border: 1px solid #ccc; /* Граница вокруг элементов */
+    border-radius: 4px; /* Скругление углов элементов */
+    height: 40px; /* Высота согласована с высотой кнопок */
+}
+
+/* Стили для select */
+.toolbar select {
+    padding: 5px 10px; /* Внутренние отступы для select */
+    cursor: pointer; /* Изменение курсора при наведении */
+}
+
+/* Стили для input[type=color] */
+.toolbar input[type=color] {
+    width: auto; /* Позволяем элементу решать о своей ширине */
+    padding: 0; /* Убираем padding */
+}
+
+/* Общие стили для .toolbar */
+.toolbar {
+    display: flex; /* Делаем .toolbar flex-контейнером */
+    flex-wrap: nowrap; /* Блокируем перенос элементов на новую строку */
+    align-items: center; /* Центрируем элементы по вертикали */
+    justify-content: flex-start; /* Располагаем элементы с начала */
+    margin-bottom: 10px; /* Отступ снизу для всего блока .toolbar */
+    white-space: nowrap; /* Запрет переноса элементов на новую строку */
+}
+
+
+
 
 
 
@@ -182,3 +330,347 @@
         .button-panel button:hover {
             background-color: #e2e6ea; /* Изменение фона при наведении */
         }
+
+
+
+
+
+
+
+/* Общие стили для контролов внутри floating labels */
+.floating-label-control {
+    font-size: 1rem;
+    padding-top: 1.1rem;
+    padding-bottom: 0.9rem;
+    padding-left: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    outline: none;
+    width: 100%;
+    height: 60px;
+}
+
+    /* Стиль для плейсхолдера */
+    .floating-label-control::placeholder {
+        color: #6c757d;
+    }
+
+/* Стили для плавающих подсказок */
+.floating-label {
+    position: relative;
+    margin-bottom: 1rem;
+    color: lightgray;
+}
+
+    /* Стиль для label внутри floating label */
+    .floating-label label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding-left: 1rem;
+        padding-top: 0.5rem;
+        transition: all 0.2s ease-in-out;
+        pointer-events: none;
+        color: lightgray;
+    }
+
+    /* Стили для активного состояния label */
+    .floating-label .floating-label-control:focus + label,
+    .floating-label .floating-label-control:not(:placeholder-shown) + label {
+        margin-top: -1px;
+        top: -11px;
+        left: 10px;
+        font-size: 0.95rem;
+        color: lightgray;
+        background-color: #fff;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+        overflow: hidden;
+        padding-top: 1px;
+        padding-bottom: 2px;
+        border-radius: 4px;
+    }
+
+/* Стили для контейнера заголовка */
+.floating-label-title {
+    flex-grow: 0; /* Не растягиваем заголовок */
+}
+
+/* Стили для контейнера текста */
+.floating-label-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Занимает все доступное пространство */
+    position: relative;
+}
+
+
+/* Стили для редактируемого контента */
+.editable-content {
+    position: absolute;
+    top: 0; /* или другое значение, если вам нужен отступ сверху */
+    bottom: 0; /* Аналогично, для нижней границы */
+    left: 0;
+    right: 0;
+    flex-grow: 1; /* Растягивается для заполнения контейнера */
+    flex-shrink: 0; /* Предотвращает сжатие элемента */
+    flex-basis: auto; /* Автоматический начальный размер */
+    overflow-y: auto; /* Скролл при переполнении */
+    padding: 0.75rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    outline: none;
+    color: black;
+    will-change: scroll-position;
+    min-height: 60px; /* Минимальная высота */
+    color: black !important;
+    height: auto;
+}
+
+
+.floating-label .editable-content {
+    font-size: 1rem;
+    padding-top: 1.1rem; /* Оставляем место для метки */
+    padding-bottom: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    outline: none;
+    width: 100%;
+    color: lightgray;
+}
+
+.floating-label label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+    transition: all 0.2s ease-in-out;
+    pointer-events: none;
+    color: lightgray;
+}
+
+/* Стили для метки, когда .editable-content пуст */
+.floating-label .editable-content:empty + label {
+    top: 8px; /* Позиция метки по умолчанию */
+    font-size: 1rem;
+}
+
+/* Стили для метки, когда .editable-content в фокусе или содержит текст */
+.floating-label .editable-content:focus + label,
+.floating-label .editable-content:not(:empty) + label {
+    margin-top: -1px;
+    top: -11px;
+    left: 10px;
+    font-size: 0.95rem;
+    color: #90908d;
+    background-color: #fff;
+    padding: 0.25rem;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+
+
+.floating-label-control::placeholder {
+    color: #6c757d;
+}
+
+
+.editable-content::placeholder {
+    color: #6c757d; /* Тот же цвет, что и у .floating-label-control::placeholder */
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between; /* Распределяет кнопки по бокам */
+    align-items: center; /* Выравнивает кнопки по центру по вертикали */
+}
+
+
+.btn-link {
+    background-color: transparent !important; /* Явное определение прозрачности фона */
+    border: none !important;
+    padding: 0;
+    margin: 0;
+    max-width: 35px;
+    max-height: 44px;
+    margin-right: 10px; /* Добавляем небольшой отступ справа от кнопки */
+
+    color: transparent !important; /* Прозрачный цвет текста */
+}
+
+    .btn-link:hover, .btn-link:focus, .btn-link:active {
+        background-color: transparent !important; /* Сохраняем прозрачность фона для всех состояний */
+        border: none !important;
+        outline: none;
+        box-shadow: none;
+    }
+
+
+
+
+
+
+.button-dropdown-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%; /* Устанавливаем ширину контейнера */
+    padding-right: 15px; /* Добавляем padding, чтобы избежать скролла */
+}
+
+
+
+
+.dropdown {
+    flex-grow: 1; /* Заполняет оставшееся пространство */
+    order: 1; /* Порядок перед кнопкой */
+    position: relative; /* Устанавливаем для контейнера выпадающего списка */
+}
+
+.dropdown-select {
+    background: linear-gradient(135deg, #ffffff, #f1f1f1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    font-size: 17px;
+    justify-content: space-between;
+    height: 55px;
+}
+
+.dropdown-list {
+    position: absolute;
+    bottom: 100%; /* Располагаем список над контейнером */
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ccc;
+    z-index: 9999;
+    display: none;
+    font-size: 18px;
+    /* Удалить top: 100%; */
+}
+
+
+.favorite-icon {
+    transition: all 0.3s ease;
+}
+
+    .favorite-icon:hover {
+        background-image: url('/serviceimages/hoverFavoritRecord.png');
+    }
+
+
+
+
+    .dropdown-list .dropdown-item {
+        padding: 10px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+        .dropdown-list .dropdown-item:hover {
+            background: #f1f1f1;
+        }
+
+/* CSS для стрелки, если вы используете FontAwesome или аналогичную библиотеку */
+.fa-chevron-down {
+    font-size: 0.8em;
+}
+
+/* Отображение выпадающего списка при клике */
+.dropdown.active .dropdown-list {
+    display: block;
+}
+
+
+.dropdown-select-default {
+    color: lightgray; /* Серый цвет текста */
+    padding-left: 14px;
+}
+
+.dropdown-select-selected {
+    color: #000000; /* Черный цвет текста */
+}
+
+
+
+
+
+
+.modal {
+    display: block; /* Показывать модальное окно */
+    background-color: rgba(0, 0, 0, 0.5); /* Полупрозрачный фон вокруг модального окна */
+}
+
+.modal-dialog {
+    border-radius: 10px; /* Скругленные углы для диалога */
+}
+
+.modal-content {
+    border-radius: 10px; /* Скругленные углы для контента */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Тень для добавления глубины */
+    border: none; /* Убрать стандартную рамку */
+}
+
+.modal-header {
+    background-color: #f7f7f7; /* Светлый фон для заголовка */
+    border-bottom: 1px solid #e5e5e5; /* Граница между заголовком и телом */
+}
+
+.modal-title {
+    color: #333; /* Цвет текста заголовка */
+}
+
+.modal-body {
+    padding: 20px; /* Отступ внутри модального окна */
+}
+
+.modal-footer {
+    border-top: 1px solid #e5e5e5; /* Граница между телом и футером */
+    background-color: #f7f7f7; /* Светлый фон для футера */
+}
+
+
+.btn-danger {
+    background-color: #f83232 ;
+    color: #fff;
+    height: 55px; /* Устанавливаем высоту, равную высоте dropdown-select */
+    max-width: 180px; /* Устанавливаем ширину в 20% от общего пространства */
+    padding: 10px;
+    font-size: 14px;
+    margin-left: 15px; /* Отступ слева */
+    margin-right: 10px; /* Добавляем отступ справа для пространства между кнопкой и dropdown */
+    order: 2; /* Устанавливаем порядок следования во Flexbox */
+    z-index: 20; /* Устанавливаем z-index выше, чем у других элементов */
+}
+
+
+    .btn-danger:hover {
+        background-color: #bf1a1a;
+    }
+
+
+
+.btn-danger-cancel {
+    background-color: #bbb8b8;
+    color: #fff;
+    height: 55px; /* Устанавливаем высоту, равную высоте dropdown-select */
+    max-width: 180px; /* Устанавливаем ширину в 20% от общего пространства */
+    padding: 10px;
+    font-size: 14px;
+    margin-left: 15px; /* Отступ слева */
+    margin-right: 10px; /* Добавляем отступ справа для пространства между кнопкой и dropdown */
+    order: 2; /* Устанавливаем порядок следования во Flexbox */
+    z-index: 20; /* Устанавливаем z-index выше, чем у других элементов */
+}
+
+
+    .btn-danger-cancel:hover {
+        background-color: #d5d3d3;
+    }
+

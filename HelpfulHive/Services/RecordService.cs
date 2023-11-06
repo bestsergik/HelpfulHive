@@ -39,7 +39,12 @@ namespace HelpfulHive.Services
 
         public async Task UpdateRecordAsync(RecordModel updatedRecord)
         {
+            await Console.Out.WriteLineAsync("вкладка изменнена на " + "----------" + updatedRecord.SubTabId);     
+            await Console.Out.WriteLineAsync("название записи изменнено на " + "----------" + updatedRecord.Title);
+
             using var context = _contextFactory.CreateDbContext();
+            context.Entry(updatedRecord).State = EntityState.Modified;
+
             context.Records.Update(updatedRecord);
             await context.SaveChangesAsync();
         }
