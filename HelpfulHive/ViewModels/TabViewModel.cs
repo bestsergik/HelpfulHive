@@ -48,7 +48,6 @@ namespace HelpfulHive.ViewModels
         {
             Tabs.Clear();  // Очистите коллекцию перед добавлением новых вкладок.
             var rootTabs = await _tabService.GetRootTabsAsync(UserId, tabType);
-            Console.WriteLine($"Loaded {rootTabs.Count()} root tabs for user {UserId}");
             foreach (var tab in rootTabs)
             {
                 Tabs.Add(tab);

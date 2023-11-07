@@ -19,7 +19,7 @@
                     <button type="button" class="btn btn-link" @onclick="() => ToggleFavorite(RecordToEdit.Id)">
                         <img class="favorite-icon" src="@(isFavorite ? "/serviceimages/favoritRecord.png" : "/serviceimages/notFavoritRecord.png")" alt="Favorite" />
                     </button>
-                    <h5 class="modal-title">Редактировать запись</h5>
+                    <h5 class="modal-title">Редактировать шаблон</h5>
                     <div class="spacer"></div> <!-- Spacer элемент -->
                     @if (ShowDeleteButton())
                     {
@@ -30,7 +30,7 @@
                 <div class="modal-body">
                     <div class="floating-label floating-label-title">
                         <input @bind="RecordToEdit.Title" type="text" id="RecordTitle" class="floating-label-control" placeholder=" " />
-                        <label for="RecordTitle">Название записи</label>
+                        <label for="RecordTitle">Название шаблона</label>
                     </div>
 
                     <div class="toolbar" style="white-space: nowrap;">
@@ -67,7 +67,7 @@
                         <div id="content" contenteditable="true" @ref="editorRef" class="floating-label-control editable-content" placeholder=" ">
                             @((MarkupString)RecordToEdit.Content.Text)
                         </div>
-                        <label for="content">Текст записи</label>
+                        <label for="content">Текст шаблона</label>
                     </div>
                     @if (ShowSaveButton())
                     {

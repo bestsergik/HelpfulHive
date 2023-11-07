@@ -59,12 +59,7 @@
 
 
 
-@if (selectedTab != null && (activeTab == TabType.Personal || (activeTab == TabType.Common && IsUserInRole("Admin").Result) || (activeTab == TabType.Common && IsUserInRole("Moderator").Result)))
-{
-    <div class="edit-button-position">
-        <button @onclick="EditSelectedTab" class="btn btn-primary">Edit tab</button>
-    </div>
-}
+
 
 @if (isEditModalOpen)
 {
@@ -122,9 +117,19 @@
         <span class="fab-icon"></span>
         <span class="tooltip">Добавить вкладку</span>
     </button>
-
-
 }
+
+
+@if (selectedTab != null && (activeTab == TabType.Personal || (activeTab == TabType.Common && IsUserInRole("Admin").Result) || (activeTab == TabType.Common && IsUserInRole("Moderator").Result)))
+{
+    <div class="edit-button-position">
+        <button @onclick="EditSelectedTab" class="edit-fab-button">
+            <span class="fas fa-pencil-alt"></span> <!-- Иконка карандаша от Font Awesome -->
+            <span class="tooltip">Редактировать вкладку</span>
+        </button>
+    </div>
+}
+
 
 @code {
     private bool isAddTabModalOpen = false;
@@ -186,7 +191,6 @@
     {
         selectedTab = subTab;  // обновляете выбранную вкладку
         var uri = $"/record-list/{subTab.Uri}";
-        Console.WriteLine($"Navigating to: {uri}");
         NavManager.NavigateTo(uri);
     }
 

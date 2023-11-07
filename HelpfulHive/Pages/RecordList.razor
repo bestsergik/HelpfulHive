@@ -13,9 +13,12 @@
 
 <div class="search-and-actions">
     <div class="search-area">
-        <input type="text" @bind="searchQuery" @oninput="HandleInput" placeholder="Search records..." />
-        <input type="checkbox" @bind="isSearchAll" /> Все записи
+        <input type="text" @bind="searchQuery" @oninput="HandleInput" placeholder="Поиск шаблонов..." />
+        <div class="checkbox-area">
+            <input type="checkbox" @bind="isSearchAll" /> Все шаблоны
+        </div>
     </div>
+
     <div class="actions-area">
         @if (PopularRecords != null && PopularRecords.Any())
         {
@@ -30,7 +33,7 @@
         }
         else
         {
-            <p>No popular records available.</p>
+       
         }
     </div>
 </div>
@@ -41,7 +44,7 @@
     <div class="record-list">
         @foreach (var record in Records)
         {
-            <div class="record-item" @ondblclick="() => EditRecord(record)" @onclick="() => HandleClick(record)">
+            <div class="record-item" @ondblclick="() => OnDoubleClick(record)" @onclick="() => OnSingleClick(record)">
                 <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
                 <div class="record-content">@record.Title</div>
                 <span class="edit-icon" @onclick="() => EditRecord(record)">
@@ -53,7 +56,7 @@
 }
 else
 {
-<p>No records available.</p>
+    <p><h5>Здесь пока пусто..</h5></p>
 }
 
 <EditRecordDialog IsVisible="@isEditDialogVisible" RecordToEdit="@selectedRecord" OnEditDialogClosed="@ReloadRecords" AvailableSubTabs="@GetAllSubTabs()" />
@@ -78,7 +81,6 @@ else
 
     private async Task SearchRecords()
     {
-        Console.WriteLine($"Search query: {searchQuery}"); // Добавьте эту строку для отладки
 
         Records = await RecordVM.SearchRecordsAsync(searchQuery, isSearchAll);
         StateHasChanged();
@@ -86,6 +88,7 @@ else
 
     private string FindFolderForImage(string imageName)
     {
+
         var imagesByFolders = imageSRV.GetImagesByFolders();
 
         foreach (var folder in imagesByFolders)
@@ -112,18 +115,18 @@ else
     }
 
 
-        private async Task LoadPopularRecords()
-        {
-            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            var user = authState.User;
-            var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    private async Task LoadPopularRecords()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
 
-            if (userId != null)
-            {
-                PopularRecords = await upVM.GetTopNClickedRecordsAsync(5, userId);
-                StateHasChanged();
-            }
+        if (userId != null)
+        {
+            PopularRecords = await upVM.GetTopNClickedRecordsAsync(5, userId);
+            StateHasChanged();
         }
+    }
 
 
     protected override void OnInitialized()
@@ -133,8 +136,44 @@ else
 
     private async Task HandleClick(RecordModel record)
     {
+        if (record != null && Records.Contains(record))
+        {
+            await RecordVM.HandleClick(record);
+            string recordText = record.Content.Text;  // Доступ к тексту
+            await scriptBuilder.BuildScriptAsync(recordText);  // Используйте текст для построения скрипта
+        }
+    }
+
+    private bool isDoubleClick = false;
+    private const int ClickDelay = 300; // Задержка в миллисекундах
+
+    private async Task OnSingleClick(RecordModel record)
+    {
+        await Task.Delay(ClickDelay);
+        if (!isDoubleClick && record != null && Records.Contains(record))
+        {
+            // Обработка одинарного клика
+            await HandleSingleClick(record);
+        }
+        isDoubleClick = false;
+    }
+
+    private void OnDoubleClick(RecordModel record)
+    {
+        isDoubleClick = true;
+        // Обработка двойного клика
+        EditRecord(record);
+    }
+
+    private async Task HandleSingleClick(RecordModel record)
+    {
+        if (record != null && Records.Contains(record))
+        {
+        Console.WriteLine("203980384701934780192745-1293875-128375-1280375-128375-2018735-128375");
         await RecordVM.HandleClick(record);
-        await scriptBuilder.BuildScriptAsync(record.Title);   // не работает 
+        string recordText = record.Content.Text;
+        await scriptBuilder.BuildScriptAsync(recordText);
+        }
     }
 
     private void HandleInput(ChangeEventArgs e)

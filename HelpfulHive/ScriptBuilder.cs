@@ -1,12 +1,10 @@
 ﻿using Microsoft.JSInterop;
 using System.Text.RegularExpressions;
-using System.IO;
 using System.Text;
+using HtmlAgilityPack;
 
 namespace HelpfulHive
 {
-  
-
     public class ScriptBuilder
     {
         private readonly IJSRuntime _jsRuntime;
@@ -22,10 +20,12 @@ namespace HelpfulHive
 
         public async Task BuildScriptAsync(string script)
         {
-            if (script.Contains("select") || script.Contains("werwer") || script.Contains("qweasd") || script == "comma")
+            script = ExtractTextFromHtml(script);
+            if (script.Contains("select") || script.Contains("{NUMERIC}") || script.Contains("{NUMERIC_VARCHAR}") || script.Contains("{SPECIFIC_VARCHAR}") || script.Contains("SELECT") || script == "comma")
             {
                 topScript = script;
                 valueBuffer = await _jsRuntime.InvokeAsync<string>("getClipboardText");
+              
                 await GetScriptAsync();
             }
             else
@@ -34,6 +34,17 @@ namespace HelpfulHive
             }
         }
 
+        public static string ExtractTextFromHtml(string html)
+        {
+            var htmlDoc = new HtmlDocument();
+            htmlDoc.LoadHtml(html);
+            var text = htmlDoc.DocumentNode.InnerText;
+
+            // Заменяем HTML-сущность &nbsp; на обычный пробел
+            text = text.Replace("&nbsp;", "");
+
+            return text;
+        }
         private async Task GetScriptAsync()
         {
             try
@@ -98,8 +109,8 @@ namespace HelpfulHive
                 string line;
                 while ((line = tr.ReadLine()) != null)
                 {
-                    line = line.Replace("werwer", uins.Contains("'") ? "1" : uins);
-                    line = line.Replace("qweasd", uins.Contains("'") ? uins : "''");
+                    line = line.Replace("{NUMERIC}", uins.Contains("'") ? "1" : uins);
+                    line = line.Replace("{SPECIFIC_VARCHAR}", uins.Contains("'") ? uins : "''");
                     output.WriteLine(line);
                 }
                 return output.ToString();
@@ -148,35 +159,15 @@ namespace HelpfulHive
 
         private string GetUINsWithHyphensAndAdditionalFormat(string input)
         {
-            List<string> uins = new List<string>();
-            int index = 0;
+            var uuidPattern = new Regex(@"\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b(?!\.png)");
+            var matches = uuidPattern.Matches(input);
 
-            while (index < input.Length)
-            {
-                int hyphenIndex = input.IndexOf('-', index);
-                if (hyphenIndex == -1 || hyphenIndex < 8) break;
-
-                if (hyphenIndex + 15 < input.Length && input[hyphenIndex + 5] == '-' && input[hyphenIndex + 10] == '-' && input[hyphenIndex + 15] == '-')
-                {
-                    string firstSymbol = input[hyphenIndex - 8].ToString();
-                    string uin = $"'{firstSymbol}{input.Substring(hyphenIndex - 7, 35)}'";
-
-                    if (!uins.Contains(uin))
-                    {
-                        uins.Add(uin);
-                    }
-
-                    index = hyphenIndex + 35;
-                }
-                else
-                {
-                    index = hyphenIndex + 1;
-                }
-            }
+            var uins = matches.Cast<Match>()
+                              .Select(m => $"'{m.Value}'")
+                              .Distinct();
 
             return string.Join(",", uins);
         }
-
 
 
         private string GetIds(string input)

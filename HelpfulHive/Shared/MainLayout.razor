@@ -115,7 +115,6 @@
 
     private void CloseAddRecordDialog()
     {
-        Console.WriteLine("CloseddRecordDialog");
         isAddRecordDialogOpen = false;
         InvokeAsync(StateHasChanged);
 
@@ -123,7 +122,6 @@
 
     private void OpenAddRecordDialog()
     {
-        Console.WriteLine("OpenAddRecordDialog");
         isAddRecordDialogOpen = true;
         InvokeAsync(StateHasChanged);
     }

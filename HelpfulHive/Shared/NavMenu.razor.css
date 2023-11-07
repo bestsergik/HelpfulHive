@@ -1,41 +1,4 @@
 
-
-
-.modal-dialog {
-    background-color: #fff;
-    border-radius: 8px;
-    overflow: hidden;
-    max-width: 200px;
-    width: 100%;
-    pointer-events: auto;
-}
-
-
-/* Закрыть кнопку */
-.close {
-    position: absolute;
-    right: 25px;
-    top: 0;
-    color: #000;
-    font-size: 35px;
-    font-weight: bold;
-}
-
-    .close:hover,
-    .close:focus {
-        color: red;
-        cursor: pointer;
-    }
-
-
-
-.edit-button-position {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-}
-
-
 .nav-tabs {
     display: flex;
     border-bottom: 2px solid #0071c1;
@@ -55,12 +18,10 @@
             color: white;
         }
 
-/* Для вашего основного контейнера, который содержит список элементов и вкладки. */
 .main-container {
     display: flex;
     flex-direction: column-reverse;
 }
-
 
 .navbar-toggler {
     background-color: rgba(255, 255, 255, 0.1);
@@ -119,8 +80,6 @@
     color: white;
 }
 
-
-
 .nav-tabs {
     display: flex;
     border-bottom: 2px solid #0071c1;
@@ -171,31 +130,32 @@
 }
 
 
-/* Добавляем базовые стили для кнопки */
+
 .fab-button {
-    position: fixed; /* Фиксированное позиционирование относительно вьюпорта */
-    bottom: 20px; /* Отступ снизу */
-    left: 20px; /* Отступ слева */
-    background-color: rgba(255, 255, 255, 0.7); /* Светлый цвет фона с прозрачностью */
-    border: none; /* Убираем границу */
-    border-radius: 50%; /* Делаем кнопку круглой */
-    width: 60px; /* Ширина */
-    height: 60px; /* Высота */
-    cursor: pointer; /* Курсор в виде руки, указывающей, что это кнопка */
-    outline: none; /* Убираем контур при фокусе */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Добавляем небольшую тень для лучшей видимости */
-    display: inline-flex !important; /* Добавлено !important для гарантирования отображения */
-    justify-content: center; /* Горизонтальное центрирование */
-    align-items: center; /* Вертикальное центрирование */
-    font-size: 24px; /* Размер иконки '+' */
-    color: #555; /* Цвет иконки, темно-серый для контраста */
-    transition: background-color 0.3s, box-shadow 0.3s; /* Плавные переходы */
-    z-index: 1000; /* Убедитесь, что кнопка будет над другими элементами */
+    position: fixed; 
+    bottom: 20px; 
+    left: 20px; 
+    background-color: #76648d;
+    border: none; 
+    border-radius: 50%; 
+    width: 60px; 
+    height: 60px; 
+    cursor: pointer; 
+    outline: none; 
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
+    display: inline-flex !important; 
+    justify-content: center; 
+    align-items: center;
+    font-size: 24px; 
+    color: #555; 
+    transition: background-color 0.3s, box-shadow 0.3s; 
+    z-index: 1000; 
+
 }
 
-    /* Стиль для эффекта при наведении курсора */
+  
     .fab-button:hover {
-        background-color: rgba(255, 255, 255, 0.9); /* Более непрозрачный фон при наведении */
+        background-color: #a394b7;
         box-shadow: 0 6px 12px rgba(0,0,0,0.4); /* Увеличиваем тень */
     }
 
@@ -211,3 +171,202 @@
     .fab-icon::before {
         content: '+';
     }
+
+
+
+/* Общие стили для кнопки */
+.edit-button-position {
+    position: fixed; /* Фиксированное позиционирование относительно вьюпорта */
+    bottom: 20px; /* Отступ снизу, аналогично кнопке "Добавить вкладку" */
+    right: 90px; /* Отступ справа, чтобы располагалась правее кнопки "Добавить вкладку" */
+}
+
+.edit-fab-button {
+    background-color: #72b8cb;
+    border: none; /* Убираем границу */
+    border-radius: 50%; /* Делаем кнопку круглой */
+    width: 60px; /* Ширина */
+    height: 60px; /* Высота */
+    cursor: pointer; /* Курсор в виде руки, указывающей, что это кнопка */
+    outline: none; /* Убираем контур при фокусе */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Добавляем небольшую тень */
+    display: flex; /* Используем flexbox для центрирования содержимого */
+    justify-content: center; /* Горизонтальное центрирование */
+    align-items: center; /* Вертикальное центрирование */
+    font-size: 24px; /* Размер иконки */
+    color: #555; /* Цвет иконки */
+    transition: background-color 0.3s, box-shadow 0.3s; /* Плавные переходы */
+    z-index: 1000; /* Убедитесь, что кнопка будет над другими элементами */
+    position: relative; /* Для позиционирования подсказки относительно кнопки */
+    opacity: 0.7; /* Значение прозрачности, например, 0.5 для 50% прозрачности */
+}
+
+    .edit-fab-button:hover {
+        background-color: #72b8cb;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.4); /* Увеличиваем тень */
+        opacity: 1;
+    }
+
+/* Стиль для иконки карандаша */
+.edit-fab-icon {
+    display: inline-block;
+    text-align: center;
+    /* Вместо '+', используйте класс иконки карандаша от Font Awesome */
+}
+
+    /* Если используете Font Awesome, добавьте соответствующий класс здесь */
+    .edit-fab-icon::before {
+        /* Пример: content: '\f040';  - это Unicode для карандаша в Font Awesome */
+    }
+
+
+.edit-fab-button .fa-pencil-alt {
+    font-size: 24px; /* Изменение размера иконки */
+    color: #555; /* Цвет иконки */
+}
+
+
+.tooltip {
+    visibility: hidden;
+    width: 105px;
+    background-color: black;
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    bottom: 100%; /* Позиционирование над кнопкой */
+    left: 50%;
+    margin-bottom:10px;
+    transform: translateX(-50%); /* Центрируем подсказку относительно кнопки */
+
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+    /* Стиль для стрелки подсказки */
+    .tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: black transparent transparent transparent;
+    }
+
+/* Отображение подсказки при наведении */
+.edit-fab-button:hover .tooltip {
+    visibility: visible;
+    opacity: 1;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+.modal {
+    font-family: Arial, sans-serif;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    animation: fadeInModal 0.5s ease-out;
+    z-index:9999;
+}
+
+
+.modal-dialog {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    max-width: none; /* Уберите ограничение максимальной ширины */
+    width: 70%; /* Установим ширину модального окна как 70% от ширины родительского элемента */
+    height: 85%; /* Установим высоту модального окна как 85% от высоты родительского элемента */
+    pointer-events: auto;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.3s ease-out;
+    z-index: 9999;
+}
+
+.add-record-modal-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    pointer-events: auto;
+}
+
+@keyframes fadeInModal {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fadeInModalAnimation {
+    animation-name: fadeInModal;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+    animation-timing-function: cubic-bezier(0.42, 0, 0.58, 1); /* Пример кривой Безье */
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    padding: 0.75rem 1.5rem; /* Увеличен padding */
+    pointer-events: auto;
+}
+
+.modal-title {
+    margin: 0;
+    font-size: 1.5rem; /* Увеличен размер шрифта */
+    font-weight: bold;
+    color: #495057;
+    pointer-events: auto;
+}
+
+.modal-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 1.5rem;
+    pointer-events: auto;
+}
+
+#content {
+    flex-grow: 1;
+    overflow-y: auto;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    pointer-events: auto;
+    padding: 0.75rem;
+    min-height: 100px; /* Минимальная высота */
+}
+
+.modal-footer {
+    pointer-events: auto;
+}

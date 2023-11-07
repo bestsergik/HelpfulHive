@@ -82,31 +82,51 @@
 
 .search-area {
     display: flex;
-    align-items: center;
+    flex-direction: column; /* Добавлено для вертикального выравнивания */
+    align-items: flex-start; /* Изменено для выравнивания элементов влево */
     gap: 15px;
+   
 }
+
+.checkbox-area label {
+    font-size: 12px; /* или другой размер, который вам нравится */
+    margin-left: 5px; /* добавляет пространство между текстом и чекбоксом */
+
+}
+
+.checkbox-area {
+    display: flex;
+    align-items: center; /* Выравнивание по центру по вертикали */
+}
+
+
 
     .search-area input[type="text"] {
         padding: 10px;
         border: 1px solid #ccc;
         border-radius: 4px;
-        width: 300px;
+        width: 400px;
         outline: none;
         transition: border-color 0.3s;
+
     }
 
         .search-area input[type="text"]:focus {
             border-color: #007bff;
         }
 
-    .search-area input[type="checkbox"] {
-        margin-right: 5px;
-    }
+.search-area input[type="checkbox"] {
+    width: 16px; /* или другой размер, который вам нравится */
+    height: 16px; /* или другой размер, который вам нравится */
+    margin-right: 10px; /* добавляет пространство между чекбоксом и текстом */
+   
+}
 
 .actions-area {
     display: flex;
     flex-direction: column;
     gap: 10px;
+    align-items: center; /* Выравнивание по центру по вертикали */
 }
 
 .popular-record-list {

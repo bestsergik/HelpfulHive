@@ -1,6 +1,7 @@
 ﻿using HelpfulHive.Models;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace HelpfulHive.Services
 {
     public class RecordService
@@ -19,11 +20,9 @@ namespace HelpfulHive.Services
             {
                 context.Records.Add(newRecord);
                 await context.SaveChangesAsync();
-                Console.WriteLine("Record added successfully");
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error adding record: " + ex.ToString());
             }
         }
         public async Task<List<RecordModel>> GetRecordsBySubTabUriAsync(string subTabUri)
@@ -36,25 +35,74 @@ namespace HelpfulHive.Services
                 .ToListAsync();
         }
 
-
         public async Task UpdateRecordAsync(RecordModel updatedRecord)
         {
-            await Console.Out.WriteLineAsync("вкладка изменнена на " + "----------" + updatedRecord.SubTabId);     
-            await Console.Out.WriteLineAsync("название записи изменнено на " + "----------" + updatedRecord.Title);
 
             using var context = _contextFactory.CreateDbContext();
-            context.Entry(updatedRecord).State = EntityState.Modified;
 
             context.Records.Update(updatedRecord);
+            context.Entry(updatedRecord).State = EntityState.Modified;
+
             await context.SaveChangesAsync();
         }
 
         public async Task DeleteRecordAsync(RecordModel recordToDelete)
         {
             using var context = _contextFactory.CreateDbContext();
-            context.Records.Remove(recordToDelete);
-            await context.SaveChangesAsync();
+
+            var existingRecord = await context.Records
+                                              .Include(r => r.Content)
+                                              .FirstOrDefaultAsync(r => r.Id == recordToDelete.Id);
+
+            if (existingRecord != null)
+            {
+                try
+                {
+                    if (existingRecord.Content != null && existingRecord.Content.ImageUrls != null)
+                    {
+                        foreach (var imageUrl in existingRecord.Content.ImageUrls)
+                        {
+                            await DeleteImageFileAsync(imageUrl);
+                        }
+                    }
+
+                    context.RecordsContent.Remove(existingRecord.Content);
+                    context.Records.Remove(existingRecord);
+                    await context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException ex)
+                {
+                    // Логирование исключения
+                    // Дополнительная логика обработки исключения
+                    throw;
+                }
+            }
         }
+
+        private async Task DeleteImageFileAsync(string imageUrl)
+        {
+            // Предполагаем, что imageUrl - это относительный путь, например, "content_images/74996892-6428-4824-b553-bde3bb20653a.png"
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imageUrl);
+
+            if (File.Exists(filePath))
+            {
+                try
+                {
+                    File.Delete(filePath);
+                }
+                catch (Exception ex)
+                {
+                    // Логирование ошибки
+                }
+            }
+            else
+            {
+                // Логирование: Файл не найден
+            }
+
+            await Task.CompletedTask;
+        }
+
 
 
         public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string userId)
@@ -124,7 +172,7 @@ namespace HelpfulHive.Services
                 .Select(up => up.Record)
                 .ToListAsync();
         }
+
+ 
     }
-
-
 }
