@@ -12,52 +12,54 @@
 
 
 
-@foreach (var tab in TabVM.Tabs)
-{
-    <div class="nav-item px-3" @onclick:preventDefault="true" @onclick="() => SelectTab(tab)">
-        <NavLink class="@GetNavLinkClass(tab)" href="@tab.Uri">
-            <span class="oi oi-list-rich" aria-hidden="true"></span> @tab.Name
-        </NavLink>
-        @if (tab.SubTabs != null && tab.SubTabs.Any())
-        {
-            <div class="sub-tabs">
-                @foreach (var subTab in tab.SubTabs)
-                {
-                    <div @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                        <NavLink class="@GetNavLinkClass(subTab)" href="@subTab.Uri" @onclick="() => SelectSubTab(subTab)">
-                            @subTab.Name
-                        </NavLink>
-                    </div>
-                }
-            </div>
-        }
+<div class="tab-button-container">
+    <div class="tab-button @GetModernTabClass(TabType.Personal)" @onclick="() => LoadTabs(TabType.Personal)">
+        Личные
     </div>
-}
+    <div class="tab-button @GetModernTabClass(TabType.Common)" @onclick="() => LoadTabs(TabType.Common)">
+        Общие
+    </div>
+</div>
+
+<br>
+<div class="modern-tab-content">
+    @foreach (var tab in TabVM.Tabs)
+    {
+
+        <div class="modern-tab-item" @onclick:preventDefault="true" style="@GetTabStyle(tab)" @onclick="() => SelectTab(tab)">
+            <NavLink style="color: antiquewhite; font-size: 20px; font-family: 'NavMenuParentLinkFont';" class="@GetModernNavLinkClass(tab)" href="@tab.Uri">
+                @TruncateString(tab.Name, 30)
+            </NavLink>
+
+            @if (tab.SubTabs != null && tab.SubTabs.Any())
+            {
+                <div class="modern-sub-tabs" >
+                    @foreach (var subTab in tab.SubTabs)
+                    {
+                        <div @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@GetSubTabStyle(subTab)" >
+                            <NavLink  style="color: antiquewhite; font-size: 18px; font-family: 'NavMenuChildtLinkFont';" class="@GetModernNavLinkClass(subTab)" href="@subTab.Uri" @onclick="() => SelectSubTab(subTab)">
+                                @TruncateString(subTab.Name, 30)
+                            </NavLink>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
 
 <div class="content-area">
-
     <div class="dynamic-content-area">
         @if (selectedTab != null && tabRecords != null)
         {
             @foreach (var record in tabRecords)
             {
-               <p>@record.Content</p>    
+                <p>@record.Content</p>
             }
         }
     </div>
 </div>
-
-
-<div class="nav-tabs">
-    <div class="@GetTabClass(TabType.Personal)" @onclick="() => LoadTabs(TabType.Personal)">
-        Personal Tabs
-    </div>
-    <div class="@GetTabClass(TabType.Common)" @onclick="() => LoadTabs(TabType.Common)">
-        Common Tabs
-    </div>
-</div>
-
-
 
 
 
@@ -67,16 +69,16 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit Tab</h5>
+                    <h5 class="modal-title">Редактирование вкладки</h5>
                     <button type="button" class="btn-close" @onclick="() => isEditModalOpen = false"></button>
                 </div>
                 <div class="modal-body">
-                    <input @bind="selectedTab.Name" placeholder="Tab Name" class="form-control" />
+                    <input @bind="selectedTab.Name" placeholder="Название вкладки" class="form-control" />
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="() => isEditModalOpen = false">Close</button>
-                    <button type="button" class="btn btn-danger" @onclick="DeleteTab">Delete</button>
-                    <button type="button" class="btn btn-primary" @onclick="SaveTab">Save</button>
+                    <button type="button" class="btn btn-secondary" @onclick="() => isEditModalOpen = false">Закрыть</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteTab">Удалить</button>
+                    <button type="button" class="btn btn-primary" @onclick="SaveTab">Сохранить</button>
                 </div>
             </div>
         </div>
@@ -89,13 +91,13 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Add Tab</h5>
+                    <h5 class="modal-title">Новая вкладка</h5>
                     <button type="button" class="btn-close" @onclick="ToggleAddTabModal"></button>
                 </div>
                 <div class="modal-body">
-                    <input @bind="newTabName" placeholder="Tab Name" class="form-control" />
+                    <input @bind="newTabName" placeholder="Название вкладки" class="form-control" />
                     <select @bind="selectedParentTabId" class="form-control mt-2">
-                        <option value="0">No Parent Tab</option>
+                        <option value="0">Выбрать родительскую вкладку</option>
                         @foreach (var tab in TabVM.Tabs)
                         {
                             <option value="@tab.Id">@tab.Name</option>
@@ -103,8 +105,8 @@
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" @onclick="ToggleAddTabModal">Close</button>
-                    <button type="button" class="btn btn-primary" @onclick="AddTab">Add</button>
+                    <button type="button" class="btn btn-secondary" @onclick="ToggleAddTabModal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" @onclick="AddTab">Добавить вкладку</button>
                 </div>
             </div>
         </div>
@@ -131,6 +133,17 @@
 }
 
 
+
+@if (!string.IsNullOrWhiteSpace(errorMessage))
+{
+    <div class="error-message">
+        @errorMessage
+        <button class="error-close-button" @onclick="() => errorMessage = string.Empty">Закрыть</button>
+    </div>
+}
+
+
+
 @code {
     private bool isAddTabModalOpen = false;
     private string newTabName = "";
@@ -142,11 +155,38 @@
     [Parameter]
     public EventCallback<TabItem> OnTabSelected { get; set; }
     private TabType activeTab = TabType.Personal;
+    private string errorMessage = string.Empty;
 
 
+
+
+
+
+
+
+    private int? selectedTabId = null;
+    private int? selectedSubTabId = null;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private TabItem? currentlySelectedTab = null;
 
   
-
 
     private async Task<bool> IsUserInRole(string role)
     {
@@ -157,8 +197,19 @@
     }
 
 
+    private string TruncateString(string input, int length)
+    {
+        if (string.IsNullOrEmpty(input) || input.Length <= length)
+        {
+            return input;
+        }
 
-    private string GetTabClass(TabType tabType)
+        return input.Substring(0, length) + "...";
+    }
+
+
+
+    private string GetModernTabClass(TabType tabType)
     {
         return activeTab == tabType ? "active" : "";
     }
@@ -177,8 +228,11 @@
 
     private async void SelectTab(TabItem tab)
     {
+        selectedTabId = tab.Id;
+
         selectedTab = tab;
         tabRecords = await TabSrv.GetRecordsByTabIdAsync(tab.Id);
+        StateHasChanged(); // Явно вызывает перерисовку компонента
 
     }
 
@@ -189,16 +243,41 @@
 
     private void SelectSubTab(TabItem subTab)
     {
+        selectedSubTabId = subTab.Id;
+
         selectedTab = subTab;  // обновляете выбранную вкладку
         var uri = $"/record-list/{subTab.Uri}";
         NavManager.NavigateTo(uri);
     }
 
+    private string GetTabStyle(TabItem tab)
+    {
+        if (selectedTabId == tab.Id || selectedSubTabId == tab.Id)
+        {
+            return "box-shadow: 0 0 10px #8fd3f4, 0 0 15px #8fd3f4;"; // Стиль для выбранной вкладки
+        }
+        return "";
+    }
 
-    private string GetNavLinkClass(TabItem tab)
+
+    private string GetSubTabStyle(TabItem subTab)
+    {
+        if (selectedSubTabId == subTab.Id)
+        {
+            return "box-shadow: 0 0 10px #8fd3f4, 0 0 15px #8fd3f4;"; // Стиль для выбранной подвкладки
+        }
+        return "";
+    }
+
+
+
+
+    private string GetModernNavLinkClass(TabItem tab)
     {
         return selectedTab == tab ? "nav-link active" : "nav-link";
     }
+
+  
 
     private void OnSubTabClick(TabItem subTab)
     {
@@ -212,6 +291,15 @@
 
     private async void SaveTab()
     {
+        errorMessage = string.Empty;
+
+        // Проверка на пустое название вкладки
+        if (string.IsNullOrWhiteSpace(selectedTab.Name))
+        {
+            errorMessage = "Название вкладки не может быть пустым";
+            return;
+        }
+
         await TabVM.UpdateTab(selectedTab); // вызываете метод обновления из ViewModel
         isEditModalOpen = false; // Закрываете модальное окно после сохранения
         StateHasChanged(); // Перерисовываете компонент
@@ -243,19 +331,31 @@
 
     private async void AddTab()
     {
+        // Очистка предыдущего сообщения об ошибке
+        errorMessage = string.Empty;
+
+        // Проверка на пустое название вкладки
+        if (string.IsNullOrWhiteSpace(newTabName))
+        {
+            errorMessage = "Название вкладки не может быть пустым";
+            return;
+        }
+
+        // Далее идет логика добавления вкладки, как у вас уже было реализовано
         var parentTab = (selectedParentTabId == 0) ? null : TabVM.Tabs.FirstOrDefault(t => t.Id == selectedParentTabId);
         var newTab = new TabItem
             {
                 Name = newTabName,
                 Uri = $"/{newTabName.Replace(" ", "")}",
-                TabType = activeTab,  // передаём тип вкладки
-                UserId = (activeTab == TabType.Personal) ? TabVM.UserId : null  // для личных вкладок передаём userId, для общих - null
+                TabType = activeTab,
+                UserId = (activeTab == TabType.Personal) ? TabVM.UserId : null
             };
         await TabVM.AddTab(newTab, parentTab);
         newTabName = "";
         selectedParentTabId = 0;
         ToggleAddTabModal();
     }
+
 
 
     public void Dispose()

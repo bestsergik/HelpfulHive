@@ -85,7 +85,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
             var user = await _userAdapter.FindByIdAsync(userId);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{userId}'.");
+                return NotFound($"Ошибка с  '{userId}'.");
             }
 
             LoadAvailableProfileImages();
@@ -102,7 +102,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
             var user = await _userAdapter.FindByIdAsync(userId);
             if (user == null)
             {
-                return NotFound($"Unable to load user with ID '{userId}'.");
+                return NotFound($"Ошибка с '{userId}'.");
             }
 
             if (!ModelState.IsValid)
@@ -118,7 +118,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
                 var updateResult = await _userAdapter.UpdateAsync(user);
                 if (!updateResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set username.";
+                    StatusMessage = "Ошибка";
                     return RedirectToPage();
                 }
             }
@@ -130,7 +130,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
                 var updateResult = await _userAdapter.UpdateAsync(user);
                 if (!updateResult.Succeeded)
                 {
-                    StatusMessage = "Unexpected error when trying to set profile image.";
+                    StatusMessage = "Ошибка";
                     return RedirectToPage();
                 }
             }
@@ -138,7 +138,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
             // Логирование успешного обновления
 
             await _signInManager.RefreshSignInAsync(await _userAdapter.FindByIdAsync(user.Id));
-            StatusMessage = "Your profile has been updated";
+            StatusMessage = "Данные обновлены";
             return RedirectToPage();
         }
 
@@ -209,7 +209,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
             var identityUser = await _userManager.FindByIdAsync(user.Id);
             if (identityUser == null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+                return IdentityResult.Failed(new IdentityError { Description = "Пользователь не найден" });
             }
 
             identityUser.UserName = user.UserName;
@@ -248,7 +248,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account.Manage
             var identityUser = await _userManager.FindByIdAsync(user.Id);
             if (identityUser == null)
             {
-                return IdentityResult.Failed(new IdentityError { Description = "User not found." });
+                return IdentityResult.Failed(new IdentityError { Description = "Пользователь не найден" });
             }
 
             return await _userManager.SetPhoneNumberAsync(identityUser, phoneNumber);

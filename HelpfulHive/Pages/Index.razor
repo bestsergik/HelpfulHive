@@ -1,14 +1,21 @@
 ﻿@page "/"
-@inject NavigationManager NavManager
+@using HelpfulHive.Services
+@using HelpfulHive.Models
+@using System.Security.Claims
+@inject RecordService rSRV
 @inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavManager
 
 <h3>Main Page</h3>
+
+<RecordList LoadFavorites="true" />
 
 @code {
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-        if (authState?.User?.Identity?.IsAuthenticated == false)
+        var user = authState.User;
+        if (!user.Identity.IsAuthenticated)
         {
             NavManager.NavigateTo("/Identity/Account/Login", forceLoad: true);
         }

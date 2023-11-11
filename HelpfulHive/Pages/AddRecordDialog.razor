@@ -21,11 +21,13 @@
             <div class="add-record-modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Новый шаблон</h5>
+
                 </div>
                 <div class="modal-body">
                     <div class="floating-label floating-label-title">
                         <input @bind="NewRecordTitle" type="text" id="NewRecordTitle" class="floating-label-control" placeholder=" " />
                         <label for="NewRecordTitle">Название шаблона</label>
+
                     </div>
 
                     @if (string.IsNullOrEmpty(NewRecordTitle) && showErrorMessage)

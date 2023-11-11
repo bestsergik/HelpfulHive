@@ -1,3 +1,4 @@
+
 .page {
     display: flex;
     flex-direction: column;
@@ -30,11 +31,7 @@ button {
         background-color: #6a1b9a;
     }
 
-.sidebar {
-    background-image: linear-gradient(180deg, #4527a0 0%, #4a148c 70%);
-    box-shadow: 4px 0px 10px rgba(0, 0, 0, 0.2);
-    flex: 0 0 250px;
-}
+
 
 .top-row {
     background-color: #ffffff;
@@ -187,3 +184,17 @@ button {
         margin: 0;
         font-size: 16px; /* Или другой размер, который вам подходит */
     }
+
+
+
+
+
+
+/* Стиль бокового меню */
+.sidebar {
+    background: var(--primary-gradient);
+    padding: 10px;
+    width:300px;
+    box-shadow: var(--box-shadow);
+    color: var(--secondary-color);
+}

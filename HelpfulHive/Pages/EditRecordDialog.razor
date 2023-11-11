@@ -20,6 +20,7 @@
                         <img class="favorite-icon" src="@(isFavorite ? "/serviceimages/favoritRecord.png" : "/serviceimages/notFavoritRecord.png")" alt="Favorite" />
                     </button>
                     <h5 class="modal-title">Редактировать шаблон</h5>
+
                     <div class="spacer"></div> <!-- Spacer элемент -->
                     @if (ShowDeleteButton())
                     {
@@ -65,8 +66,12 @@
 
                     <div class="floating-label floating-label-content">
                         <div id="content" contenteditable="true" @ref="editorRef" class="floating-label-control editable-content" placeholder=" ">
-                            @((MarkupString)RecordToEdit.Content.Text)
+                            @if (RecordToEdit?.Content != null)
+                            {
+                                @((MarkupString)RecordToEdit.Content.Text)
+                            }
                         </div>
+
                         <label for="content">Текст шаблона</label>
                     </div>
                     @if (ShowSaveButton())
@@ -157,6 +162,8 @@
     [Parameter] public IEnumerable<TabItem> AvailableSubTabs { get; set; } = new List<TabItem>();
 
     private bool showErrorMessage = false;
+
+
 
 
     private RecordContent NewRecordContentObject { get; set; } = new RecordContent();
@@ -349,18 +356,22 @@
 
     private bool ShowDeleteButton()
     {
-        if (RecordToEdit.SubTab.TabType == TabType.Personal)
+        if (RecordToEdit?.SubTab != null)
         {
-            return true;
-        }
+            if (RecordToEdit.SubTab.TabType == TabType.Personal)
+            {
+                return true;
+            }
 
-        if (RecordToEdit.SubTab.TabType == TabType.Common && IsUserInRole("Admin").Result)
-        {
-            return true;
+            if (RecordToEdit.SubTab.TabType == TabType.Common && IsUserInRole("Admin").Result)
+            {
+                return true;
+            }
         }
 
         return false;
     }
+
 
     public bool IsValidBase64String(string s)
     {

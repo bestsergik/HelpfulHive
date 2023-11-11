@@ -67,6 +67,9 @@ else
     [Parameter] public string SelectedSubTabId { get; set; }
     [Parameter]
     public EventCallback<RecordModel> OnRecordAddedFromNavMenu { get; set; }
+   // private List<RecordModel> FavoriteRecords { get; set; }
+
+    [Parameter] public bool LoadFavorites { get; set; } = false;
 
     private ScriptBuilder scriptBuilder;
 
@@ -76,8 +79,8 @@ else
 
     private string searchQuery = string.Empty;
 
-    private List<RecordModel> PopularRecords { get; set; }
 
+    private List<RecordModel> PopularRecords { get; set; }
 
     private async Task SearchRecords()
     {
@@ -101,9 +104,6 @@ else
                 return folderName;
             }
         }
-
-        // Если изображение не найдено во всех папках, можно вернуть значение по умолчанию, например, пустую строку
-        // или выбросить исключение, в зависимости от того, что лучше подходит для вашего проекта.
         return string.Empty;
     }
 
@@ -112,8 +112,34 @@ else
     protected override async Task OnInitializedAsync()
     {
         await LoadPopularRecords();
+
+        if (LoadFavorites)
+        {
+            await LoadFavoriteRecords();
+        }
     }
 
+    private async Task LoadFavoriteRecords()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId != null)
+        {
+            Records = await RecordSV.GetFavoriteRecordsByUserAsync(userId);
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadRecordsFromSubTab()
+    {
+        if (!string.IsNullOrWhiteSpace(SelectedSubTabId))
+        {
+            Records = await RecordSV.GetRecordsBySubTabUriAsync(SelectedSubTabId);
+            StateHasChanged();
+        }
+    }
 
     private async Task LoadPopularRecords()
     {
@@ -167,28 +193,28 @@ else
 
     private async Task HandleSingleClick(RecordModel record)
     {
-        if (record != null && Records.Contains(record))
+        if (record != null && Records.Contains(record) && record.Content != null)
         {
-        Console.WriteLine("203980384701934780192745-1293875-128375-1280375-128375-2018735-128375");
-        await RecordVM.HandleClick(record);
-        string recordText = record.Content.Text;
-        await scriptBuilder.BuildScriptAsync(recordText);
+            await RecordVM.HandleClick(record);
+            string recordText = record.Content.Text ?? ""; // Используйте пустую строку, если Text null
+            await scriptBuilder.BuildScriptAsync(recordText);
         }
     }
+
 
     private void HandleInput(ChangeEventArgs e)
     {
         searchQuery = e.Value.ToString();
-        StateHasChanged();
         SearchRecords();
     }
 
-
     protected override async Task OnParametersSetAsync()
     {
-        await LoadRecords(SelectedSubTabId);
+        if (!LoadFavorites && !string.IsNullOrEmpty(SelectedSubTabId))
+        {
+            await LoadRecords(SelectedSubTabId);
+        }
     }
-
     private async Task LoadRecords(string subTabUri)
     {
         Records = await RecordSV.GetRecordsBySubTabUriAsync(subTabUri);

@@ -1,8 +1,7 @@
 ﻿@using HelpfulHive.Models;
 
 @if (IsVisible)
-
-{<div class="add-record-modal" tabindex="-1">
+{
     <div class="modal" tabindex="-1" style="display:block!important;">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -27,8 +26,6 @@
             </div>
         </div>
     </div>
-    </div>
-}
 }
 
 @code {
@@ -43,11 +40,15 @@
     private async Task Confirm()
     {
         await OnConfirm.InvokeAsync((newTab, selectedParentTabId));
-        newTab = new TabItem();
-        selectedParentTabId = "";
-        await IsVisibleChanged.InvokeAsync(false);
+        ClearModal();
     }
 
+    private void ClearModal()
+    {
+        newTab = new TabItem();
+        selectedParentTabId = "";
+        IsVisible = false;
+    }
     private async Task Cancel()
     {
         newTab = new TabItem();

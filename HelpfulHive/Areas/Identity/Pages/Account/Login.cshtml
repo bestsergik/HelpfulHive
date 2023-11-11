@@ -16,14 +16,14 @@
             <form id="account" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.EmailOrUsername" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
-                    <label asp-for="Input.EmailOrUsername" class="form-label">Username</label>
+                    <input asp-for="Input.EmailOrUsername" class="form-control" autocomplete="username" aria-required="true" placeholder="Почта или логин" />
+                    <label asp-for="Input.EmailOrUsername" class="form-label">Почта или логин</label>
                     <span asp-validation-for="Input.EmailOrUsername" class="text-danger"></span>
                 </div>
 
                 <div class="form-floating mb-3">
-                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
-                    <label asp-for="Input.Password" class="form-label">Password</label>
+                    <input asp-for="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="Пароль" />
+                    <label asp-for="Input.Password" class="form-label">Пароль</label>
                     <span asp-validation-for="Input.Password" class="text-danger"></span>
                 </div>
                 @*     <div class="checkbox mb-3">

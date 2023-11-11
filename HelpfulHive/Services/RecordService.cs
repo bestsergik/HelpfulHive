@@ -103,6 +103,20 @@ namespace HelpfulHive.Services
             await Task.CompletedTask;
         }
 
+        public async Task<List<RecordModel>> GetFavoriteRecordsByUserAsync(string userId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var records = await context.UserPreferences
+                   .Where(up => up.UserId == userId && up.IsFavorite)
+                   .Include(up => up.Record)
+                   .Select(up => up.Record)
+                   .ToListAsync();
+            await Console.Out.WriteLineAsync("----------------------Найдено {Count} избранных записей" + records.Count);
+            return records;
+
+        }
+
+
 
 
         public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string userId)

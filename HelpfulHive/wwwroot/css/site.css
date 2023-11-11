@@ -1,7 +1,38 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
+@font-face {
+    font-family: 'NavMenuParentLinkFont';
+    src: url('/css/open-iconic/font/fonts/Marmelad.ttf');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'NavMenuChildtLinkFont';
+    src: url('/css/open-iconic/font/fonts/Futura.ttf') format('ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #47708b, #41908d);
+    --secondary-color: #f7f7fe;
+    --hover-color: #a394b7;
+    --highlight-color: #ffc107; /* яркий цвет дл€ акцентов */
+    --text-color: red;
+    --box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.global-navlink-style {
+    color: red; /* ”кажите желаемый цвет */
+}
+
+
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'NavMenuChildtLinkFont', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 h1:focus {
