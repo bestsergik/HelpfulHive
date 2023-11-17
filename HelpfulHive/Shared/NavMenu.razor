@@ -28,7 +28,7 @@
 
         <div class="modern-tab-item" @onclick:preventDefault="true" style="@GetTabStyle(tab)" @onclick="() => SelectTab(tab)">
             <NavLink style="color: antiquewhite; font-size: 20px; font-family: 'NavMenuParentLinkFont';" class="@GetModernNavLinkClass(tab)" href="@tab.Uri">
-                @TruncateString(tab.Name, 30)
+                @TruncateString(tab.Name, 36)
             </NavLink>
 
             @if (tab.SubTabs != null && tab.SubTabs.Any())
@@ -38,7 +38,7 @@
                     {
                         <div @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@GetSubTabStyle(subTab)" >
                             <NavLink  style="color: antiquewhite; font-size: 18px; font-family: 'NavMenuChildtLinkFont';" class="@GetModernNavLinkClass(subTab)" href="@subTab.Uri" @onclick="() => SelectSubTab(subTab)">
-                                @TruncateString(subTab.Name, 30)
+                                @TruncateString(subTab.Name, 40)
                             </NavLink>
                         </div>
                     }
@@ -69,7 +69,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Редактирование вкладки</h5>
+                    <h5 class="modal-title">Редактировать вкладки</h5>
                     <button type="button" class="btn-close" @onclick="() => isEditModalOpen = false"></button>
                 </div>
                 <div class="modal-body">
@@ -156,37 +156,9 @@
     public EventCallback<TabItem> OnTabSelected { get; set; }
     private TabType activeTab = TabType.Personal;
     private string errorMessage = string.Empty;
-
-
-
-
-
-
-
-
     private int? selectedTabId = null;
     private int? selectedSubTabId = null;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     private TabItem? currentlySelectedTab = null;
-
-  
 
     private async Task<bool> IsUserInRole(string role)
     {
@@ -197,6 +169,8 @@
     }
 
 
+
+
     private string TruncateString(string input, int length)
     {
         if (string.IsNullOrEmpty(input) || input.Length <= length)
@@ -204,10 +178,8 @@
             return input;
         }
 
-        return input.Substring(0, length) + "...";
+        return input.Substring(0, length) + "..";
     }
-
-
 
     private string GetModernTabClass(TabType tabType)
     {
@@ -277,7 +249,7 @@
         return selectedTab == tab ? "nav-link active" : "nav-link";
     }
 
-  
+
 
     private void OnSubTabClick(TabItem subTab)
     {
@@ -305,19 +277,33 @@
         StateHasChanged(); // Перерисовываете компонент
     }
 
-    private async void DeleteTab()
+
+
+private async void DeleteTab()
+{
+    errorMessage = string.Empty;
+
+    bool isDeleted = await TabVM.DeleteTab(selectedTab);
+
+    if (isDeleted)
     {
-        if (await TabVM.DeleteTab(selectedTab)) // вызываете метод удаления из ViewModel
+        selectedTab = null;
+        isEditModalOpen = false;
+        StateHasChanged();
+    }
+    else
+    {
+        if (selectedTab.SubTabs != null && selectedTab.SubTabs.Any())
         {
-            selectedTab = null; // Сбрасываете выбранную вкладку после удаления
-            isEditModalOpen = false; // Закрываете модальное окно после удаления
-            StateHasChanged(); // Перерисовываете компонент
+            errorMessage = "Не удалось удалить вкладку, так как она содержит подвкладки";
         }
         else
         {
-            // Показываете сообщение пользователю, что удаление невозможно (если это необходимо)
+            errorMessage = "Не удалось удалить вкладку, так как она содержит записи";
         }
     }
+}
+
 
     private void UpdateUI()
     {

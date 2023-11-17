@@ -65,7 +65,7 @@
                         <!-- Добавьте дополнительные кнопки и функции для других команд форматирования -->
                     </div>
                     <div class="floating-label floating-label-content">
-                        <div id="content" contenteditable="true" @ref="editorRef" class="floating-label-control editable-content" placeholder=" " @onpaste="HandlePaste"></div>
+                        <div id="content" contenteditable="true" @ref="editorRef" class="floating-label-control editable-content" placeholder=" " @onpaste="HandlePaste" @onpaste:preventDefault></div>
                         <label for="content">Текст шаблона</label>
                     </div>
 
@@ -155,6 +155,9 @@
 
 
 
+
+
+
     private void HandleImageSelected(string selectedImagePath)
     {
         SelectedImage = selectedImagePath; // Обновите переменную с выбранным путем изображения
@@ -211,14 +214,18 @@
 
     private async Task HandlePaste(Microsoft.AspNetCore.Components.Web.ClipboardEventArgs e)
     {
+    
         await JSRuntime.InvokeVoidAsync("insertImageFromClipboard", editorRef, e);
     }
+
+
 
 
     private async Task UpdateContentText()
     {
         var text = await JSRuntime.InvokeAsync<string>("getContentText", editorRef);
         NewRecordContentObject.Text = text;
+    
     }
 
 
@@ -282,7 +289,7 @@
             StateHasChanged();
             return;
         }
-
+      
         var imagePath = "content_images";
 
         var contentText = NewRecordContentObject.Text;

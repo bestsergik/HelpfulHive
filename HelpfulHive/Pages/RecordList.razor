@@ -9,6 +9,9 @@
 @inject IJSRuntime JSRuntime
 @inject UserPreferencesService upVM
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Text
+@using System.Text.RegularExpressions;
+
 
 
 <div class="search-and-actions">
@@ -59,7 +62,12 @@ else
     <p><h5>Здесь пока пусто..</h5></p>
 }
 
-<EditRecordDialog IsVisible="@isEditDialogVisible" RecordToEdit="@selectedRecord" OnEditDialogClosed="@ReloadRecords" AvailableSubTabs="@GetAllSubTabs()" />
+<EditRecordDialog IsVisible="@isEditDialogVisible"
+                  RecordToEdit="@selectedRecord"
+                  OnEditDialogClosed="@CloseEditDialog"
+                  AvailableSubTabs="@GetAllSubTabs()"
+                  OnRecordDeleted="OnRecordDeleted" />
+
 <AddRecordDialog OnRecordAdded="HandleNewRecordAdded" AvailableSubTabs="@GetAllSubTabs()"  />
 
 @code {
@@ -67,9 +75,16 @@ else
     [Parameter] public string SelectedSubTabId { get; set; }
     [Parameter]
     public EventCallback<RecordModel> OnRecordAddedFromNavMenu { get; set; }
-   // private List<RecordModel> FavoriteRecords { get; set; }
+    // private List<RecordModel> FavoriteRecords { get; set; }
 
     [Parameter] public bool LoadFavorites { get; set; } = false;
+
+    private async Task OnRecordDeleted(RecordModel deletedRecord)
+    {
+        Records.Remove(deletedRecord);
+        await ReloadRecords(); // Обновляем список записей
+        StateHasChanged();
+    }
 
     private ScriptBuilder scriptBuilder;
 
@@ -84,10 +99,16 @@ else
 
     private async Task SearchRecords()
     {
-
-        Records = await RecordVM.SearchRecordsAsync(searchQuery, isSearchAll);
+        Records = await RecordVM.SearchRecordsAsync(searchQuery, isSearchAll, SelectedSubTabId);
         StateHasChanged();
     }
+
+    private void CloseEditDialog()
+    {
+        isEditDialogVisible = false;
+        StateHasChanged(); // Чтобы убедиться, что состояние компонента обновлено
+    }
+
 
     private string FindFolderForImage(string imageName)
     {
@@ -154,6 +175,12 @@ else
         }
     }
 
+    private bool ContainsKeyWords(string text)
+    {
+        var keyWords = new List<string> { "{NUMERIC}", "select", "SELECT", "{NUMERIC_VARCHAR}", "{SPECIFIC_VARCHAR}", "comma" };
+        return keyWords.Any(keyword => text.Contains(keyword));
+    }
+
 
     protected override void OnInitialized()
     {
@@ -164,41 +191,66 @@ else
     {
         if (record != null && Records.Contains(record))
         {
-            await RecordVM.HandleClick(record);
-            string recordText = record.Content.Text;  // Доступ к тексту
-            await scriptBuilder.BuildScriptAsync(recordText);  // Используйте текст для построения скрипта
+            if (ContainsKeyWords(record.Content.Text ?? ""))
+            {
+                await scriptBuilder.BuildScriptAsync(record.Content.Text);
+            }
+            else
+            {
+                var htmlContent = ConvertRelativeUrlsToAbsolute(record.Content.Text);
+                await JSRuntime.InvokeVoidAsync("copyHtmlToClipboard", htmlContent);
+            }
         }
     }
 
-    private bool isDoubleClick = false;
-    private const int ClickDelay = 300; // Задержка в миллисекундах
 
-    private async Task OnSingleClick(RecordModel record)
+    private string ConvertRelativeUrlsToAbsolute(string html)
     {
-        await Task.Delay(ClickDelay);
-        if (!isDoubleClick && record != null && Records.Contains(record))
+        var baseUrl = "https://localhost:7058/";
+        // Регулярное выражение для поиска относительных URL
+        var regex = new Regex("src=\"(.*?)\"");
+        var matches = regex.Matches(html);
+
+        foreach (Match match in matches)
         {
-            // Обработка одинарного клика
-            await HandleSingleClick(record);
+            var relativeUrl = match.Groups[1].Value;
+            if (!relativeUrl.StartsWith("http"))
+            {
+                var absoluteUrl = baseUrl + relativeUrl.TrimStart('/');
+                html = html.Replace(relativeUrl, absoluteUrl);
+            }
         }
-        isDoubleClick = false;
+
+        return html;
+    }
+
+
+
+
+    //private async Task CopyContentToClipboard(RecordModel record)
+    //{
+    //    if (record != null)
+    //    {
+    //        Console.WriteLine("Copying content: " + record.Content.Text);
+    //        await JSRuntime.InvokeVoidAsync("copyHtmlToClipboard", record.Content.Text);
+    //    }
+    //    else
+    //    {
+    //        Console.WriteLine("No record to copy");
+    //    }
+    //}
+
+
+
+
+    private void OnSingleClick(RecordModel record)
+    {
+        HandleClick(record);
     }
 
     private void OnDoubleClick(RecordModel record)
     {
-        isDoubleClick = true;
-        // Обработка двойного клика
         EditRecord(record);
-    }
-
-    private async Task HandleSingleClick(RecordModel record)
-    {
-        if (record != null && Records.Contains(record) && record.Content != null)
-        {
-            await RecordVM.HandleClick(record);
-            string recordText = record.Content.Text ?? ""; // Используйте пустую строку, если Text null
-            await scriptBuilder.BuildScriptAsync(recordText);
-        }
     }
 
 
@@ -237,10 +289,24 @@ else
         StateHasChanged();
     }
 
+    //private async Task ReloadRecords()
+    //{
+    //    isEditDialogVisible = false; // Close the edit dialog
+    //    await LoadRecords(SelectedSubTabId); // Wait for records to load
+    //    StateHasChanged(); // Update the UI
+    //}
+
+
     private async Task ReloadRecords()
     {
-        isEditDialogVisible = false; // Close the edit dialog
-        await LoadRecords(SelectedSubTabId); // Wait for records to load
+        if (LoadFavorites)
+        {
+            await LoadFavoriteRecords();
+        }
+        else if (!string.IsNullOrWhiteSpace(SelectedSubTabId))
+        {
+            await LoadRecordsFromSubTab();
+        }
         StateHasChanged(); // Update the UI
     }
 }

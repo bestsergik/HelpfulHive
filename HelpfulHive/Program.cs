@@ -29,6 +29,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 // В Program.cs или Startup.cs
 builder.Services.AddScoped<IApplicationUserAdapter, ApplicationUserAdapter>();
 
+
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<UserPreferencesService>();
 builder.Services.AddTransient<UserPreferencesViewModel>();
@@ -42,6 +44,23 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Identity/Account/Login";
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
     options.LogoutPath = "/Identity/Account/Logout";
+});
+
+builder.Services.AddSignalR(hubOptions => {
+    // Установка интервала поддержания активного соединения
+    hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(2);
+
+    // Увеличение максимального размера принимаемого сообщения до 10 МБ
+    hubOptions.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
+
+    // Включение подробных ошибок для упрощения процесса отладки (в продакшене следует отключить)
+    hubOptions.EnableDetailedErrors = true;
+
+    // Установка тайм-аута для клиента
+    hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(1);
+
+    // Установка тайм-аута для рукопожатия
+    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(30);
 });
 
 var app = builder.Build();

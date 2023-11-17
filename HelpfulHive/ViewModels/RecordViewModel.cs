@@ -57,10 +57,10 @@ namespace HelpfulHive.ViewModels
             await UpdateRecordAsync(record);
             OnRecordChanged?.Invoke();
         }
-        public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll)
-        {
-            return await _recordService.SearchRecordsAsync(query, isSearchAll, UserId);
-        }
+      public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string selectedSubTabId)
+    {
+        return await _recordService.SearchRecordsAsync(query, isSearchAll, UserId, selectedSubTabId);
+    }
 
 
 

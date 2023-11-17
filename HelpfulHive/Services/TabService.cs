@@ -108,8 +108,20 @@ namespace HelpfulHive.Services
 
         public bool CanDeleteTab(TabItem tab)
         {
-            return !_dbContext.Tabs.Any(t => t.ParentTabId == tab.Id);
+            // Проверка наличия дочерних вкладок
+            var hasChildTabs = _dbContext.Tabs.Any(t => t.ParentTabId == tab.Id);
+
+            // Проверка наличия записей в этой вкладке
+            var hasRecords = _dbContext.Records.Any(r => r.SubTabId == tab.Id);
+
+            // Вкладку можно удалять только если нет дочерних вкладок и записей
+            return !hasChildTabs && !hasRecords;
         }
+
+
+    
+
+
 
     }
 

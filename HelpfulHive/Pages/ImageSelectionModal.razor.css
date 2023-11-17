@@ -206,14 +206,15 @@
 }
 
 .selected-image {
-    max-width: 300px; /* Увеличены максимальные размеры */
-    max-height: 300px; /* Увеличены максимальные размеры */
+    max-width: 96px; /* Увеличены максимальные размеры */
+    max-height:96px; /* Увеличены максимальные размеры */
+    min-width: 96px; /* Увеличены максимальные размеры */
+    min-height:96px; /* Увеличены максимальные размеры */
     border: 3px solid #ced4da; /* Увеличена толщина границы */
     border-radius: 12px; /* Увеличено скругление */
     display: block;
     margin: 0 auto;
-    padding:10px;
-   
+    padding: 10px;
 }
 
 

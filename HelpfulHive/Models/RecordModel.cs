@@ -6,11 +6,10 @@ namespace HelpfulHive.Models
     {
         public int Id { get; set; }
         public string Title { get; set; }
-        public int ContentId { get; set; } // Внешний ключ для связи с RecordContent
-        public RecordContent Content { get; set; } // Навигационное свойство
+        public int ContentId { get; set; }
+        public RecordContent Content { get; set; } 
         public int SubTabId { get; set; }
         public TabItem SubTab { get; set; }
         public string ImagePath { get; set; }
-
     }
 }

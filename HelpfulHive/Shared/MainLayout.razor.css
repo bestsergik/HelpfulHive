@@ -189,12 +189,29 @@ button {
 
 
 
-
-/* —тиль бокового меню */
 .sidebar {
     background: var(--primary-gradient);
     padding: 10px;
-    width:300px;
+    width: 300px;
     box-shadow: var(--box-shadow);
     color: var(--secondary-color);
+    overflow-y: auto; /* Ёто позволит прокрутку по вертикали при необходимости */
+    max-height: 100vh; /* ћаксимальна€ высота элемента будет равна высоте области просмотра */
 }
+
+
+    .sidebar::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }

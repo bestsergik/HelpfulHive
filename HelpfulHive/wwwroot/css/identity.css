@@ -133,4 +133,9 @@
 .profile-image-selector {
     position: relative; /* или 'absolute', 'fixed', 'sticky' в зависимости от желаемого эффекта */
     z-index: 1000; /* Убедитесь, что это значение выше, чем у других элементов на странице */
+    min-height:400px;
+    
 }
+
+
+

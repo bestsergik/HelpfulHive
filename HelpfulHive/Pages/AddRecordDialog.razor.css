@@ -388,6 +388,13 @@ btn btn-secondary
     position: relative;
 }
 
+.editable-content img {
+    max-width: 100%;
+    max-height: 400px; /* или другое значение, подходящее для вашего дизайна */
+    height: auto;
+    display: block;
+    object-fit: contain; /* Этот стиль гарантирует, что изображение будет полностью видно */
+}
 
 /* Стили для редактируемого контента */
 .editable-content {
@@ -404,11 +411,12 @@ btn btn-secondary
     border: 1px solid #ced4da;
     border-radius: 4px;
     outline: none;
+    width: auto; /* Измените на auto, чтобы не ограничивать ширину */
+    height: auto; /* То же самое для высоты */
     color: black;
     will-change: scroll-position;
     min-height: 60px; /* Минимальная высота */
     color: black !important;
-    height:auto;
 }
 
 
