@@ -101,3 +101,22 @@ function getContentText(element) {
     return element.innerHTML;
 }
 
+
+window.editorFunctions = {
+    handlePaste: function (dotNetReference, editorId) {
+        var editor = document.getElementById(editorId);
+        if (editor) {
+            // Удаляем предыдущий обработчик, если он был добавлен
+            editor.removeEventListener('paste', this.pasteHandler);
+
+            // Обработчик события вставки
+            this.pasteHandler = async function (event) {
+                var pasteContent = (event.clipboardData || window.clipboardData).getData('text');
+                await dotNetReference.invokeMethodAsync('HandlePaste', editorId, pasteContent);
+            };
+
+            // Добавляем обработчик события вставки
+            editor.addEventListener('paste', this.pasteHandler);
+        }
+    }
+};

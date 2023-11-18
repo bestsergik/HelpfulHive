@@ -8,7 +8,6 @@
 @inject IJSRuntime JSRuntime
 
 
-
 <div class="xml-tabs">
     <!-- Верхние табы для XML документов -->
     <ul class="nav nav-pills mb-3" id="xmlTabList" role="tablist">
@@ -34,17 +33,17 @@
                     @if (tab.IsSplit)
                     {
                         <div class="col-md-6">
-                            <StandaloneCodeEditor @ref="tab.SendEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPasteUniversal(tab.SendEditorRef, tab.SendEditorRef, tab.CheckEditorRef))" />
+                            <StandaloneCodeEditor @ref="tab.SendEditorRef" id="@($"xmlTab{tab.Id}-sendEditor")" ConstructionOptions="EditorConstructionOptions" />
                         </div>
                         <div class="col-md-6">
-                            <StandaloneCodeEditor @ref="tab.CheckEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPasteUniversal(tab.CheckEditorRef, tab.SendEditorRef, tab.CheckEditorRef))" />
+                            <StandaloneCodeEditor @ref="tab.CheckEditorRef" id="@($"xmlTab{tab.Id}-checkEditor")" ConstructionOptions="EditorConstructionOptions" />
                         </div>
 
                     }
                     else
                     {
                         <div class="col-md-12">
-                            <StandaloneCodeEditor @ref="tab.UniversalEditorRef" ConstructionOptions="EditorConstructionOptions" OnKeyUp="@(async () => await FormatXmlOnPasteUniversal(tab.UniversalEditorRef, tab.SendEditorRef, tab.CheckEditorRef))" />
+                            <StandaloneCodeEditor @ref="tab.UniversalEditorRef" id="@($"xmlTab{tab.Id}-universalEditor")" ConstructionOptions="EditorConstructionOptions" />
                         </div>
                     }
                 </div>
@@ -72,6 +71,43 @@
 
             };
     }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // Удаление проверки firstRender
+        foreach (var tab in xmlTabs)
+        {
+            var editorId = tab.IsSplit ? $"xmlTab{tab.Id}-sendEditor" : $"xmlTab{tab.Id}-universalEditor";
+            await JSRuntime.InvokeVoidAsync("editorFunctions.handlePaste", DotNetObjectReference.Create(this), editorId);
+
+            if (tab.IsSplit)
+            {
+                var checkEditorId = $"xmlTab{tab.Id}-checkEditor";
+                await JSRuntime.InvokeVoidAsync("editorFunctions.handlePaste", DotNetObjectReference.Create(this), checkEditorId);
+            }
+        }
+    }
+
+
+
+    [JSInvokable]
+    public async Task HandlePaste(string editorId, string pastedText)
+    {
+        var currentTab = xmlTabs.FirstOrDefault(t => t.IsActive);
+        if (currentTab != null)
+        {
+            if (editorId.EndsWith("-sendEditor") || (!currentTab.IsSplit && editorId.EndsWith("-universalEditor")))
+                await currentTab.SendEditorRef.SetValue(pastedText);
+            else if (editorId.EndsWith("-checkEditor"))
+                await currentTab.CheckEditorRef.SetValue(pastedText);
+
+            // Вызов FormatXmlOnPasteUniversal для дополнительной обработки
+            await FormatXmlOnPasteUniversal(currentTab.UniversalEditorRef, currentTab.SendEditorRef, currentTab.CheckEditorRef);
+        }
+    }
+
+
 
 
 
