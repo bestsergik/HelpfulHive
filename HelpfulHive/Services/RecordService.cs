@@ -143,12 +143,14 @@ namespace HelpfulHive.Services
             records = records.Where(r => r.SubTab.TabType == TabType.Common || (r.SubTab.TabType == TabType.Personal && r.SubTab.UserId == userId));
         }
 
-        if (!string.IsNullOrWhiteSpace(query))
-        {
-            records = records.Where(r => EF.Functions.Like(r.Title, $"%{query}%") || EF.Functions.Like(r.Content.Text, $"%{query}%"));
-        }
+            if (!string.IsNullOrWhiteSpace(query))
+            {
+                // Преобразуйте строку запроса и данные в базе данных в нижний регистр перед сравнением
+                query = query.ToLower(); // Используйте ToUpper() для сравнения в верхнем регистре
+                records = records.Where(r => EF.Functions.Like(r.Title.ToLower(), $"%{query}%") || EF.Functions.Like(r.Content.Text.ToLower(), $"%{query}%"));
+            }
 
-        return await records.ToListAsync();
+            return await records.ToListAsync();
     }
 
         public async Task<List<RecordModel>> GetRecordsByUserAndTabTypeAsync(bool isSearchAll, string userId)

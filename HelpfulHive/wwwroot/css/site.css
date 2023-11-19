@@ -127,7 +127,7 @@ a, .btn-link {
 
 
 .monaco-editor-container {
-    height: 400px;
+    height: 68vh;
     width: 100%;
     border: 1px solid #ddd; /* Добавим границу вокруг редактора */
     border-radius: 4px; /* Сделаем углы немного закругленными */

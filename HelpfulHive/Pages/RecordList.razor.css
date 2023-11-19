@@ -132,16 +132,29 @@
 .popular-record-list {
     display: flex;
     gap: 10px;
+    background-color: transparent; /* Убрать фоновый цвет */
 }
 
 .popular-record-item {
     position: relative;
-    cursor: pointer;
     transition: transform 0.3s;
+    background-color: transparent; /* Убрать фоновый цвет */
+    border: none; /* Убрать границу */
+    cursor: pointer; /* Курсор в виде указателя */
+
+    padding: 0; /* Убрать внутренние отступы */
+    display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
 }
 
     .popular-record-item:hover {
         transform: scale(1.05);
+        position: relative;
+        transition: transform 0.3s;
+        background-color: transparent; /* Убрать фоновый цвет */
+        border: none; /* Убрать границу */
+        cursor: pointer; /* Курсор в виде указателя */
+        padding: 0; /* Убрать внутренние отступы */
+        display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
     }
 
 .record-img {

@@ -109,7 +109,7 @@ window.editorFunctions = {
             // Удаляем предыдущий обработчик, если он был добавлен
             editor.removeEventListener('paste', this.pasteHandler);
 
-            // Обработчик события вставки
+            // Обработчик события вставки5
             this.pasteHandler = async function (event) {
                 var pasteContent = (event.clipboardData || window.clipboardData).getData('text');
                 await dotNetReference.invokeMethodAsync('HandlePaste', editorId, pasteContent);
@@ -120,3 +120,12 @@ window.editorFunctions = {
         }
     }
 };
+
+
+
+document.addEventListener('keydown', function (e) {
+    if (e.ctrlKey && e.key === 'f') {
+        e.preventDefault();
+        document.getElementById('searchInput').focus();
+    }
+});

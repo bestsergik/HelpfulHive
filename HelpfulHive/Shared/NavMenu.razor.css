@@ -402,7 +402,7 @@ body {
 
 /* Стили для вкладок */
 .tab-button {
-    background: linear-gradient(145deg, #817b7b 0%, #b7b6b6  100%);
+    background: linear-gradient(12deg, #8ca9ae 0%, #5a7f8b 100%);
     color: #dbd6d6;
     font-size: 17px;
     font-weight: bold;
@@ -419,7 +419,7 @@ body {
 }
 
     .tab-button:hover {
-        background: linear-gradient(12deg, #8bafe1 0%, #96c4d8 100%);
+        background: linear-gradient(12deg, #b2d8d8 0%, #38839d 100%);
         transform: translateY(-3px); /* Поднимаем кнопку при наведении */
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Добавляем тень для эффекта приподнятия */
     }

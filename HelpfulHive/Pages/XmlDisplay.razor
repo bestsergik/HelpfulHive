@@ -4,6 +4,7 @@
 @using BlazorMonaco.Languages
 @using System.Xml.Linq   
 @using System.Text.RegularExpressions;
+@using System.Data
 
 @inject IJSRuntime JSRuntime
 
@@ -15,7 +16,7 @@
         {
             var tabId = $"xmlTab{tab.Id}";
             <li class="nav-item">
-                <a class="nav-link @(tab.IsActive ? "active" : "")" id="@tabId-tab" @onclick="() => SetActiveTab(tab)" role="tab" aria-controls="@tabId" aria-selected="true">@tab.Name</a>
+                <a style=" font-size: 18px; font-family: 'NavMenuChildtLinkFont';" class="nav-link @(tab.IsActive ? "active" : "")" id="@tabId-tab" @onclick="() => SetActiveTab(tab)" role="tab" aria-controls="@tabId" aria-selected="true">@tab.Name</a>
             </li>
         }
         <li class="nav-item">
@@ -29,35 +30,85 @@
         {
             var tabId = $"xmlTab{tab.Id}";
             <div class="tab-pane fade @(tab.IsActive ? "show active" : "")" id="@tabId" role="tabpanel" aria-labelledby="@tabId-tab">
-                <div class="row">
-                    @if (tab.IsSplit)
-                    {
-                        <div class="col-md-6">
-                            <StandaloneCodeEditor @ref="tab.SendEditorRef" id="@($"xmlTab{tab.Id}-sendEditor")" ConstructionOptions="EditorConstructionOptions" />
-                        </div>
-                        <div class="col-md-6">
-                            <StandaloneCodeEditor @ref="tab.CheckEditorRef" id="@($"xmlTab{tab.Id}-checkEditor")" ConstructionOptions="EditorConstructionOptions" />
-                        </div>
+                <div class="tab-header">
 
-                    }
-                    else
-                    {
-                        <div class="col-md-12">
-                            <StandaloneCodeEditor @ref="tab.UniversalEditorRef" id="@($"xmlTab{tab.Id}-universalEditor")" ConstructionOptions="EditorConstructionOptions" />
-                        </div>
-                    }
+                <button class="toggle-view-btn" @onclick="() => ToggleTabularView(tab)">@(tab.ShowTable ? "Назад" : "Перейти к табличному виду")</button>
                 </div>
-                <button @onclick="() => FormatXml(tab)">Format XML</button>
+
+                @if (!tab.ShowTable)
+                {
+                    <div class="row">
+                        @if (tab.IsSplit)
+                        {
+                            <div class="col-md-6">
+                                <StandaloneCodeEditor @ref="tab.SendEditorRef" id="@($"xmlTab{tab.Id}-sendEditor")" ConstructionOptions="EditorConstructionOptions" />
+                            </div>
+                            <div class="col-md-6">
+                                <StandaloneCodeEditor @ref="tab.CheckEditorRef" id="@($"xmlTab{tab.Id}-checkEditor")" ConstructionOptions="EditorConstructionOptions" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-md-12">
+                                <StandaloneCodeEditor @ref="tab.UniversalEditorRef" id="@($"xmlTab{tab.Id}-universalEditor")" ConstructionOptions="EditorConstructionOptions" />
+                            </div>
+                        }
+                    </div>
+                }
+
+
+                @if (!string.IsNullOrWhiteSpace(errorMessage))
+                {
+                    <div class="error-message">
+                        @errorMessage
+                        <button class="error-close-button" @onclick="() => errorMessage = string.Empty">Закрыть</button>
+                    </div>
+                }
+
             </div>
         }
     </div>
 </div>
 
-@code {
-    private List<XmlTab> xmlTabs = new List<XmlTab>
+@foreach (var tab in xmlTabs)
 {
-    new XmlTab { Id = 1, Name = "Tab 1", IsActive = true }
-};
+    if (tab.ShowTable && tab.DataTable != null)
+    {
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        @foreach (DataColumn column in tab.DataTable.Columns)
+                        {
+                            <th>@column.ColumnName</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (DataRow row in tab.DataTable.Rows)
+                    {
+                        <tr>
+                            @foreach (DataColumn column in tab.DataTable.Columns)
+                            {
+                                <td>@(row[column] ?? "Пусто")</td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+}
+@code {
+
+    private List<XmlTab> xmlTabs = new List<XmlTab>
+    {
+    new XmlTab { Id = 1, Name = "Вкладка 1", IsActive = true }
+    };
+
+    private DataTable currentDataTable;
+    private bool showTable = false;
+    private string errorMessage = string.Empty;
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
@@ -70,6 +121,42 @@
                 FontSize = 20
 
             };
+    }
+
+    private async Task ShowTabularView(XmlTab tab)
+    {
+        string xmlContent;
+        if (tab.IsSplit)
+        {
+            xmlContent = await tab.SendEditorRef.GetValue();
+        }
+        else
+        {
+            xmlContent = await tab.UniversalEditorRef.GetValue();
+        }
+
+        XmlProcessor processor = new XmlProcessor();
+
+        if (string.IsNullOrWhiteSpace(xmlContent))
+        {
+            errorMessage = "XML данных нет или они пусты";
+            tab.DataTable = null;
+        }
+        else
+        {
+            try
+            {
+                tab.DataTable = processor.ConvertXmlToDataTable(xmlContent);
+                errorMessage = string.Empty; // Очищаем сообщение об ошибке при успешной конвертации
+            }
+            catch (InvalidOperationException ex)
+            {
+                errorMessage = "Ошибка при обработке XML данных: " + ex.Message;
+                tab.DataTable = null;
+            }
+        }
+
+        StateHasChanged();
     }
 
 
@@ -89,8 +176,6 @@
         }
     }
 
-
-
     [JSInvokable]
     public async Task HandlePaste(string editorId, string pastedText)
     {
@@ -107,15 +192,22 @@
         }
     }
 
+    private async Task ToggleTabularView(XmlTab tab)
+    {
+        tab.ShowTable = !tab.ShowTable;
 
+        if (tab.ShowTable)
+        {
+            await ShowTabularView(tab);
+        }
 
-
+        StateHasChanged();
+    }
 
     private async Task FormatXmlOnPasteUniversal(StandaloneCodeEditor editor, StandaloneCodeEditor sendEditor, StandaloneCodeEditor checkEditor)
     {
         // Получение значения из буфера обмена или редактора
         string xml = await editor.GetValue();
-
 
         // Разделение XML документов
         List<string> sendDocuments = new List<string>();
@@ -166,10 +258,6 @@
         }
     }
 
-
-
-
-
     private string FormatXmlString(string xml)
     {
         try
@@ -182,8 +270,6 @@
             return xml;
         }
     }
-
-
 
     private async Task FormatXml(XmlTab tab)
     {
@@ -204,14 +290,16 @@
         }
     }
 
-
-
     private void AddTab()
     {
+        if (xmlTabs.Any(tab => tab.ShowTable))
+        {
+            return;
+        }
         var newTab = new XmlTab
             {
                 Id = xmlTabs.Max(t => t.Id) + 1,
-                Name = $"Tab {xmlTabs.Count + 1}",
+                Name = $"Вкладка {xmlTabs.Count + 1}",
                 IsActive = true
             };
 
@@ -221,6 +309,14 @@
 
     private void SetActiveTab(XmlTab activeTab)
     {
+        // Проверка, активен ли табличный вид в любой из вкладок
+        if (xmlTabs.Any(tab => tab.ShowTable))
+        {
+            // Здесь можно добавить какую-то логику уведомления пользователя
+            // Например, вывести сообщение о том, что переключение вкладок запрещено
+            return;
+        }
+
         xmlTabs.ForEach(t => t.IsActive = false);
         activeTab.IsActive = true;
     }
@@ -231,10 +327,11 @@
         public string Name { get; set; }
         public bool IsActive { get; set; }
         public bool IsSplit { get; set; }
+        public bool ShowTable { get; set; } = false;
+        public DataTable DataTable { get; set; }
+
         public StandaloneCodeEditor SendEditorRef = new StandaloneCodeEditor();
         public StandaloneCodeEditor CheckEditorRef = new StandaloneCodeEditor();
         public StandaloneCodeEditor UniversalEditorRef = new StandaloneCodeEditor();
     }
-
-
 }

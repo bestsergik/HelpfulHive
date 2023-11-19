@@ -63,13 +63,13 @@ namespace HelpfulHive
                 {
                     listUINs = GetUINsWithHyphensAndAdditionalFormat(valueBuffer);
                 }
-                if (string.IsNullOrEmpty(listUINs))
-                {
-                    listUINs = GetUINsWithVariableLength(valueBuffer);
-                }
-
                 if (topScript == "comma")
                 {
+                    finalScript.Append(listUINs);
+                }
+                else if (topScript.Contains("NUMERIC_VARCHAR"))
+                {
+                    listUINs = GetUINsWithVariableLength(valueBuffer);
                     finalScript.Append(listUINs);
                 }
                 else if (!string.IsNullOrEmpty(listUINs))
@@ -151,11 +151,17 @@ namespace HelpfulHive
 
         private string GetUINsWithVariableLength(string input)
         {
-            var uinPattern = new Regex(@"\b\d{10}\b|\b\d{13}\b|\b\d{12}\b|\b\d{14}\b|\b\d{15}\b");
+   
+            var uinPattern = new Regex(@"\d+");
             var uins = uinPattern.Matches(input).OfType<Match>().Select(m => $"'{m.Value}'").Distinct();
 
-            return string.Join(",", uins);
+        
+            var result = string.Join(",", uins);
+            return result;
         }
+
+
+
 
         private string GetUINsWithHyphensAndAdditionalFormat(string input)
         {
