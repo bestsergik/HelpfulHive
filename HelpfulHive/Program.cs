@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
+// builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<ImageService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -25,6 +25,12 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
+
+builder.Services.AddServerSideBlazor().AddHubOptions(o =>
+{
+    o.ClientTimeoutInterval = TimeSpan.FromMinutes(2); // Устанавливает время ожидания клиента
+    o.KeepAliveInterval = TimeSpan.FromSeconds(30);    // Устанавливает интервал Keep-Alive
+});
 
 // В Program.cs или Startup.cs
 builder.Services.AddScoped<IApplicationUserAdapter, ApplicationUserAdapter>();

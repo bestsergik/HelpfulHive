@@ -217,16 +217,17 @@ button {
     }
 
     .user-btn .user-img {
-        width: 72px; /* Задайте ширину для изображения */
-        height: 72px;
-        border-radius: 50%;
+        max-width: 54px; /* Максимальная ширина изображения */
+        max-height: 54px; /* Максимальная высота изображения */
+        width: auto; /* Ширина изображения будет изменяться автоматически */
+        height: auto; /* Высота изображения будет изменяться автоматически */
         order: 2; /* Помещаем изображение вторым в flexbox, чтобы оно было справа */
-        object-fit: cover;
+        object-fit: contain; /* Убедитесь, что весь контент изображения виден */
     }
 
     .user-btn .user-name {
         order: 1; /* Помещаем текст первым в flexbox, чтобы он был слева */
-        margin: 0;
+        margin-right: 14px;
         font-size: 16px; /* Или другой размер, который вам подходит */
         white-space: nowrap; /* Предотвращаем перенос текста на новую строку */
     }
@@ -276,8 +277,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 72px; /* Задайте необходимый размер */
-    height: 72px;
+    width: 54px; /* Задайте необходимый размер */
+    height: 54px;
     transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -290,8 +291,8 @@ button {
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 72px; /* Задайте необходимый размер */
-        height: 72px;
+        width: 54px; /* Задайте необходимый размер */
+        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
         transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
@@ -309,8 +310,9 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 72px; /* Задайте необходимый размер */
-    height: 72px;
+    width: 54px; /* Задайте необходимый размер */
+    height: 54px;
+
     position: relative;
     transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
     position: relative;
@@ -324,8 +326,8 @@ button {
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 72px; /* Задайте необходимый размер */
-        height: 72px;
+        width: 54px; /* Задайте необходимый размер */
+        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
         transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
@@ -344,8 +346,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 72px; /* Задайте необходимый размер */
-    height: 72px;
+    width: 54px; /* Задайте необходимый размер */
+    height: 54px;
     transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -358,8 +360,8 @@ button {
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 72px; /* Задайте необходимый размер */
-        height: 72px;
+        width: 54px; /* Задайте необходимый размер */
+        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
         transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
@@ -368,7 +370,7 @@ button {
 .tooltip-text {
     visibility: hidden;
     width: 120px; /* или нужный вам размер */
-    background-color: slategray; /* Черный фон */
+    background-color: dimgray; 
     color: white; /* Белый текст */
     text-align: center;
     border-radius: 3px;
@@ -399,8 +401,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 72px; /* Задайте необходимый размер */
-    height: 72px;
+    width: 54px; /* Задайте необходимый размер */
+    height: 54px;
     transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -413,8 +415,8 @@ button {
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 72px; /* Задайте необходимый размер */
-        height: 72px;
+        width: 54px; /* Задайте необходимый размер */
+        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
         transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
@@ -433,8 +435,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 72px; /* Задайте необходимый размер */
-    height: 72px;
+    width: 54px; /* Задайте необходимый размер */
+    height: 54px;
     transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -447,8 +449,8 @@ button {
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 72px; /* Задайте необходимый размер */
-        height: 72px;
+        width: 54px; /* Задайте необходимый размер */
+        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
         transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
@@ -466,8 +468,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 72px; /* Задайте необходимый размер */
-    height: 72px;
+    width: 54px; /* Задайте необходимый размер */
+    height: 54px;
     transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -480,8 +482,8 @@ button {
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 72px; /* Задайте необходимый размер */
-        height: 72px;
+        width: 54px; /* Задайте необходимый размер */
+        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
         transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */

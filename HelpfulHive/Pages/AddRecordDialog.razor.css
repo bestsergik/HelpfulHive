@@ -165,7 +165,11 @@
 
     .btn:hover {
         background-color: #d5d3d3;
+
     }
+
+
+
 
 /* Оставьте уникальные стили для каждого варианта кнопки */
 .btn-secondary {
@@ -173,9 +177,19 @@
     font-size: 16px;
     height: 42px;
     padding: 1px;
+    position: relative;
 }
 
-.btn-primary {
+
+
+.btn-secondary:hover .tooltip-text {
+        visibility: visible;
+        opacity: 1;
+        transition-delay: 1s;
+    }
+
+
+    .btn-primary {
     background-color: #007bff;
     color: #fff;
     font-size: 17px;
@@ -552,4 +566,27 @@ btn btn-secondary
 
 .dropdown-select-selected {
     color: #000000; /* Черный цвет текста */
+}
+
+
+
+.tooltip-text {
+    visibility: hidden;
+    width: 180px; /* или нужный вам размер */
+    background-color: dimgray;
+    color: white; /* Белый текст */
+    text-align: center;
+    border-radius: 3px;
+    padding: 7px;
+    /* Позиционирование */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%; /* Под кнопкой */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 10px; /* Отступ от кнопки */
+    /* Анимация */
+    opacity: 0;
+    transition: opacity 0.2s, visibility 0.2s;
+    transition-delay: 0.1s;
 }

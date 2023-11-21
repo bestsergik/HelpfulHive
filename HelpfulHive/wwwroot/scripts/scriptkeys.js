@@ -48,3 +48,37 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
+function animateCheckmark(x, y) {
+    var checkmark = document.getElementById('checkmark');
+    checkmark.style.left = (x - 15) + 'px';
+    checkmark.style.top = (y - 15) + 'px';
+    checkmark.style.visibility = 'visible';
+    checkmark.style.zIndex = '1000'; // Устанавливаем высокий z-index
+
+    gsap.fromTo(checkmark,
+        { scale: 0.5, autoAlpha: 0 },
+        { scale: 1, autoAlpha: 1, duration: 0.7, ease: "back.out" });
+
+    gsap.to(checkmark, { scale: 1.2, autoAlpha: 0, delay: 1, duration: 0.5, onComplete: () => checkmark.style.visibility = 'hidden' });
+}
+
+
+
+function toggleSubTabs(tabId) {
+    var allSubTabs = document.querySelectorAll('.modern-sub-tabs');
+    var targetSubTab = document.getElementById('sub-tabs-' + tabId);
+
+    if (!targetSubTab) return;
+
+    if (targetSubTab.style.maxHeight) {
+        // Если уже открыто, закрываем
+        targetSubTab.style.maxHeight = null;
+    } else {
+        // Если закрыто, то сначала закрываем все, затем открываем целевую вкладку
+        for (var i = 0; i < allSubTabs.length; i++) {
+            allSubTabs[i].style.maxHeight = null;
+        }
+        // После того как все вкладки закрыты, открываем нужную
+        targetSubTab.style.maxHeight = targetSubTab.scrollHeight + "px";
+    }
+}

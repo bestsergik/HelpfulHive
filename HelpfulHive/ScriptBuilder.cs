@@ -63,6 +63,13 @@ namespace HelpfulHive
                 {
                     listUINs = GetUINsWithHyphensAndAdditionalFormat(valueBuffer);
                 }
+
+                // Проверка на необходимость переноса всего результата listUINs на новую строку
+                if (!string.IsNullOrEmpty(listUINs))
+                {
+                    listUINs = Environment.NewLine + listUINs;
+                }
+
                 if (topScript == "comma")
                 {
                     finalScript.Append(listUINs);
@@ -77,18 +84,19 @@ namespace HelpfulHive
                     finalScript.Append(ReplaceTokens(topScript, listUINs));
                 }
 
-                await _jsRuntime.InvokeVoidAsync("copyTextToClipboard", finalScript.ToString() + "\r\n");
+                await _jsRuntime.InvokeVoidAsync("copyTextToClipboard", finalScript.ToString());
             }
             catch (Exception ex)
             {
-
+                // Здесь можно добавить логирование исключения, если это необходимо
+                // Например: Console.WriteLine(ex.ToString());
             }
             finalScript.Clear();
         }
 
-    
 
-    private string GetUINs(string input)
+
+        private string GetUINs(string input)
         {
             var uinPattern = new Regex(@"(?<first>.)-\d{2}-\d{10}-\d");
             var uins = uinPattern.Matches(input).OfType<Match>().Select(m => "'" + m.Groups["first"].Value + m.Value + "'").Distinct();

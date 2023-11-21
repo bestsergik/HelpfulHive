@@ -8,6 +8,7 @@
 @inject TabService TabSrv
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserService uSRV
+@inject IJSRuntime JsRuntime
 
 
 
@@ -31,9 +32,9 @@
                 @TruncateString(tab.Name, 36)
             </NavLink>
 
-            @if (tab.SubTabs != null && tab.SubTabs.Any())
+            @if (tab.SubTabs != null && tab.SubTabs.Any() && tabsVisibility.ContainsKey(tab.Id) && tabsVisibility[tab.Id])
             {
-                <div class="modern-sub-tabs" >
+                <div id="sub-tabs-@tab.Id" class="modern-sub-tabs">
                     @foreach (var subTab in tab.SubTabs)
                     {
                         <div @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@GetSubTabStyle(subTab)" >
@@ -168,6 +169,8 @@
         return user.IsInRole(role);
     }
 
+    private Dictionary<int, bool> tabsVisibility = new Dictionary<int, bool>();
+
 
 
 
@@ -195,15 +198,39 @@
 
     protected override void OnInitialized()
     {
+        foreach (var tab in TabVM.Tabs)
+        {
+            InitializeTabVisibility(tab);
+        }
+
         TabVM.OnTabAdded += UpdateUI;
     }
 
+    private void InitializeTabVisibility(TabItem tab)
+    {
+        if (!tabsVisibility.ContainsKey(tab.Id))
+        {
+            tabsVisibility[tab.Id] = false; // По умолчанию вкладки скрыты
+        }
+    }
+
+
     private async void SelectTab(TabItem tab)
     {
+        foreach (var key in tabsVisibility.Keys.ToList())
+        {
+            tabsVisibility[key] = false;
+        }
+
+        // Отображаем подвкладки для выбранной вкладки
+        tabsVisibility[tab.Id] = true;
+
         selectedTabId = tab.Id;
 
         selectedTab = tab;
         tabRecords = await TabSrv.GetRecordsByTabIdAsync(tab.Id);
+        await JsRuntime.InvokeVoidAsync("toggleSubTabs", tab.Id);
+
         StateHasChanged(); // Явно вызывает перерисовку компонента
 
     }
@@ -215,6 +242,7 @@
 
     private void SelectSubTab(TabItem subTab)
     {
+
         selectedSubTabId = subTab.Id;
 
         selectedTab = subTab;  // обновляете выбранную вкладку
@@ -236,7 +264,7 @@
     {
         if (selectedSubTabId == subTab.Id)
         {
-            return "box-shadow: 0 0 10px #8fd3f4, 0 0 15px #8fd3f4;"; // Стиль для выбранной подвкладки
+            return "box-shadow: 0 0 7px #8fd3f4, 0 0 9px #8fd3f4;"; // Стиль для выбранной подвкладки
         }
         return "";
     }

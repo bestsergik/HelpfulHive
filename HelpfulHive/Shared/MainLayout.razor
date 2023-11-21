@@ -12,8 +12,20 @@
 @inject UserService uSRV
 @inject IJSRuntime JSRuntime
 
+<svg id="checkmark" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 50 50" style="position: fixed; visibility: hidden;">
+    <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:rgb(39,93,195);stop-opacity:1" />
+            <stop offset="100%" style="stop-color:rgb(153,87,45);stop-opacity:1" />
+        </linearGradient>
+    </defs>
+    <path d="M5 25L20 40L45 5" stroke="url(#grad1)" stroke-width="8" fill="none" stroke-linecap="round" />
+</svg>
+
 
 <PageTitle>HelpfulHive</PageTitle>
+
+
 
 <div class="page">
     <div class="main-content">
@@ -32,11 +44,13 @@
                     <button class="image-favorite" @onclick="NavigateToFavorite" aria-label="Избранное">
                         <span class="tooltip-text">Избранное</span>
                     </button>
-                    <button class="image-comma" @onclick="@(() => GetCommaClick("comma"))">
+                    <button class="image-comma" @onclick="@(e => GetCommaClick(e, "comma"))">
                         <span class="tooltip-text">Добавить запятые</span>
                     </button>
 
-                    <button class="image-quotes" @onclick="@(() => GetCommaClick("{NUMERIC_VARCHAR}"))">
+        
+
+                    <button class="image-quotes" @onclick="@(e => GetCommaClick(e, "{NUMERIC_VARCHAR}"))">
                         <span class="tooltip-text">Добавить кавычки</span>
                     </button>
                     <button class="image-pdf" @onclick="NavigateToPdfDisplay" >
@@ -115,10 +129,14 @@
     }
 
 
-    private async Task GetCommaClick(string value)
+    private async Task GetCommaClick(MouseEventArgs e, string value)
     {
         await scriptBuilder.BuildScriptAsync(value);
+        await JSRuntime.InvokeVoidAsync("animateCheckmark", e.ClientX, e.ClientY);
+
     }
+
+   
 
 
     [Inject]

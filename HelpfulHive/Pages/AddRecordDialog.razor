@@ -21,7 +21,8 @@
             <div class="add-record-modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Новый шаблон</h5>
-
+                    <button @onclick="Close" class="btn-close">
+                    </button>
                 </div>
                 <div class="modal-body">
                     <div class="floating-label floating-label-title">
@@ -74,9 +75,9 @@
                         <div class="text-danger">Введите текст шаблона</div>
                     }
                     <div class="button-panel">
-                        <button @onclick="@(() => InsertTextAtCursor("{NUMERIC}"))" class="btn btn-secondary">NUMERIC</button>
-                        <button @onclick="@(() => InsertTextAtCursor("{SPECIFIC_VARCHAR}"))" class="btn btn-secondary">SPECIFIC_VARCHAR</button>
-                        <button @onclick="@(() => InsertTextAtCursor("{NUMERIC_VARCHAR}"))" class="btn btn-secondary">NUMERIC_VARCHAR</button>
+                        <button @onclick="@(() => InsertTextAtCursor("{NUMERIC}"))" class="btn btn-secondary"><span class="tooltip-text">6432123456789123 220023423454 </span>NUMERIC</button>
+                        <button @onclick="@(() => InsertTextAtCursor("{SPECIFIC_VARCHAR}"))" class="btn btn-secondary"><span class="tooltip-text">'T-00-345353253-22' 'C-00-345353253-22' '5643668e-d08f-fe..'</span>SPECIFIC_VARCHAR</button>
+                        <button @onclick="@(() => InsertTextAtCursor("{NUMERIC_VARCHAR}"))" class="btn btn-secondary"><span class="tooltip-text">'6432123456789123' '220023423454'</span>NUMERIC_VARCHAR</button>
                     </div>
                     <br>
 

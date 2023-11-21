@@ -327,7 +327,7 @@ body {
     background: linear-gradient(145deg, #3498db, #9b59b6);
     margin-left: 20px;
     margin-bottom: 7px; /* Добавление пространства между подвкладками */
-  
+    margin-top: 10px;
     border-radius: 10px;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
@@ -347,7 +347,7 @@ body {
     }
 
     .modern-tab-item:hover, .modern-sub-tabs div:hover {
-        box-shadow: 0 0 7px #8fd3f4, 0 0 15px #8fd3f4; /* Светящаяся тень при наведении */
+        box-shadow: 0 0 4px #8fd3f4, 0 0 8px #8fd3f4; /* Светящаяся тень при наведении */
         /* Остальные стили остаются прежними */
     }
 
@@ -443,10 +443,14 @@ body {
 }
 
 
-
-
 .nav-link.active {
     box-shadow: 0 0 10px #f4d03f, 0 0 15px #f4d03f; /* Неоновая подсветка для активных вкладок */
     /* Остальные стили остаются прежними */
 }
 
+
+.modern-sub-tabs {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+}
