@@ -29,7 +29,7 @@
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     background-image: linear-gradient(to right, #4a8c9b, #4abfbd, #4a8c9b, #4abfbd);
     background-size: 400% 400%;
-    animation: gradientAnimation 75s ease infinite; /* Очень медленная анимация */
+    /*animation: gradientAnimation 75s ease infinite;*/ /* Очень медленная анимация */
     transition: transform 0.4s ease, box-shadow 0.4s ease; /* Добавляем плавность перехода transform */
 }
 
@@ -90,9 +90,21 @@
     right: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: #ffd700; /* Яркий желтый заменен на более мягкий тон */
+    color: #7334e9;
     cursor: pointer;
+    transition: transform 2s ease; /* Плавный переход за 0.3 секунды */
+
 }
+.record-item:hover .edit-icon {
+    display: inline-block; /* или block, в зависимости от того, как вам нужно */
+}
+
+.edit-icon:hover {
+    color: #c87714; /* Изменить на другой цвет при наведении */
+    cursor: pointer; /* Изменить курсор на указывающий */
+}
+
+
 
 .record-content {
     font-size: 16px;

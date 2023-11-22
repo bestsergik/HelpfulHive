@@ -10,6 +10,9 @@
 @inject RecordViewModel RecordVM
 @inject ImageService ImageService
 @inject IJSRuntime JSRuntime
+@using Blazored.Toast
+@using Blazored.Toast.Services
+@inject IToastService toastService
 
 
 
@@ -24,7 +27,7 @@
                     <button @onclick="Close" class="btn-close">
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body">   
                     <div class="floating-label floating-label-title">
                         <input @bind="NewRecordTitle" type="text" id="NewRecordTitle" class="floating-label-control" placeholder=" " />
                         <label for="NewRecordTitle">Название шаблона</label>

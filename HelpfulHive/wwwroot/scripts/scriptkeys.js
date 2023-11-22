@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function animateCheckmark(x, y) {
     var checkmark = document.getElementById('checkmark');
-    checkmark.style.left = (x - 15) + 'px';
-    checkmark.style.top = (y - 15) + 'px';
+    checkmark.style.left = (x - 25) + 'px';
+    checkmark.style.top = (y - 25) + 'px';
     checkmark.style.visibility = 'visible';
     checkmark.style.zIndex = '1000'; // Устанавливаем высокий z-index
 

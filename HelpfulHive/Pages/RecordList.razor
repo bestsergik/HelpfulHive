@@ -82,32 +82,19 @@ else
 @code {
     [Parameter] public List<RecordModel> Records { get; set; }
     [Parameter] public string SelectedSubTabId { get; set; }
+    [Parameter] public bool LoadFavorites { get; set; } = false;
     [Parameter]
     public EventCallback<RecordModel> OnRecordAddedFromNavMenu { get; set; }
-    // private List<RecordModel> FavoriteRecords { get; set; }
-
-    [Parameter] public bool LoadFavorites { get; set; } = false;
-
-    private async Task OnRecordDeleted(RecordModel deletedRecord)
-    {
-        Records.Remove(deletedRecord);
-        await ReloadRecords(); // Обновляем список записей
-        StateHasChanged();
-    }
-
-    private ScriptBuilder scriptBuilder;
-
-    private bool isEditDialogVisible = false;
-    private RecordModel? selectedRecord;
-    private bool isSearchAll = false;
-
-    private string searchQuery = string.Empty;
-
 
     private List<RecordModel> PopularRecords { get; set; }
+    private ScriptBuilder scriptBuilder;
+    private RecordModel? selectedRecord;
 
+    private bool isEditDialogVisible = false;
+    private bool isSearchAll = false;
+    private string searchQuery = string.Empty;
+    private bool isDoubleClick;
 
-   
 
     private async Task SearchRecords()
     {
@@ -121,6 +108,12 @@ else
         StateHasChanged(); // Чтобы убедиться, что состояние компонента обновлено
     }
 
+    private async Task OnRecordDeleted(RecordModel deletedRecord)
+    {
+        Records.Remove(deletedRecord);
+        await ReloadRecords(); // Обновляем список записей
+        StateHasChanged();
+    }
 
     private string FindFolderForImage(string imageName)
     {
@@ -139,7 +132,6 @@ else
         }
         return string.Empty;
     }
-
 
 
     protected override async Task OnInitializedAsync()
@@ -171,10 +163,17 @@ else
     {
         if (!string.IsNullOrWhiteSpace(SelectedSubTabId))
         {
-            Records = await RecordSV.GetRecordsBySubTabUriAsync(SelectedSubTabId);
-            StateHasChanged();
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId != null)
+            {
+                Records = await RecordSV.GetRecordsBySubTabUriAsync(SelectedSubTabId, userId);
+                StateHasChanged();
+            }
         }
     }
+
 
     private async Task LoadPopularRecords()
     {
@@ -221,7 +220,7 @@ else
 
     private string ConvertRelativeUrlsToAbsolute(string html)
     {
-        var baseUrl = "https://localhost:7058/";
+        var baseUrl = "https://supportools.ru/";
         // Регулярное выражение для поиска относительных URL
         var regex = new Regex("src=\"(.*?)\"");
         var matches = regex.Matches(html);
@@ -239,33 +238,20 @@ else
         return html;
     }
 
-
-
-
-    //private async Task CopyContentToClipboard(RecordModel record)
-    //{
-    //    if (record != null)
-    //    {
-    //        Console.WriteLine("Copying content: " + record.Content.Text);
-    //        await JSRuntime.InvokeVoidAsync("copyHtmlToClipboard", record.Content.Text);
-    //    }
-    //    else
-    //    {
-    //        Console.WriteLine("No record to copy");
-    //    }
-    //}
-
-
-
-
     private async Task OnSingleClick(MouseEventArgs e, RecordModel record)
     {
-        HandleClick(record);
-        await JSRuntime.InvokeVoidAsync("animateCheckmark", e.ClientX, e.ClientY);
+        isDoubleClick = false;
+        await Task.Delay(190); // Задержка для проверки двойного клика
+        if (!isDoubleClick)
+        {
+            HandleClick(record);
+            await JSRuntime.InvokeVoidAsync("animateCheckmark", e.ClientX, e.ClientY);
+        }
     }
 
     private void OnDoubleClick(RecordModel record)
     {
+        isDoubleClick = true;
         EditRecord(record);
     }
 
@@ -278,15 +264,24 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
+
         if (!LoadFavorites && !string.IsNullOrEmpty(SelectedSubTabId))
         {
-            await LoadRecords(SelectedSubTabId);
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            var userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId != null)
+            {
+                Records = await RecordSV.GetRecordsBySubTabUriAsync(SelectedSubTabId, userId);
+            }
         }
     }
-    private async Task LoadRecords(string subTabUri)
+
+    private async Task LoadRecords(string subTabUri, string userId)
     {
-        Records = await RecordSV.GetRecordsBySubTabUriAsync(subTabUri);
+        Records = await RecordSV.GetRecordsBySubTabUriAsync(subTabUri, userId);
     }
+
 
     private void EditRecord(RecordModel record)
     {
@@ -304,14 +299,6 @@ else
         Records.Add(newRecord);
         StateHasChanged();
     }
-
-    //private async Task ReloadRecords()
-    //{
-    //    isEditDialogVisible = false; // Close the edit dialog
-    //    await LoadRecords(SelectedSubTabId); // Wait for records to load
-    //    StateHasChanged(); // Update the UI
-    //}
-
 
     private async Task ReloadRecords()
     {

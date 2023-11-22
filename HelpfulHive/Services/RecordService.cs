@@ -25,15 +25,25 @@ namespace HelpfulHive.Services
             {
             }
         }
-        public async Task<List<RecordModel>> GetRecordsBySubTabUriAsync(string subTabUri)
+        public async Task<List<RecordModel>> GetRecordsBySubTabUriAsync(string subTabUri, string userId)
         {
             using var context = _contextFactory.CreateDbContext();
+
+            // Проверяем, принадлежит ли подвкладка текущему пользователю
+            var subTab = await context.Tabs.FirstOrDefaultAsync(t => t.Uri == subTabUri);
+            if (subTab == null || (subTab.TabType == TabType.Personal && subTab.UserId != userId))
+            {
+                // Если подвкладка не найдена или не принадлежит пользователю, возвращаем пустой список
+                return new List<RecordModel>();
+            }
+
+            // Если всё в порядке, загружаем записи
             return await context.Records
-                .Include(r => r.Content) // Добавляем подгрузку связанного свойства Content
-                .Include(r => r.SubTab)  // Если нужно, подгружаем и другие связанные свойства
-                .Where(r => r.SubTab.Uri == subTabUri)
-                .ToListAsync();
+                                .Include(r => r.Content)
+                                .Where(r => r.SubTab.Uri == subTabUri)
+                                .ToListAsync();
         }
+
 
         public async Task UpdateRecordAsync(RecordModel updatedRecord)
         {
