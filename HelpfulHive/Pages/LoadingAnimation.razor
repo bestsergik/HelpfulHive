@@ -1,0 +1,29 @@
+﻿@if (IsLoadingAnimation)
+{
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+}
+else if (ShowSuccessMessageAnimation)
+{
+    <div class="message-overlay success">
+        <p>Успешно выполнено!</p>
+    </div>
+}
+else if (ShowErrorMessageAnimation)
+{
+    <div class="message-overlay error">
+        <p>Произошла ошибка!</p>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool IsLoadingAnimation { get; set; }
+
+    [Parameter]
+    public bool ShowSuccessMessageAnimation { get; set; }
+
+    [Parameter]
+    public bool ShowErrorMessageAnimation { get; set; }
+}

@@ -69,7 +69,7 @@
 
                  
                     <div class="floating-label floating-label-content">
-                        <div id="content" contenteditable="true" @ref="editorRef" class="floating-label-control editable-content" placeholder=" " @onpaste="HandlePaste">
+                        <div id="content" contenteditable="true" @ref="editorRef" class="floating-label-control editable-content" placeholder=" " @onpaste="HandlePaste" @onpaste:preventDefault>
                             @if (RecordToEdit?.Content != null)
                             {
                                 @((MarkupString)RecordToEdit.Content.Text)
@@ -241,9 +241,10 @@
 
     private async Task HandlePaste(Microsoft.AspNetCore.Components.Web.ClipboardEventArgs e)
     {
-        const int maxWidth = 800; // Максимальная ширина, соответствующая ширине вашего div
-        await JSRuntime.InvokeVoidAsync("insertImageFromClipboard", editorRef, e, maxWidth);
+
+        await JSRuntime.InvokeVoidAsync("insertImageFromClipboard", editorRef, e);
     }
+
 
 
 

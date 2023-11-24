@@ -24,36 +24,22 @@
                                 height = maxScreenHeight;
                             }
 
-                            const canvas = document.createElement('canvas');
-                            canvas.width = width;
-                            canvas.height = height;
-                            const ctx = canvas.getContext('2d');
-                            ctx.drawImage(img, 0, 0, width, height);
-
-                            const base64Image = canvas.toDataURL('image/png');
                             const resizedImg = document.createElement('img');
-                            resizedImg.src = base64Image;
+                            resizedImg.src = e.target.result;
+                            resizedImg.style.maxWidth = '100%';
+                            resizedImg.style.height = 'auto';
+                            editor.appendChild(resizedImg);
 
-                            if (document.activeElement === editor) {
-                                const selection = window.getSelection();
-                                if (selection.rangeCount > 0) {
-                                    const range = selection.getRangeAt(0);
-                                    range.deleteContents();
-                                    range.insertNode(resizedImg);
+                            const newLine = document.createElement('br');
+                            editor.appendChild(newLine);
 
-
-                                    const newLine = document.createElement('br');
-                                    range.insertNode(newLine);
-
-                                    range.setStartAfter(resizedImg);
-                                    range.collapse(true);
-                                    selection.removeAllRanges();
-                                    selection.addRange(range);
-                                }
-                            } else {
-                                editor.appendChild(resizedImg);
-                                editor.appendChild(document.createElement('br'));
-                            }
+                            // После вставки изображения переместим курсор после него
+                            const range = document.createRange();
+                            range.setStartAfter(resizedImg);
+                            range.collapse(true);
+                            const selection = window.getSelection();
+                            selection.removeAllRanges();
+                            selection.addRange(range);
                         };
                         img.src = e.target.result;
                     };

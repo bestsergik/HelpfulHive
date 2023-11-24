@@ -11,6 +11,8 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @using System.Text
 @using System.Text.RegularExpressions;
+@inject RecordUpdateService recordUpdateService
+
 
 <svg id="checkmark" xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 50 50" style="position: fixed; visibility: hidden;">
     <defs>
@@ -198,6 +200,8 @@ else
     protected override void OnInitialized()
     {
         scriptBuilder = new ScriptBuilder(JSRuntime);
+        recordUpdateService.RecordsUpdated += ReloadRecords;
+
     }
 
     private async Task HandleClick(RecordModel record)
@@ -220,7 +224,7 @@ else
 
     private string ConvertRelativeUrlsToAbsolute(string html)
     {
-        var baseUrl = "https://supportools.ru/";
+        var baseUrl = "https://localhost:7058/";
         // Регулярное выражение для поиска относительных URL
         var regex = new Regex("src=\"(.*?)\"");
         var matches = regex.Matches(html);
@@ -311,6 +315,11 @@ else
             await LoadRecordsFromSubTab();
         }
         StateHasChanged(); // Update the UI
+    }
+
+    public void Dispose()
+    {
+        recordUpdateService.RecordsUpdated -= ReloadRecords;
     }
 }
 

@@ -41,6 +41,8 @@ builder.Services.AddScoped<IApplicationUserAdapter, ApplicationUserAdapter>();
 builder.Services.AddBlazoredToast();
 
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<AnimationService>();
+builder.Services.AddSingleton<RecordUpdateService>();
 builder.Services.AddTransient<UserPreferencesService>();
 builder.Services.AddTransient<UserPreferencesViewModel>();
 builder.Services.AddScoped<TabViewModel>();

@@ -423,7 +423,6 @@ btn btn-secondary
     border-radius: 4px;
     outline: none;
     color: black;
-    will-change: scroll-position;
     min-height: 60px; /* Минимальная высота */
     color: black !important;
     height: auto;

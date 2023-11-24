@@ -428,8 +428,7 @@ btn btn-secondary
     width: auto; /* Измените на auto, чтобы не ограничивать ширину */
     height: auto; /* То же самое для высоты */
     color: black;
-    will-change: scroll-position;
-    min-height: 60px; /* Минимальная высота */
+    min-height: 300px; /* Минимальная высота */
     color: black !important;
 }
 

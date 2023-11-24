@@ -11,6 +11,8 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserService uSRV
 @inject IJSRuntime JSRuntime
+@inject RecordUpdateService recordUpdateService
+
 
 <svg id="checkmark" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 50 50" style="position: fixed; visibility: hidden;">
     <defs>
@@ -23,7 +25,7 @@
 </svg>
 
 
-<PageTitle>HelpfulHive</PageTitle>
+<PageTitle>Supportools</PageTitle>
 
 
 
@@ -109,7 +111,16 @@
         NavigationManager.NavigateTo("/pdf-display");
     }
 
+    public event Func<Task> RecordsUpdated;
 
+
+    private async void OnRecordsUpdated()
+    {
+        if (RecordsUpdated != null)
+        {
+            await RecordsUpdated.Invoke();
+        }
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -188,6 +199,8 @@
         {
             tabRecords = tabRecords.Append(newRecord);
         }
+        await recordUpdateService.OnRecordsUpdated();
+
     }
 
     private void NavigateToXmlDisplay()

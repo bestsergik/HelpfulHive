@@ -133,6 +133,17 @@
       
 }
 
+@if (IsLoading)
+{
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+}
+
+<LoadingAnimation IsLoadingAnimation="@isLoadingAnimation"
+                  ShowSuccessMessageAnimation="@showSuccessMessageAnimation"
+                  ShowErrorMessageAnimation="@showErrorMessageAnimation" />
+
 <ImageSelectionModal IsVisible="@isImageSelectionVisible"
                      IsVisibleChanged="OnImageModalVisibilityChanged"
                      OnImageSelected="HandleImageSelected" />
@@ -145,6 +156,9 @@
     [Parameter] public IEnumerable<TabItem> AvailableSubTabs { get; set; } = new List<TabItem>();
     [Parameter] public EventCallback OnCloseDialog { get; set; }
     [Parameter] public TabItem SelectedTab { get; set; }
+    [Parameter]
+    public bool IsLoading { get; set; }
+
 
     private Dictionary<string, List<string>> AvailableImagesByFolders { get; set; }
     private string SelectedFolder { get; set; }
@@ -156,8 +170,9 @@
     private RecordContent NewRecordContentObject { get; set; } = new RecordContent();
 
     private ElementReference editorRef;
-
-
+    private bool isLoadingAnimation = false;
+    private bool showSuccessMessageAnimation = false;
+    private bool showErrorMessageAnimation = false;
 
 
 
@@ -218,7 +233,7 @@
 
     private async Task HandlePaste(Microsoft.AspNetCore.Components.Web.ClipboardEventArgs e)
     {
-    
+
         await JSRuntime.InvokeVoidAsync("insertImageFromClipboard", editorRef, e);
     }
 
@@ -229,7 +244,7 @@
     {
         var text = await JSRuntime.InvokeAsync<string>("getContentText", editorRef);
         NewRecordContentObject.Text = text;
-    
+
     }
 
 
@@ -259,6 +274,12 @@
     }
 
 
+    private void TriggerAnimation(string animationName)
+    {
+        // Логика для активации анимации
+    }
+
+
     // Функция для проверки валидности Base64 строки
     public bool IsValidBase64String(string s)
     {
@@ -284,56 +305,73 @@
 
     private async Task AddRecord()
     {
-        await UpdateContentText();
-        if (string.IsNullOrEmpty(NewRecordTitle) ||
-            string.IsNullOrEmpty(NewRecordContentObject.Text) ||
-            SelectedSubTabId == 0)
+        isLoadingAnimation = false;
+        showSuccessMessageAnimation = false;
+        showErrorMessageAnimation = false;
+        try
         {
-            showErrorMessage = true;
-            StateHasChanged();
-            return;
-        }
-      
-        var imagePath = "content_images";
-
-        var contentText = NewRecordContentObject.Text;
-        var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,([A-Za-z0-9+/=]+)";
-        var matches = Regex.Matches(contentText, base64ImagePattern);
-        var imageTasks = matches.Select(async match =>
-     {
-         var base64Image = match.Groups[1].Value;
-         if (IsValidBase64String(base64Image))
-         {
-             var imageUrl = await ImageService.SaveImageAsync(base64Image, imagePath);
-             contentText = contentText.Replace(match.Value, imageUrl);
-             return imageUrl;
-         }
-         return null;
-     }).ToList();
-
-        var imageUrls = (await Task.WhenAll(imageTasks)).Where(url => url != null).ToList();
-
-        NewRecordContentObject.Text = contentText;
-        NewRecordContentObject.ImageUrls = imageUrls.ToList();
-        var newRecord = new RecordModel
+            await UpdateContentText();
+            if (string.IsNullOrEmpty(NewRecordTitle) ||
+                string.IsNullOrEmpty(NewRecordContentObject.Text) ||
+                SelectedSubTabId == 0)
             {
-                Title = NewRecordTitle,
-                Content = NewRecordContentObject,
-                SubTabId = SelectedSubTabId,
-                ImagePath = string.IsNullOrEmpty(SelectedImage) ? "default_template.png" : SelectedImage
+                showErrorMessage = true;
+                StateHasChanged();
+                return;
+            }
 
-            };
+            var imagePath = "content_images";
 
-        await RecordVM.AddRecordAsync(newRecord);
-        await OnRecordAdded.InvokeAsync(newRecord);
+            var contentText = NewRecordContentObject.Text;
+            var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,([A-Za-z0-9+/=]+)";
+            var matches = Regex.Matches(contentText, base64ImagePattern);
+            var imageTasks = matches.Select(async match =>
+         {
+             var base64Image = match.Groups[1].Value;
+             if (IsValidBase64String(base64Image))
+             {
+                 var imageUrl = await ImageService.SaveImageAsync(base64Image, imagePath);
+                 contentText = contentText.Replace(match.Value, imageUrl);
+                 return imageUrl;
+             }
+             return null;
+         }).ToList();
+
+            var imageUrls = (await Task.WhenAll(imageTasks)).Where(url => url != null).ToList();
+
+            NewRecordContentObject.Text = contentText;
+            NewRecordContentObject.ImageUrls = imageUrls.ToList();
+            var newRecord = new RecordModel
+                {
+                    Title = NewRecordTitle,
+                    Content = NewRecordContentObject,
+                    SubTabId = SelectedSubTabId,
+                    ImagePath = string.IsNullOrEmpty(SelectedImage) ? "default_template.png" : SelectedImage
+
+                };
+
+            await RecordVM.AddRecordAsync(newRecord);
+            await OnRecordAdded.InvokeAsync(newRecord);
 
 
-        NewRecordTitle = string.Empty;
-        NewRecordContentObject.Text = string.Empty;  // Используйте Text вместо NewRecordContent
-        NewRecordContentObject.ImageUrls = imageUrls.ToList();  // Конвертируйте список в массив
-        SelectedImage = "";
-        showErrorMessage = false;
-        await Close();
+            NewRecordTitle = string.Empty;
+            NewRecordContentObject.Text = string.Empty;  // Используйте Text вместо NewRecordContent
+            NewRecordContentObject.ImageUrls = imageUrls.ToList();  // Конвертируйте список в массив
+            SelectedImage = "";
+            showErrorMessage = false;
+          
+
+            await Close();
+            showSuccessMessageAnimation = true;
+        }
+        catch {
+            showErrorMessageAnimation = true;
+            }
+        finally
+        {
+            isLoadingAnimation = false;
+        }
+
     }
 
     public class JsonbListConverter : ValueConverter<List<string>, string>
@@ -343,13 +381,6 @@
             v => JsonConvert.DeserializeObject<List<string>>(v))
         { }
     }
-
-
-
-
-
-
-
 
 }
 

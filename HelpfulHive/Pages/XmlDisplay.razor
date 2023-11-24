@@ -99,6 +99,10 @@
         </div>
     }
 }
+
+
+<LoadingAnimation IsLoadingAnimation="@isLoadingAnimation"/>
+
 @code {
 
     private List<XmlTab> xmlTabs = new List<XmlTab>
@@ -106,6 +110,7 @@
     new XmlTab { Id = 1, Name = "Вкладка 1", IsActive = true }
     };
 
+    private bool isLoadingAnimation = false;
     private DataTable currentDataTable;
     private bool showTable = false;
     private string errorMessage = string.Empty;
@@ -125,38 +130,48 @@
 
     private async Task ShowTabularView(XmlTab tab)
     {
-        string xmlContent;
-        if (tab.IsSplit)
-        {
-            xmlContent = await tab.SendEditorRef.GetValue();
-        }
-        else
-        {
-            xmlContent = await tab.UniversalEditorRef.GetValue();
-        }
+        isLoadingAnimation = true; // Активация индикатора загрузки
 
-        XmlProcessor processor = new XmlProcessor();
-
-        if (string.IsNullOrWhiteSpace(xmlContent))
+        try
         {
-            errorMessage = "XML данных нет или они пусты";
-            tab.DataTable = null;
-        }
-        else
-        {
-            try
+            string xmlContent;
+            if (tab.IsSplit)
             {
-                tab.DataTable = processor.ConvertXmlToDataTable(xmlContent);
-                errorMessage = string.Empty; // Очищаем сообщение об ошибке при успешной конвертации
+                xmlContent = await tab.SendEditorRef.GetValue();
             }
-            catch (InvalidOperationException ex)
+            else
             {
-                errorMessage = "Ошибка при обработке XML данных: " + ex.Message;
+                xmlContent = await tab.UniversalEditorRef.GetValue();
+            }
+
+            XmlProcessor processor = new XmlProcessor();
+
+            if (string.IsNullOrWhiteSpace(xmlContent))
+            {
+                errorMessage = "XML данных нет или они пусты";
                 tab.DataTable = null;
             }
+            else
+            {
+                try
+                {
+                    tab.DataTable = processor.ConvertXmlToDataTable(xmlContent);
+                    errorMessage = string.Empty; // Очищаем сообщение об ошибке при успешной конвертации
+                }
+                catch (InvalidOperationException ex)
+                {
+                    errorMessage = "Ошибка при обработке XML данных: " + ex.Message;
+                    tab.DataTable = null;
+                }
+            }
+
+            StateHasChanged();
+        }
+        finally
+        {
+            isLoadingAnimation = false; // Деактивация индикатора загрузки
         }
 
-        StateHasChanged();
     }
 
 
@@ -292,33 +307,46 @@
 
     private void AddTab()
     {
-        if (xmlTabs.Any(tab => tab.ShowTable))
+        isLoadingAnimation = true;
+        try
         {
-            return;
-        }
-        var newTab = new XmlTab
+            if (xmlTabs.Any(tab => tab.ShowTable))
             {
-                Id = xmlTabs.Max(t => t.Id) + 1,
-                Name = $"Вкладка {xmlTabs.Count + 1}",
-                IsActive = true
-            };
+                return;
+            }
+            var newTab = new XmlTab
+                {
+                    Id = xmlTabs.Max(t => t.Id) + 1,
+                    Name = $"Вкладка {xmlTabs.Count + 1}",
+                    IsActive = true
+                };
 
-        xmlTabs.ForEach(t => t.IsActive = false);
-        xmlTabs.Add(newTab);
+            xmlTabs.ForEach(t => t.IsActive = false);
+            xmlTabs.Add(newTab);
+        }
+        finally
+        {
+            isLoadingAnimation = false;
+        }
     }
 
     private void SetActiveTab(XmlTab activeTab)
     {
-        // Проверка, активен ли табличный вид в любой из вкладок
-        if (xmlTabs.Any(tab => tab.ShowTable))
+        isLoadingAnimation = true;
+        try
         {
-            // Здесь можно добавить какую-то логику уведомления пользователя
-            // Например, вывести сообщение о том, что переключение вкладок запрещено
-            return;
-        }
+            if (xmlTabs.Any(tab => tab.ShowTable))
+            {
+                return;
+            }
 
-        xmlTabs.ForEach(t => t.IsActive = false);
-        activeTab.IsActive = true;
+            xmlTabs.ForEach(t => t.IsActive = false);
+            activeTab.IsActive = true;
+        }
+        finally
+        {
+            isLoadingAnimation = false;
+        }
     }
 
     private class XmlTab
