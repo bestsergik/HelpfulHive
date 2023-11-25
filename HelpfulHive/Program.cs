@@ -8,7 +8,7 @@ using HelpfulHive.Models;
 using Microsoft.AspNetCore.Components.Forms;
 using HelpfulHive.Areas.Identity.Pages.Account.Manage;
 using Microsoft.Extensions.FileProviders;
-using Blazored.Toast;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +38,7 @@ builder.Services.AddScoped<IApplicationUserAdapter, ApplicationUserAdapter>();
 
 
 
-builder.Services.AddBlazoredToast();
+
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<AnimationService>();

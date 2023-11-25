@@ -129,39 +129,46 @@ namespace HelpfulHive.Services
 
 
 
-       public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string userId, string selectedSubTabId)
-    {
-        using var context = _contextFactory.CreateDbContext();
-        var records = context.Records
-            .Include(r => r.SubTab)
-            .ThenInclude(st => st.ParentTab)
-            .AsNoTracking()
-            .AsQueryable();
-
-        // Добавляем условие, чтобы возвращать записи только для текущей вкладки
-        if (!string.IsNullOrEmpty(selectedSubTabId))
+        public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string userId, string selectedSubTabId)
         {
-            records = records.Where(r => r.SubTab.Uri == selectedSubTabId);
-        }
-
-        if (!isSearchAll)
-        {
-            records = records.Where(r => r.SubTab.UserId == userId && r.SubTab.TabType == TabType.Personal);
-        }
-        else
-        {
-            records = records.Where(r => r.SubTab.TabType == TabType.Common || (r.SubTab.TabType == TabType.Personal && r.SubTab.UserId == userId));
-        }
-
-            if (!string.IsNullOrWhiteSpace(query))
+            try
             {
-                // Преобразуйте строку запроса и данные в базе данных в нижний регистр перед сравнением
-                query = query.ToLower(); // Используйте ToUpper() для сравнения в верхнем регистре
-                records = records.Where(r => EF.Functions.Like(r.Title.ToLower(), $"%{query}%") || EF.Functions.Like(r.Content.Text.ToLower(), $"%{query}%"));
-            }
+                using var context = _contextFactory.CreateDbContext();
+                var records = context.Records
+                    .Include(r => r.SubTab)
+                    .ThenInclude(st => st.ParentTab)
+                    .Include(r => r.Content) // Добавляем явную загрузку для объекта Content
+                    .AsNoTracking()
+                    .AsQueryable();
 
-            return await records.ToListAsync();
-    }
+
+                Console.WriteLine($"Before filters - Count: {records.Count()}");
+
+                // Фильтр по строке запроса
+                if (!string.IsNullOrWhiteSpace(query))
+                {
+                    query = query.ToLower();
+                    records = records
+                        .Where(r =>
+                            EF.Functions.Like(r.Title.ToLower(), $"%{query}%") || EF.Functions.Like(r.Content.Text.ToLower(), $"%{query}%"));
+                }
+
+                var result = await records.ToListAsync();
+                Console.WriteLine($"After filters - Count: {result.Count}");
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in SearchRecordsAsync: {ex.Message}");
+                return new List<RecordModel>();
+            }
+        }
+
+
+
+
+
+
 
         public async Task<List<RecordModel>> GetRecordsByUserAndTabTypeAsync(bool isSearchAll, string userId)
         {

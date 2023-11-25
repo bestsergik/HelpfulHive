@@ -311,8 +311,7 @@ body {
     background: linear-gradient(145deg, #48728a 2%, #4ecdc4 );
     margin-bottom: 8px;
     border-radius: 12px;
-   
-    padding: 15px;
+    padding: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
@@ -410,12 +409,12 @@ body {
     align-items: center; /* Выравнивание по вертикали */
     justify-content: center; /* Выравнивание по горизонтали */
     border: none;
-    height: 70px;
+    height: 58px;
     cursor: pointer;
     padding: 10px 20px; /* Устанавливаем паддинг для кнопок */
     border-radius: 5px; /* Скругляем углы */
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Плавные переходы */
-    width: 135px;
+    width: 137px;
 }
 
     .tab-button:hover {

@@ -28,7 +28,7 @@
     {
 
         <div class="modern-tab-item" @onclick:preventDefault="true" style="@GetTabStyle(tab)" @onclick="() => SelectTab(tab)">
-            <NavLink style="color: antiquewhite; font-size: 20px; font-family: 'NavMenuParentLinkFont';" class="@GetModernNavLinkClass(tab)" href="@tab.Uri">
+            <NavLink style="color: antiquewhite; font-size: 18px; font-family: 'NavMenuParentLinkFont';" class="@GetModernNavLinkClass(tab)" href="@tab.Uri">
                 @TruncateString(tab.Name, 36)
             </NavLink>
 
@@ -38,7 +38,7 @@
                     @foreach (var subTab in tab.SubTabs)
                     {
                         <div @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@GetSubTabStyle(subTab)" >
-                            <NavLink  style="color: antiquewhite; font-size: 18px; font-family: 'NavMenuChildtLinkFont';" class="@GetModernNavLinkClass(subTab)" href="@subTab.Uri" @onclick="() => SelectSubTab(subTab)">
+                            <NavLink  style="color: antiquewhite; font-size: 17px; font-family: 'NavMenuChildtLinkFont';" class="@GetModernNavLinkClass(subTab)" href="@subTab.Uri" @onclick="() => SelectSubTab(subTab)">
                                 @TruncateString(subTab.Name, 40)
                             </NavLink>
                         </div>
@@ -371,6 +371,7 @@ private async void DeleteTab()
         newTabName = "";
         selectedParentTabId = 0;
         ToggleAddTabModal();
+        StateHasChanged(); // Явно обновить состояние компонента
     }
 
 

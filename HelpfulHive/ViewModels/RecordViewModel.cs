@@ -40,6 +40,12 @@ namespace HelpfulHive.ViewModels
             // Вы можете здесь вызвать метод загрузки записей или другие методы, которые зависят от UserId
         }
 
+
+        public async Task<List<RecordModel>> GetRecordsBySubTabUriAsync(string subTabUri)
+        {
+            return await _recordService.GetRecordsBySubTabUriAsync(subTabUri, UserId);
+        }
+
         public async Task AddRecordAsync(RecordModel newRecord)
         {
             await _recordService.AddRecordAsync(newRecord);

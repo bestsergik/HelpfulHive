@@ -22,4 +22,25 @@ function getClipboardText() {
 
 
 
+function copyHtmlToClipboard(htmlContent) {
+    var tempDiv = document.createElement('div');
+    tempDiv.style.position = 'absolute';
+    tempDiv.style.left = '-9999px';
+    tempDiv.innerHTML = htmlContent;
+    document.body.appendChild(tempDiv);
+
+    if (document.selection) {
+        var range = document.body.createTextRange();
+        range.moveToElementText(tempDiv);
+        range.select();
+    } else if (window.getSelection) {
+        var range = document.createRange();
+        range.selectNode(tempDiv);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+    }
+
+    document.execCommand('copy');
+    document.body.removeChild(tempDiv);
+}
 

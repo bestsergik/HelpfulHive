@@ -43,12 +43,16 @@ button {
     flex-wrap: wrap;
     border-bottom: 2px solid #e0e0e0;
     justify-content: center;
-    height: 108px;
+    height: 80px;
     display: flex;
     align-items: center;
     box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
     background: linear-gradient(12deg, #4ba1a8 0%, #47728b 100%);
+
 }
+
+
+
 
 
 
@@ -188,37 +192,38 @@ button {
 
 .user-btn {
     background-color: transparent; /* Убрать фоновый цвет */
-    border: none; /* Убрать границу */
+    border-radius: 8px; /* Закругление углов */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень */
     cursor: pointer; /* Курсор в виде указателя */
-    transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
+    transition: transform 0.1s ease, background-image 0.1s ease; /* Обновите transition */
     display: flex; /* Использование flexbox */
     align-items: center; /* Выравнивание по центру по вертикали */
     justify-content: flex-start; /* Выравнивание содержимого по левому краю */
     padding: 0; /* Убрать внутренние отступы */
     position: absolute; /* Абсолютное позиционирование */
-    top: 14px; /* Верхний отступ */
-    right: 20px; /* Правый отступ */
+    right: 10px; /* Правый отступ */
     width: auto; /* Ширина подстраивается под содержимое */
+    padding: 10px;
 }
 
     .user-btn:hover {
         background-color: transparent; /* Убрать фоновый цвет */
-        border: none; /* Убрать границу */
+        border-color: #e74c3c; /* Изменить цвет рамки при наведении */
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Изменить тень при наведении */
         cursor: pointer; /* Курсор в виде указателя */
         display: flex; /* Использование flexbox */
         align-items: center; /* Выравнивание по центру по вертикали */
         justify-content: flex-start; /* Выравнивание содержимого по левому краю */
         padding: 0; /* Убрать внутренние отступы */
         position: absolute; /* Абсолютное позиционирование */
-        top: 14px; /* Верхний отступ */
-        right: 20px; /* Правый отступ */
+        right: 10px; /* Правый отступ */
         width: auto; /* Ширина подстраивается под содержимое */
-        transform: scale(0.95) translate(1px, 1px); /* Уменьшение и смещение */
+        padding: 10px;
     }
 
     .user-btn .user-img {
-        max-width: 54px; /* Максимальная ширина изображения */
-        max-height: 54px; /* Максимальная высота изображения */
+        max-width: 50px; /* Максимальная ширина изображения */
+        max-height: 50px; /* Максимальная высота изображения */
         width: auto; /* Ширина изображения будет изменяться автоматически */
         height: auto; /* Высота изображения будет изменяться автоматически */
         order: 2; /* Помещаем изображение вторым в flexbox, чтобы оно было справа */
@@ -230,7 +235,13 @@ button {
         margin-right: 14px;
         font-size: 16px; /* Или другой размер, который вам подходит */
         white-space: nowrap; /* Предотвращаем перенос текста на новую строку */
+      
     }
+
+
+
+
+
 
 
 
@@ -242,7 +253,7 @@ button {
 
     background: var(--primary-gradient);
     padding: 10px;
-    width: 300px;
+    width: 275px;
     box-shadow: var(--box-shadow);
     color: var(--secondary-color);
     overflow-y: auto; /* Это позволит прокрутку по вертикали при необходимости */
@@ -277,25 +288,24 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 54px; /* Задайте необходимый размер */
-    height: 54px;
-    transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
+    width: 34px; /* Задайте необходимый размер */
+    height: 50px; /* Высота для одного изображения в спрайте */
+    transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
     display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
 }
 
 
     .image-favorite:hover {
-        background-image: url('/serviceimages/favorite_main_hover.png');
+        background-position: 0 -50px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 54px; /* Задайте необходимый размер */
-        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
-        transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
+        transform:  translate(1px, 1px); /* Уменьшение и смещение */
     }
 
         .image-favorite:hover .tooltip-text {
@@ -310,27 +320,24 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 54px; /* Задайте необходимый размер */
-    height: 54px;
-
-    position: relative;
-    transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
+    width: 37px; /* Задайте необходимый размер */
+    height: 50px; /* Высота для одного изображения в спрайте */
+    transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
     display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
 }
 
 
     .image-add-template:hover {
-        background-image: url('/serviceimages/add_template_hover.png');
+        background-position: 0 -47px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 54px; /* Задайте необходимый размер */
-        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
-        transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
+        transform: translate(1px, 1px); /* Уменьшение и смещение */
     }
 
         .image-add-template:hover .tooltip-text {
@@ -341,31 +348,36 @@ button {
 
 
 
+
+
+
+
 .image-xml {
     background-image: url('/serviceimages/xml.png');
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 54px; /* Задайте необходимый размер */
-    height: 54px;
-    transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
+    width: 40px; /* Задайте необходимый размер */
+    height: 24px; /* Высота для одного изображения в спрайте */
+    transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
     display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
 }
 
 
     .image-xml:hover {
-        background-image: url('/serviceimages/xml_hover.png');
+        background-position: 0 -24px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 54px; /* Задайте необходимый размер */
-        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
-        transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
+        transform: translate(1px, 1px); /* Уменьшение и смещение */
     }
+
+
 
 .tooltip-text {
     visibility: hidden;
@@ -401,26 +413,28 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 54px; /* Задайте необходимый размер */
-    height: 54px;
-    transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
+    width: 38px; /* Задайте необходимый размер */
+    height: 40px; /* Высота для одного изображения в спрайте */
+    transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
     display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
 }
 
 
     .image-quotes:hover {
-        background-image: url('/serviceimages/quotes_hover.png');
+        background-position: 0 -40px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 54px; /* Задайте необходимый размер */
-        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
-        transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
+        transform: translate(1px, 1px); /* Уменьшение и смещение */
     }
+
+
+
 
         .image-quotes:hover .tooltip-text {
             visibility: visible;
@@ -435,26 +449,31 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 54px; /* Задайте необходимый размер */
-    height: 54px;
-    transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
+    width: 38px; /* Задайте необходимый размер */
+    height: 40px; /* Высота для одного изображения в спрайте */
+    transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
     display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
 }
 
 
     .image-comma:hover {
-        background-image: url('/serviceimages/comma_hover.png');
+        background-position: 0 -40px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 54px; /* Задайте необходимый размер */
-        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
-        transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
+        transform: translate(1px, 1px); /* Уменьшение и смещение */
     }
+
+
+
+
+
+
 
         .image-comma:hover .tooltip-text {
             visibility: visible;
@@ -463,31 +482,34 @@ button {
         }
 
 
+
+
 .image-pdf {
     background-image: url('/serviceimages/pdf.png');
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 54px; /* Задайте необходимый размер */
-    height: 54px;
-    transition: transform 0.5s ease, background-image 0.5s ease; /* Обновите transition */
+    width: 37px; /* Задайте необходимый размер */
+    height: 42px; /* Высота для одного изображения в спрайте */
+    transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
     display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
 }
 
 
     .image-pdf:hover {
-        background-image: url('/serviceimages/pdf_hover.png');
+        background-position: 0 -42px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
-        width: 54px; /* Задайте необходимый размер */
-        height: 54px;
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
-        transform: scale(0.95) translate(2px, 2px); /* Уменьшение и смещение */
+        transform: translate(1px, 1px); /* Уменьшение и смещение */
     }
+
+
 
         .image-pdf:hover .tooltip-text {
             visibility: visible;

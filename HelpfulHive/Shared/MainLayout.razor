@@ -50,14 +50,14 @@
                         <span class="tooltip-text">Добавить запятые</span>
                     </button>
 
-        
+                    <button class="image-pdf" @onclick="NavigateToPdfDisplay">
+                        <span class="tooltip-text">Руководство пользователя</span>
+                    </button>
 
                     <button class="image-quotes" @onclick="@(e => GetCommaClick(e, "{NUMERIC_VARCHAR}"))">
                         <span class="tooltip-text">Добавить кавычки</span>
                     </button>
-                    <button class="image-pdf" @onclick="NavigateToPdfDisplay" >
-                        <span class="tooltip-text">Руководство пользователя</span>
-                    </button>
+             
 
 
                     <button @onclick="Logout" class="user-btn" >
@@ -67,7 +67,7 @@
                             {
                                 <img src="@profileImagePath" alt="Profile Image" class="user-img" />
                             }
-                            <span class="user-name" style="color: antiquewhite; font-size: 22px !important; font-family: 'NavMenuChildtLinkFont';">@userName</span>
+                                                    <span class="user-name" style="color: #E0FFFF; font-size: 19px !important; font-family: 'NavMenuChildtLinkFont';">@userName</span>
                         }
                         else
                         {

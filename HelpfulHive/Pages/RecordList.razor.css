@@ -24,20 +24,19 @@
     border-radius: 5px;
     margin-bottom: 4px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     background-image: linear-gradient(to right, #4a8c9b, #4abfbd, #4a8c9b, #4abfbd);
     background-size: 400% 400%;
-    /*animation: gradientAnimation 75s ease infinite;*/ /* Очень медленная анимация */
-    transition: transform 0.4s ease, box-shadow 0.4s ease; /* Добавляем плавность перехода transform */
+    display: flex; /* Используем flexbox */
+    justify-content: space-between; /* Распределяем содержимое и иконку по бокам */
+    align-items: center; /* Центрируем элементы по вертикали */
+    transition: opacity 0.4s ease, box-shadow 0.4s ease; /* Плавное изменение */
 }
 
     .record-item:hover {
-        transform: scale(0.996) translate(1px, 1px); /* Уменьшение и смещение при наведении */
-        box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5); /* Опционально, можно оставить или убрать тень */
+        opacity: 0.7; /* Немного уменьшаем прозрачность при наведении */
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* Увеличиваем тень для добавления глубины */
     }
-
 
 
     .record-item:last-child {
@@ -58,11 +57,15 @@
     }
 }
 
-
+.record-item-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Позволяет содержимому занимать все доступное пространство */
+}
 
 .record-img {
-    width: 50px;
-    height: 50px;
+    width: 45px;
+    height: 45px;
     margin-right: 15px;
     object-fit: cover;
     padding: 5px;
@@ -86,14 +89,10 @@
 
 .edit-icon {
     display: none;
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
+    margin-right:10px;
     color: #7334e9;
     cursor: pointer;
-    transition: transform 2s ease; /* Плавный переход за 0.3 секунды */
-
+    transition: transform 2s ease; /* Плавный переход */
 }
 .record-item:hover .edit-icon {
     display: inline-block; /* или block, в зависимости от того, как вам нужно */
@@ -101,7 +100,6 @@
 
 .edit-icon:hover {
     color: #c87714; /* Изменить на другой цвет при наведении */
-    cursor: pointer; /* Изменить курсор на указывающий */
 }
 
 
@@ -216,3 +214,80 @@ body, html {
         padding: 0; /* Убрать внутренние отступы */
         display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
     }
+
+
+
+
+
+.record-list {
+    margin-top: 20px;
+}
+
+.record-group {
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+}
+
+.group-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.tab-group {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+}
+
+.tab-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+}
+
+.subtab-group {
+    margin-top: 10px;
+    border: 1px solid #eee;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.subtab-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #777;
+}
+
+.record-item {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.record-item-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.record-img {
+    max-width: 50px;
+    max-height: 50px;
+    margin-right: 10px;
+}
+
+.record-content {
+
+    color: #333;
+}
+
+.edit-icon {
+    cursor: pointer;
+}

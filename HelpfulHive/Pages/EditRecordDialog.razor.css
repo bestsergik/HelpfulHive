@@ -491,14 +491,15 @@ btn btn-secondary
 
 .btn-link {
     background-color: transparent !important; /* Явное определение прозрачности фона */
-    border: none !important;
+    border: none; /* Убрать границу */
     padding: 0;
-    margin: 0;
     max-width: 35px;
     max-height: 44px;
     margin-right: 10px; /* Добавляем небольшой отступ справа от кнопки */
     position: relative;
-    color: transparent !important; /* Прозрачный цвет текста */
+    padding: 0; /* Убрать внутренние отступы */
+    display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
 }
 
     .btn-link:hover, .btn-link:focus, .btn-link:active {
@@ -506,8 +507,45 @@ btn btn-secondary
         border: none !important;
         outline: none;
         box-shadow: none;
+        background-color: transparent; /* Убрать фоновый цвет */
+        border: none; /* Убрать границу */
+        cursor: pointer; /* Курсор в виде указателя */
+        padding: 0; /* Убрать внутренние отступы */
+        display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+        transform: translate(1px, 1px); /* Уменьшение и смещение */
     }
 
+        .btn-link:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transition-delay: 0.7s;
+        }
+
+
+    .image-add-template {
+    background-image: url('/serviceimages/add_template.png');
+    background-color: transparent; /* Убрать фоновый цвет */
+    border: none; /* Убрать границу */
+    cursor: pointer; /* Курсор в виде указателя */
+    width: 37px; /* Задайте необходимый размер */
+    height: 50px; /* Высота для одного изображения в спрайте */
+    transition: transform 0.4s ease; /* Обновите transition */
+    position: relative;
+    padding: 0; /* Убрать внутренние отступы */
+    display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
+}
+
+
+    .image-add-template:hover {
+        background-position: 0 -47px; /* Позиция для состояния при наведении */
+        background-color: transparent; /* Убрать фоновый цвет */
+        border: none; /* Убрать границу */
+        cursor: pointer; /* Курсор в виде указателя */
+        padding: 0; /* Убрать внутренние отступы */
+        display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+        transform: translate(1px, 1px); /* Уменьшение и смещение */
+    }
 
 
 
@@ -701,17 +739,46 @@ btn btn-secondary
     transition-delay: 0.1s;
 }
 
-.btn-delete-record:hover .tooltip-text {
+/*.btn-delete-record:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
     transition-delay: 0.7s;
+}*/
+
+
+.btn-delete-record {
+    background-image: url('/serviceimages/trash.png');
+    background-color: transparent; /* Убрать фоновый цвет */
+    border: none; /* Убрать границу */
+    cursor: pointer; /* Курсор в виде указателя */
+    width: 15px; /* Задайте необходимый размер */
+    height: 23px; /* Высота для одного изображения в спрайте */
+    transition: transform 0.2s ease; /* Обновите transition */
+    position: relative;
+    padding: 0; /* Убрать внутренние отступы */
+    display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    background-position: 0 0; /* Позиция обычного состояния */
+    margin-left:10px;
 }
 
-.btn-link:hover .tooltip-text {
-    visibility: visible;
-    opacity: 1;
-    transition-delay: 0.7s;
-}
+
+    .btn-delete-record:hover {
+        background-position: 0 -23px; /* Позиция для состояния при наведении */
+        background-color: transparent; /* Убрать фоновый цвет */
+        border: none; /* Убрать границу */
+        cursor: pointer; /* Курсор в виде указателя */
+        padding: 0; /* Убрать внутренние отступы */
+        display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+        transform: translate(0.5px, 0.5px); /* Уменьшение и смещение */
+    }
+
+
+
+        .btn-delete-record:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+            transition-delay: 0.7s;
+        }
 
 .btn-close{
     margin-bottom: 4px;

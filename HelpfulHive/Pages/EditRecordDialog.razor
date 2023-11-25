@@ -16,14 +16,18 @@
         <div class="modal-dialog">
             <div class="add-record-modal-content">
                 <div class="modal-header">
-                    <button type="button" class="btn btn-link" @onclick="() => ToggleFavorite(RecordToEdit.Id)">
+                    <button type="button" class="btn-link" @onclick="() => ToggleFavorite(RecordToEdit.Id)">
                         <span class="tooltip-text">Добавить в избранное</span>
                         <img class="favorite-icon" src="@(isFavorite ? "/serviceimages/favoritRecord.png" : "/serviceimages/notFavoritRecord.png")" alt="Favorite" />
                     </button>
                     <h5 class="modal-title">Редактировать шаблон</h5>
                     @if (ShowDeleteButton())
                     {
-                        <button @onclick="DeleteRecord" class="btn-delete-record"><span class="tooltip-text">Удалить шаблон</span>🗑</button>
+                        <button class="btn-delete-record" @onclick="DeleteRecord">
+                            <span class="tooltip-text">Удалить шаблон</span>
+                        </button>
+
+                        @*<button @onclick="DeleteRecord" class="btn-delete-record"><span class="tooltip-text">Удалить шаблон</span>🗑</button>*@
                     }
                     <div class="spacer"></div> <!-- Spacer элемент -->
 
