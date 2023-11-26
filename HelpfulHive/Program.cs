@@ -23,7 +23,6 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>() // Добавляем поддержку ролей
-
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 

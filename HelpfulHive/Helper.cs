@@ -5,6 +5,8 @@ namespace HelpfulHive
     public class Helper
     {
 
+
+
         // Первичная инициализация
 
         // dotnet ef migrations add InitialCreate -c HelpfulHive.ApplicationDbContext  
@@ -16,10 +18,11 @@ namespace HelpfulHive
         //  dotnet ef database update -c HelpfulHive.ApplicationDbContext
 
         // полный откат
-        // dotnet ef database update 0 --context HelpfulHive.ApplicationDbContext
+        // dotnet ef database update 0 --context HelpfulHive.ApplicationDbContexts
 
         // *************************************************
 
+        // cd C:\Users\user\source\repos\HelpfulHive
         // git add .
         // git commit -m "????"
         // git push origin development

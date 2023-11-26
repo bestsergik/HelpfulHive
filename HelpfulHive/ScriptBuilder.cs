@@ -77,8 +77,13 @@ namespace HelpfulHive
                 else if (topScript.Contains("NUMERIC_VARCHAR"))
                 {
                     listUINs = GetUINsWithVariableLength(valueBuffer);
-                    finalScript.Append(listUINs);
+
+                    // Заменяем токен {NUMERIC_VARCHAR} на строку с UINs, разделенными пробелом
+                    topScript = topScript.Replace("{NUMERIC_VARCHAR}", " " + string.Join(" ", listUINs));
+
+                    finalScript.Append(topScript);
                 }
+
                 else if (!string.IsNullOrEmpty(listUINs))
                 {
                     finalScript.Append(ReplaceTokens(topScript, listUINs));

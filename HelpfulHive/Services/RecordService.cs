@@ -117,13 +117,13 @@ namespace HelpfulHive.Services
         {
             using var context = _contextFactory.CreateDbContext();
             var records = await context.UserPreferences
-                   .Where(up => up.UserId == userId && up.IsFavorite)
-                   .Include(up => up.Record)
-                   .Select(up => up.Record)
-                   .ToListAsync();
-            return records;
-
+                .Where(up => up.UserId == userId && up.IsFavorite)
+                .Include(up => up.Record)
+                    .ThenInclude(record => record.Content) // Включаем загрузку контента
+                .ToListAsync();
+            return records.Select(up => up.Record).ToList();
         }
+
 
 
 

@@ -5,7 +5,9 @@
 @inject RecordService RecordSV
 @inject TabViewModel TabVM
 @inject RecordViewModel RecordVM
+@attribute [Authorize]
 @inject ImageService imageSRV
+@inject NavigationManager NavManager
 @inject IJSRuntime JSRuntime
 @inject UserPreferencesService upVM
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -170,25 +172,29 @@ else
 
     private async Task SearchRecords()
     {
-        if (string.IsNullOrWhiteSpace(searchQuery))
+        try
         {
-            Records = await RecordVM.GetRecordsBySubTabUriAsync(SelectedSubTabId);
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                Records = await RecordVM.GetRecordsBySubTabUriAsync(SelectedSubTabId);
+            }
+            else
+            {
+                Records = await RecordVM.SearchRecordsAsync(searchQuery, isSearchAll, SelectedSubTabId);
+            }
+
+            // Группируем записи по вкладкам и подвкладкам
+            GroupedRecords = Records.GroupBy(r => $"{r.SubTab.TabType}/{r.SubTab.ParentTab?.Name}/{r.SubTab.Name}")
+                                    .OrderBy(g => g.Key)
+                                    .ToList();
+
+            StateHasChanged();
         }
-        else
+        catch
         {
-            Records = await RecordVM.SearchRecordsAsync(searchQuery, isSearchAll, SelectedSubTabId);
+            
         }
-
-        // Группируем записи по вкладкам и подвкладкам
-        GroupedRecords = Records.GroupBy(r => $"{r.SubTab.TabType}/{r.SubTab.ParentTab?.Name}/{r.SubTab.Name}")
-                                .OrderBy(g => g.Key)
-                                .ToList();
-
-        StateHasChanged();
     }
-
-
-
 
     private string GetActiveSubTabName()
     {
@@ -275,6 +281,16 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (!user.Identity.IsAuthenticated)
+        {
+            NavManager.NavigateTo("/Identity/Account/Login", forceLoad: true);
+        }
+     
+
         Records = new List<RecordModel>(); // Инициализация пустого списка
 
         await LoadPopularRecords();
@@ -375,8 +391,8 @@ else
 
     private string ConvertRelativeUrlsToAbsolute(string html)
     {
-       var baseUrl = "https://localhost:7058/";
-       // var baseUrl = "https://supportools.ru/";
+        // var baseUrl = "https://localhost:7058/";
+       var baseUrl = "https://supportools.ru/";
         // Регулярное выражение для поиска относительных URL
         var regex = new Regex("src=\"(.*?)\"");
         var matches = regex.Matches(html);
