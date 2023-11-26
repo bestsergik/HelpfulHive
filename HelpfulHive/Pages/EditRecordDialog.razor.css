@@ -719,18 +719,18 @@ btn btn-secondary
 
 .tooltip-text {
     visibility: hidden;
-    width: 120px; /* или нужный вам размер */
+    width: 90px; /* или нужный вам размер */
     background-color: dimgray;
     color: white; /* Белый текст */
     text-align: center;
     border-radius: 3px;
-    font-size:16px !important;
-    padding: 7px;
+    font-size:13px !important;
+    padding: 3px;
     /* Позиционирование */
     position: absolute;
     z-index: 1;
-    top: 100%; /* Под кнопкой */
-    left: 50%;
+    bottom: 1%; /* Под кнопкой */
+    left: 260%;
     transform: translateX(-20%);
     margin-top: 10px; /* Отступ от кнопки */
     /* Анимация */

@@ -47,7 +47,7 @@
                         <button style="text-decoration: underline;" @onclick="@(() => ExecuteCommand("underline"))">Ч</button>
                         <button @onclick="@(() => ChangeFontSize("increase"))">A+</button>
                         <button @onclick="@(() => ChangeFontSize("decrease"))">A-</button>
-
+                        <button @onclick="@(() => ResetStyles())">По умолчанию</button>
                         <!-- Выбор шрифта -->
                         <select @onchange="@((ChangeEventArgs e) => ExecuteCommand("fontName", e.Value.ToString()))">
                             <option value="Arial">Arial</option>
@@ -157,6 +157,9 @@
         </div>
     </div>
 }
+<LoadingAnimation IsLoadingAnimation="@isLoadingAnimation"
+                  ShowSuccessMessageAnimation="@showSuccessMessageAnimation"
+                  ShowErrorMessageAnimation="@showErrorMessageAnimation" />
 
 <ImageSelectionModal IsVisible="@isImageSelectionVisible"
                      IsVisibleChanged="OnImageModalVisibilityChanged"
@@ -171,12 +174,14 @@
 
     [Parameter] public EventCallback<RecordModel> OnRecordDeleted { get; set; }
 
-   
+
 
     private bool showErrorMessage = false;
 
 
-
+    private bool isLoadingAnimation = false;
+    private bool showSuccessMessageAnimation = false;
+    private bool showErrorMessageAnimation = false;
 
     private RecordContent NewRecordContentObject { get; set; } = new RecordContent();
     private string SelectedImage { get; set; } = "";
@@ -258,6 +263,17 @@
         NewRecordContentObject.Text = text;
     }
 
+    private async Task ResetStyles()
+    {
+        await ExecuteCommand("removeFormat"); // Сброс всех стилей к стандартным значениям
+        await ExecuteCommand("fontSize", "3"); // Установите стандартный размер шрифта
+        await ExecuteCommand("foreColor", "black"); // Установите стандартный цвет текста (черный)
+        await ExecuteCommand("fontName", "Arial"); // Установите стандартный шрифт
+
+        await ExecuteCommand("bold"); // Убрать жирность
+        await ExecuteCommand("italic"); // Убрать курсив
+        await ExecuteCommand("underline"); // Убрать подчеркивание
+    }
 
 
 
@@ -416,47 +432,65 @@
 
     private async Task SaveChanges()
     {
-        await UpdateContentText();
-        if (string.IsNullOrEmpty(RecordTitle) ||
-            string.IsNullOrEmpty(NewRecordContentObject.Text) ||
-            SelectedSubTabId == 0)
-        {
-            showErrorMessage = true;
-            StateHasChanged();
-            return;
-        }
 
-        var imagePath = "content_images";
-        var contentText = NewRecordContentObject.Text;
-        var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,([A-Za-z0-9+/=]+)";
-        var matches = Regex.Matches(contentText, base64ImagePattern);
-
-        var imageTasks = matches.Select(async match =>
+        isLoadingAnimation = false;
+        showSuccessMessageAnimation = false;
+        showErrorMessageAnimation = false;
+        try
         {
-            var base64Image = match.Groups[1].Value;
-            if (IsValidBase64String(base64Image))
+
+            await UpdateContentText();
+            if (string.IsNullOrEmpty(RecordTitle) ||
+                string.IsNullOrEmpty(NewRecordContentObject.Text) ||
+                SelectedSubTabId == 0)
             {
-                var imageUrl = await ImageService.SaveImageAsync(base64Image, imagePath);
-                contentText = contentText.Replace(match.Value, imageUrl);
-                return imageUrl;
+                showErrorMessage = true;
+                StateHasChanged();
+                return;
             }
-            return null;
-        }).ToList();
 
-        var imageUrls = (await Task.WhenAll(imageTasks)).Where(url => url != null).ToList();
+            var imagePath = "content_images";
+            var contentText = NewRecordContentObject.Text;
+            var base64ImagePattern = @"data:image\/[a-zA-Z]+;base64,([A-Za-z0-9+/=]+)";
+            var matches = Regex.Matches(contentText, base64ImagePattern);
 
-        // Обновление содержимого записи
-        RecordToEdit.Content.Text = contentText;
-        RecordToEdit.Content.ImageUrls = imageUrls;
-       
-        // Обновление других свойств записи
-        RecordToEdit.SubTabId = SelectedSubTabId;
-        RecordToEdit.ImagePath = string.IsNullOrEmpty(SelectedImage) ? "default_template.png" : SelectedImage;
-        // Обновите другие изменяемые поля здесь, если это необходимо
+            var imageTasks = matches.Select(async match =>
+            {
+                var base64Image = match.Groups[1].Value;
+                if (IsValidBase64String(base64Image))
+                {
+                    var imageUrl = await ImageService.SaveImageAsync(base64Image, imagePath);
+                    contentText = contentText.Replace(match.Value, imageUrl);
+                    return imageUrl;
+                }
+                return null;
+            }).ToList();
 
-        // Сохранение изменений
-        await RecordVM.UpdateRecordAsync(RecordToEdit);
-        CloseDialog();
+            var imageUrls = (await Task.WhenAll(imageTasks)).Where(url => url != null).ToList();
+
+            // Обновление содержимого записи
+            RecordToEdit.Content.Text = contentText;
+            RecordToEdit.Content.ImageUrls = imageUrls;
+
+            // Обновление других свойств записи
+            RecordToEdit.SubTabId = SelectedSubTabId;
+            RecordToEdit.ImagePath = string.IsNullOrEmpty(SelectedImage) ? "default_template.png" : SelectedImage;
+            // Обновите другие изменяемые поля здесь, если это необходимо
+
+            // Сохранение изменений
+            await RecordVM.UpdateRecordAsync(RecordToEdit);
+            CloseDialog();
+        }
+        catch
+        {
+            showErrorMessageAnimation = true;
+        }
+        finally
+        {
+            isLoadingAnimation = false;
+            await InvokeAsync(StateHasChanged); // Используйте InvokeAsync
+
+        }
     }
 
 

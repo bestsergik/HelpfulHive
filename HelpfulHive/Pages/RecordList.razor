@@ -58,7 +58,9 @@
                 @{
                     var tabType = topLevelGroup.Key == "Personal" ? "Личные" : "Общие";
                 }
-                <h4 class="tab-title">@tabType</h4>
+                <div class="center-container">
+                    <h4 class="tab-title">@tabType</h4>
+                </div>
                 <div class="group-divider"></div>
                 @foreach (var subTabGroup in topLevelGroup.GroupBy(g => g.Key.Split('/')[1]))
                 {
@@ -90,9 +92,6 @@
         }
     </div>
 }
-
-
-
 else
 {
   @if (Records != null && Records.Any())
@@ -126,6 +125,9 @@ else
 
 
 
+<LoadingAnimation IsLoadingAnimation="@isLoadingAnimation" />
+
+
 <EditRecordDialog IsVisible="@isEditDialogVisible"
                   RecordToEdit="@selectedRecord"
                   OnEditDialogClosed="@CloseEditDialog"
@@ -153,18 +155,17 @@ else
     private bool ShowGroupedRecords => !string.IsNullOrEmpty(searchQuery);
     private List<RecordModel> AllRecords { get; set; }
     private bool ShowGroupedSearchResults => !string.IsNullOrEmpty(searchQuery) && Records != null && Records.Any();
+    private bool isSingleClick = false;
+    private bool isLoadingAnimation = false;
 
 
     private string FormatGroupTitle(string groupKey)
     {
         var parts = groupKey.Split('/');
 
-        // Добавим отладочный вывод для второй части ключа (подвкладка)
-
-        // Возвращаем только вторую часть ключа (подвкладку)
-        return parts.Length > 1 ? parts[1].Trim() : "N/A";
+        // Возвращаем только последнюю часть ключа (подвкладку)
+        return parts.LastOrDefault()?.Trim() ?? "N/A";
     }
-
 
 
     private async Task SearchRecords()
@@ -186,7 +187,7 @@ else
         StateHasChanged();
     }
 
-  
+
 
 
     private string GetActiveSubTabName()
@@ -342,18 +343,32 @@ else
 
     private async Task HandleClick(RecordModel record)
     {
-     
-        if (record != null && record.Content != null && Records.Contains(record))
+        isLoadingAnimation = true; // Активация индикатора загрузки
+
+        try
         {
-            if (ContainsKeyWords(record.Content.Text ?? ""))
+            if (record != null && record.Content != null && Records.Contains(record))
             {
-                await scriptBuilder.BuildScriptAsync(record.Content.Text);
+                if (ContainsKeyWords(record.Content.Text ?? ""))
+                {
+
+                    await scriptBuilder.BuildScriptAsync(record.Content.Text);
+                }
+                else
+                {
+                    var htmlContent = ConvertRelativeUrlsToAbsolute(record.Content.Text);
+                    await JSRuntime.InvokeVoidAsync("copyHtmlToClipboard", htmlContent);
+                }
             }
-            else
-            {
-                var htmlContent = ConvertRelativeUrlsToAbsolute(record.Content.Text);
-                await JSRuntime.InvokeVoidAsync("copyHtmlToClipboard", htmlContent);
-            }
+        }
+        catch
+        {
+            
+        }
+        finally
+        {
+            isLoadingAnimation = false; // Деактивация индикатора загрузки
+            await InvokeAsync(StateHasChanged); // Используйте InvokeAsync
         }
     }
 
@@ -381,21 +396,25 @@ else
 
     private async Task OnSingleClick(MouseEventArgs e, RecordModel record)
     {
-        isDoubleClick = false;
-        await Task.Delay(190); // Задержка для проверки двойного клика
-        if (!isDoubleClick)
+        if (!isSingleClick)
         {
-            HandleClick(record);
-            await JSRuntime.InvokeVoidAsync("animateCheckmark", e.ClientX, e.ClientY);
+            isSingleClick = true;
+            await Task.Delay(190); // Задержка для проверки двойного клика
+            if (isSingleClick)
+            {
+                HandleClick(record);
+                await JSRuntime.InvokeVoidAsync("animateCheckmark", e.ClientX, e.ClientY);
+            }
+            isSingleClick = false; // Сброс флага после обработки
         }
     }
 
+
     private void OnDoubleClick(RecordModel record)
     {
-        isDoubleClick = true;
+        isSingleClick = false;
         EditRecord(record);
     }
-
 
     
 

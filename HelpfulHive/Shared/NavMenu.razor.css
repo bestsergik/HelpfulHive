@@ -100,7 +100,6 @@
 .tooltip {
     visibility: hidden;
     width: 105px;
-    background-color: black;
     color: white;
     text-align: center;
     border-radius: 6px;
@@ -109,9 +108,9 @@
     z-index: 1;
     bottom: 100%; /* Позиционирование над кнопкой */
     left: 50%;
-    margin-bottom:10px;
+    margin-bottom: 10px;
     transform: translateX(-50%); /* Центрируем подсказку относительно кнопки */
-
+    background-color: dimgray;
     opacity: 0;
     transition: opacity 0.3s;
 }

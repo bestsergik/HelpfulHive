@@ -295,6 +295,8 @@ button {
     padding: 0; /* Убрать внутренние отступы */
     display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
     background-position: 0 0; /* Позиция обычного состояния */
+
+
 }
 
 
@@ -313,6 +315,34 @@ button {
             opacity: 1;
             transition-delay: 0.6s;
         }
+
+.top-row button:not(.user-btn) {
+    position: relative;
+    border-color: #e74c3c;
+
+}
+
+    .top-row button:not(.user-btn)::before {
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2), /* Основная тень */
+        0 5px 10px rgba(0, 0, 0, 0.1), /* Тень снизу */
+        inset 0 0 10px rgba(255, 255, 255, 0.5), /* Внутренний свет */
+        0 0 5px rgba(0, 0, 0, 0.3), /* Резкий контур */
+        0 0 10px rgba(0, 0, 0, 0.1); /* Тонкая обводка */
+
+
+        content: "";
+        position: absolute;
+        top: 50%; /* Центрирование тени по вертикали */
+        left: 50%; /* Центрирование тени по горизонтали */
+        width: 65px; /* Фиксированная ширина тени */
+        height: 65px; /* Фиксированная высота тени */
+        background: rgba(0, 0, 0, 0.2); /* Цвет тени */
+        border-radius: 20%; /* Для создания круглой тени */
+        transform: translate(-50%, -50%); /* Центрирование тени относительно кнопки */
+        z-index: -1;
+    }
+
+
 
 
 .image-add-template {
@@ -381,7 +411,6 @@ button {
 
 .tooltip-text {
     visibility: hidden;
-    width: 120px; /* или нужный вам размер */
     background-color: dimgray; 
     color: white; /* Белый текст */
     text-align: center;
@@ -398,6 +427,7 @@ button {
     opacity: 0;
     transition: opacity 0.2s, visibility 0.2s;
     transition-delay: 0.1s;
+    font-size:13px !important;
     
 }
 

@@ -44,7 +44,7 @@
                         <span class="tooltip-text">Добавить шаблон</span>
                     </button>
                     <button class="image-favorite" @onclick="NavigateToFavorite" aria-label="Избранное">
-                        <span class="tooltip-text">Избранное</span>
+                        <span class="tooltip-text">Избранные шаблоны</span>
                     </button>
                     <button class="image-comma" @onclick="@(e => GetCommaClick(e, "comma"))">
                         <span class="tooltip-text">Добавить запятые</span>
@@ -81,7 +81,7 @@
                 @Body
             </article>
             <!-- Место для Monaco Editor -->
-            <div id="xmlEditor" style="height:400px;"></div>
+            <div id="xmlEditor" ></div>
         </main>
     </div>
 </div>
@@ -95,13 +95,15 @@
     <AddRecordDialog IsVisible="true" AvailableSubTabs="@GetAllSubTabs()"  OnRecordAdded="HandleRecordAdded" OnCloseDialog="CloseAddRecordDialog" SelectedTab="selectedTab"></AddRecordDialog>
 }
 
+<LoadingAnimation IsLoadingAnimation="@isLoadingAnimation" />
+
 @code{
 
     private bool isAddRecordDialogOpen = false;
     private TabItem? selectedTab = null;
     private IEnumerable<RecordModel>? tabRecords = null;
     private List<RecordModel>? topRecords;
-
+    private bool isLoadingAnimation = false;
     private string userName;
     private string profileImagePath;
 
@@ -142,9 +144,18 @@
 
     private async Task GetCommaClick(MouseEventArgs e, string value)
     {
-        await scriptBuilder.BuildScriptAsync(value);
-        await JSRuntime.InvokeVoidAsync("animateCheckmark", e.ClientX, e.ClientY);
+        isLoadingAnimation = true; // Активация индикатора загрузки
 
+        try
+        {
+            await scriptBuilder.BuildScriptAsync(value);
+           
+        }
+        finally
+        {
+            await JSRuntime.InvokeVoidAsync("animateCheckmark", e.ClientX, e.ClientY);
+            isLoadingAnimation = false; // Деактивация индикатора загрузки
+        }
     }
 
    

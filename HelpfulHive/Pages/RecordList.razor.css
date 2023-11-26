@@ -218,9 +218,13 @@ body, html {
 
 
 
-
 .record-list {
     margin-top: 20px;
+}
+
+.center-container {
+    text-align: center;
+   
 }
 
 .record-group {
@@ -241,12 +245,14 @@ body, html {
     border: 1px solid #ddd;
     padding: 10px;
     background-color: #fff;
+   
 }
 
 .tab-title {
     font-size: 16px;
     font-weight: bold;
     color: #555;
+    font-size: 19px;
 }
 
 .subtab-group {
@@ -284,7 +290,6 @@ body, html {
 }
 
 .record-content {
-
     color: #333;
 }
 

@@ -30,10 +30,7 @@
         {
             var tabId = $"xmlTab{tab.Id}";
             <div class="tab-pane fade @(tab.IsActive ? "show active" : "")" id="@tabId" role="tabpanel" aria-labelledby="@tabId-tab">
-                <div class="tab-header">
-
-                <button class="toggle-view-btn" @onclick="() => ToggleTabularView(tab)">@(tab.ShowTable ? "Назад" : "Перейти к табличному виду")</button>
-                </div>
+               
 
                 @if (!tab.ShowTable)
                 {
@@ -64,8 +61,12 @@
                         <button class="error-close-button" @onclick="() => errorMessage = string.Empty">Закрыть</button>
                     </div>
                 }
+                <div class="tab-header">
 
+                    <button class="toggle-view-btn" @onclick="() => ToggleTabularView(tab)">@(tab.ShowTable ? "Назад" : "Перейти к табличному виду")</button>
+                </div>
             </div>
+          
         }
     </div>
 </div>
@@ -123,7 +124,7 @@
                 Language = "xml",
                 Theme = "vs-white",
                 ReadOnly = false,
-                FontSize = 20
+                FontSize = 18
 
             };
     }
@@ -221,60 +222,67 @@
 
     private async Task FormatXmlOnPasteUniversal(StandaloneCodeEditor editor, StandaloneCodeEditor sendEditor, StandaloneCodeEditor checkEditor)
     {
-        // Получение значения из буфера обмена или редактора
-        string xml = await editor.GetValue();
 
-        // Разделение XML документов
-        List<string> sendDocuments = new List<string>();
-        List<string> checkDocuments = new List<string>();
+       
+            // Получение значения из буфера обмена или редактора
+            string xml = await editor.GetValue();
 
-        // Разделение входных данных на отдельные документы
-        string[] documents = Regex.Split(xml, @"(?=<\?xml[^>]*\?>\s*<Send)|(?=<\?xml[^>]*\?>\s*<Check)|(?=<Send)|(?=<Check)");
-        foreach (var doc in documents)
-        {
-            var trimmedDoc = doc.Trim();
+            // Разделение XML документов
+            List<string> sendDocuments = new List<string>();
+            List<string> checkDocuments = new List<string>();
 
-            if (trimmedDoc.StartsWith("<Send"))
+            // Разделение входных данных на отдельные документы
+            string[] documents = Regex.Split(xml, @"(?=<\?xml[^>]*\?>\s*<Send)|(?=<\?xml[^>]*\?>\s*<Check)|(?=<Send)|(?=<Check)");
+            foreach (var doc in documents)
             {
-                sendDocuments.Add(trimmedDoc);
-            }
-            else if (trimmedDoc.StartsWith("<Check"))
-            {
-                checkDocuments.Add(trimmedDoc);
-            }
-        }
+                var trimmedDoc = doc.Trim();
 
-        var currentTab = xmlTabs.FirstOrDefault(t => t.IsActive);
-        if (currentTab != null)
-        {
-            if (sendDocuments.Any() && checkDocuments.Any())
-            {
-                currentTab.IsSplit = true;
-            }
-            else
-            {
-                currentTab.IsSplit = false;
+                if (trimmedDoc.StartsWith("<Send"))
+                {
+                    sendDocuments.Add(trimmedDoc);
+                }
+                else if (trimmedDoc.StartsWith("<Check"))
+                {
+                    checkDocuments.Add(trimmedDoc);
+                }
             }
 
-            StateHasChanged();
-
-            string formattedXml = FormatXmlString(xml);
-            await editor.SetValue(formattedXml);
-
-            if (currentTab.IsSplit)
+            var currentTab = xmlTabs.FirstOrDefault(t => t.IsActive);
+            if (currentTab != null)
             {
-                string sendXml = string.Join("\n", sendDocuments);
-                string checkXml = string.Join("\n", checkDocuments);
-                string formattedSendXml = FormatXmlString(sendXml);
-                string formattedCheckXml = FormatXmlString(checkXml);
-                await currentTab.SendEditorRef.SetValue(formattedSendXml);
-                await currentTab.CheckEditorRef.SetValue(formattedCheckXml);
+                if (sendDocuments.Any() && checkDocuments.Any())
+                {
+                    currentTab.IsSplit = true;
+                }
+                else
+                {
+                    currentTab.IsSplit = false;
+                }
+
+                StateHasChanged();
+
+                string formattedXml = FormatXmlString(xml);
+                await editor.SetValue(formattedXml);
+
+                if (currentTab.IsSplit)
+                {
+                    string sendXml = string.Join("\n", sendDocuments);
+                    string checkXml = string.Join("\n", checkDocuments);
+                    string formattedSendXml = FormatXmlString(sendXml);
+                    string formattedCheckXml = FormatXmlString(checkXml);
+                    await currentTab.SendEditorRef.SetValue(formattedSendXml);
+                    await currentTab.CheckEditorRef.SetValue(formattedCheckXml);
+                }
             }
-        }
     }
+  
+     
+    
 
     private string FormatXmlString(string xml)
     {
+        isLoadingAnimation = true; // Активация индикатора загрузки
+
         try
         {
             var xDoc = XDocument.Parse(xml);
@@ -283,6 +291,10 @@
         catch (Exception ex)
         {
             return xml;
+        }
+        finally
+        {
+            isLoadingAnimation = false;
         }
     }
 

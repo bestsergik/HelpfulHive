@@ -127,8 +127,6 @@ namespace HelpfulHive.Services
 
 
 
-
-
         public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string userId, string selectedSubTabId)
         {
             try
@@ -137,10 +135,9 @@ namespace HelpfulHive.Services
                 var records = context.Records
                     .Include(r => r.SubTab)
                     .ThenInclude(st => st.ParentTab)
-                    .Include(r => r.Content) // Добавляем явную загрузку для объекта Content
+                    .Include(r => r.Content)
                     .AsNoTracking()
                     .AsQueryable();
-
 
                 Console.WriteLine($"Before filters - Count: {records.Count()}");
 
@@ -153,8 +150,21 @@ namespace HelpfulHive.Services
                             EF.Functions.Like(r.Title.ToLower(), $"%{query}%") || EF.Functions.Like(r.Content.Text.ToLower(), $"%{query}%"));
                 }
 
+                // Дополнительные фильтры для учета типа вкладки и владельца
+                if (!isSearchAll)
+                {
+                    records = records
+                        .Where(r => (r.SubTab.UserId == userId && r.SubTab.TabType == TabType.Personal) || r.SubTab.TabType == TabType.Common);
+                }
+
                 var result = await records.ToListAsync();
                 Console.WriteLine($"After filters - Count: {result.Count}");
+
+                foreach (var record in result)
+                {
+                    Console.WriteLine($"Record Id: {record.Id}, TabType: {record.SubTab.TabType}, UserId: {record.SubTab.UserId}");
+                }
+
                 return result;
             }
             catch (Exception ex)
@@ -170,6 +180,9 @@ namespace HelpfulHive.Services
 
 
 
+
+
+
         public async Task<List<RecordModel>> GetRecordsByUserAndTabTypeAsync(bool isSearchAll, string userId)
         {
             using var context = _contextFactory.CreateDbContext();
@@ -178,6 +191,7 @@ namespace HelpfulHive.Services
                 .ThenInclude(st => st.ParentTab)
                 .AsNoTracking()
                 .AsQueryable();
+                records = records.Where(r => r.SubTab.UserId == userId || r.SubTab.TabType == TabType.Common);
 
             if (!isSearchAll)
             {

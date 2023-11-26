@@ -11,20 +11,21 @@
 /* Стили для вкладок */
 .nav-pills .nav-link {
     color: #555;
-    background: linear-gradient(45deg, #6d5dfc, #6b8dfc);
+    background: linear-gradient(45deg, #51a2c6, #5c87ac);
     margin-right: 10px;
     border: none;
     margin: 5px;
     border-radius: 10px;
+    font-size: 15px !important; 
     padding: 10px 20px;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer; /* Добавить это свойство */
 }
 
     .nav-pills .nav-link.active, .nav-pills .nav-link:hover {
         color: #fff;
-        background: linear-gradient(45deg, #6b8dfc, #6d5dfc);
+        background: linear-gradient(45deg, #5c87ac, #51a2c6);
     }
 
 /* Кнопка "+" */
@@ -38,18 +39,21 @@
     padding: 11px 15px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
+    font-size: 13.5px !important;
 }
 
     .btn-primary:hover {
-        background: linear-gradient(to right, #4cb7b6, #68dcd6);
+        opacity: 0.8; /* Немного уменьшаем прозрачность при наведении */
+
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* Увеличиваем тень для добавления глубины */
     }
 
 /* Содержимое вкладок */
 .tab-content {
-    background-color: #fff;
+    background-color: #c4c5c7;
     border-radius: 8px;
-    padding: 20px;
-    margin-top: 10px;
+    padding: 10px;
+    margin-top: 1px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -67,7 +71,7 @@
 .tab-header {
     display: flex;
     justify-content: flex-start; /* Выравниваем элементы справа */
-    padding-bottom: 10px; /* Отступ снизу для разделения от содержимого */
+    padding-bottom: 2px; /* Отступ снизу для разделения от содержимого */
 }
 
 .toggle-view-btn {
@@ -75,16 +79,22 @@
     border: none;
     padding: 10px 20px;
     background: linear-gradient(to right, #48778d, #4dc2bd);
-    margin-bottom: 10px;
+    margin-top: 10px;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s ease;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     cursor: pointer;
+    transition: opacity 0.4s ease, box-shadow 0.4s ease; /* Плавное изменение */
+    font-size: 13.5px !important;
 }
 
     .toggle-view-btn:hover {
-        background: linear-gradient(to right, #4cb7b6, #68dcd6);
+        opacity: 0.8; /* Немного уменьшаем прозрачность при наведении */
+
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* Увеличиваем тень для добавления глубины */
     }
+
+
+
 
 
 

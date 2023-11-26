@@ -12,8 +12,36 @@
 
 function executeCommand(element, command, argument) {
     element.focus();
-    document.execCommand(command, false, argument || null);
+
+    if (command === "removeFormat") {
+        document.execCommand("removeFormat", false, null);
+        // Добавьте другие команды, если необходимо сбросить другие стили
+    } else {
+        document.execCommand(command, false, argument || null);
+    }
 }
+
+
+function setStyle(element, style, value) {
+    element.style[style] = value;
+}
+
+function resetStyles(element) {
+    element.style.fontWeight = "normal";
+    element.style.fontStyle = "normal";
+    element.style.textDecoration = "none";
+    element.style.fontSize = "medium";
+    element.style.color = "black";
+    element.style.fontFamily = "Arial";
+}
+
+function toggleStyle(element, style) {
+    const currentValue = window.getComputedStyle(element, null).getPropertyValue(style);
+    const newValue = currentValue === "normal" ? "bold" : "normal";
+    setStyle(element, style, newValue);
+}
+
+
 
 
 

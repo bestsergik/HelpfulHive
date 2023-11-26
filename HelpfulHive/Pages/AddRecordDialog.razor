@@ -42,7 +42,7 @@
                         <button style="text-decoration: underline;" @onclick="@(() => ExecuteCommand("underline"))">Ч</button>
                         <button @onclick="@(() => ChangeFontSize("increase"))">A+</button>
                         <button @onclick="@(() => ChangeFontSize("decrease"))">A-</button>
-
+                        <button @onclick="@(() => ResetStyles())">По умолчанию</button>
                         <!-- Выбор шрифта -->
                         <select @onchange="@((ChangeEventArgs e) => ExecuteCommand("fontName", e.Value.ToString()))">
                             <option value="Arial">Arial</option>
@@ -235,8 +235,6 @@
     }
 
 
-
-
     private async Task UpdateContentText()
     {
         var text = await JSRuntime.InvokeAsync<string>("getContentText", editorRef);
@@ -244,7 +242,17 @@
 
     }
 
+    private async Task ResetStyles()
+    {
+        await ExecuteCommand("removeFormat"); // Сброс всех стилей к стандартным значениям
+        await ExecuteCommand("fontSize", "3"); // Установите стандартный размер шрифта
+        await ExecuteCommand("foreColor", "black"); // Установите стандартный цвет текста (черный)
+        await ExecuteCommand("fontName", "Arial"); // Установите стандартный шрифт
 
+        await ExecuteCommand("bold"); // Убрать жирность
+        await ExecuteCommand("italic"); // Убрать курсив
+        await ExecuteCommand("underline"); // Убрать подчеркивание
+    }
 
     protected override void OnInitialized()
     {
@@ -302,7 +310,7 @@
 
     private async Task AddRecord()
     {
-        isLoadingAnimation = false;
+        isLoadingAnimation = true;
         showSuccessMessageAnimation = false;
         showErrorMessageAnimation = false;
         try
@@ -367,6 +375,8 @@
         finally
         {
             isLoadingAnimation = false;
+            await InvokeAsync(StateHasChanged); // Используйте InvokeAsync
+
         }
 
     }
