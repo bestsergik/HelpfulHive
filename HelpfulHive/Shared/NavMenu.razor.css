@@ -349,6 +349,33 @@ body {
         /* Остальные стили остаются прежними */
     }
 
+.modern-tab-content {
+    max-height: 85vh; /* Adjust the value as needed */
+    overflow-y: auto; /* Enable vertical scrolling if the content exceeds the max height */
+    padding: 16px 10px 6px 10px;
+}
+
+
+
+    .modern-tab-content::-webkit-scrollbar-track {
+        background: transparent; /* цвет фона трека */
+    }
+
+    .modern-tab-content::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        .modern-tab-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    .modern-tab-content::-webkit-scrollbar {
+        width: 0;
+    }
+
+
+
+
 /* Анимации */
 @keyframes gradient {
     0% {
@@ -396,6 +423,7 @@ body {
     display: flex;
     justify-content: center; /* Центрировать кнопки */
     gap: 10px; /* Расстояние между кнопками */
+    padding: 6px 6px 0 6px;
 }
 
 /* Стили для вкладок */
@@ -408,7 +436,7 @@ body {
     align-items: center; /* Выравнивание по вертикали */
     justify-content: center; /* Выравнивание по горизонтали */
     border: none;
-    height: 58px;
+    height: 50px;
     cursor: pointer;
     padding: 10px 20px; /* Устанавливаем паддинг для кнопок */
     border-radius: 5px; /* Скругляем углы */

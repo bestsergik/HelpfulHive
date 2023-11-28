@@ -242,7 +242,9 @@ button {
 
 
 
-
+::-webkit-scrollbar {
+    width: 0;
+}
 
 
 
@@ -250,35 +252,19 @@ button {
 
 .sidebar {
     border-bottom: none; /* или '0', чтобы убрать границу */
-
     background: var(--primary-gradient);
-    padding: 10px;
     width: 275px;
     box-shadow: var(--box-shadow);
     color: var(--secondary-color);
     overflow-y: auto; /* Это позволит прокрутку по вертикали при необходимости */
-    max-height: 100vh; /* Максимальная высота элемента будет равна высоте области просмотра */
 }
 
 
-    .sidebar::-webkit-scrollbar {
-        width: 10px;
-    }
-
-    .sidebar::-webkit-scrollbar-track {
-        background: #f1f1f1;
-    }
-
-    .sidebar::-webkit-scrollbar-thumb {
-        background: #888;
-    }
-
-        .sidebar::-webkit-scrollbar-thumb:hover {
-            background: #555;
-        }
 
 
+    
 
+  
 
 
 
@@ -288,8 +274,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 34px; /* Задайте необходимый размер */
-    height: 50px; /* Высота для одного изображения в спрайте */
+    width: 30px; /* Задайте необходимый размер */
+    height: 44px; /* Высота для одного изображения в спрайте */
     transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -301,7 +287,7 @@ button {
 
 
     .image-favorite:hover {
-        background-position: 0 -50px; /* Позиция для состояния при наведении */
+        background-position: 0 -44px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
@@ -323,9 +309,9 @@ button {
 }
 
     .top-row button:not(.user-btn)::before {
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2), /* Основная тень */
-        0 5px 10px rgba(0, 0, 0, 0.1), /* Тень снизу */
-        inset 0 0 10px rgba(255, 255, 255, 0.5), /* Внутренний свет */
+        box-shadow: 0 0 2px rgba(0, 0, 0, 0.2), /* Основная тень */
+        0 5px 3px rgba(0, 0, 0, 0.1), /* Тень снизу */
+        inset 0 0 10px rgba(255, 255, 255, 0.2), /* Внутренний свет */
         0 0 5px rgba(0, 0, 0, 0.3), /* Резкий контур */
         0 0 10px rgba(0, 0, 0, 0.1); /* Тонкая обводка */
 
@@ -334,9 +320,9 @@ button {
         position: absolute;
         top: 50%; /* Центрирование тени по вертикали */
         left: 50%; /* Центрирование тени по горизонтали */
-        width: 65px; /* Фиксированная ширина тени */
-        height: 65px; /* Фиксированная высота тени */
-        background: rgba(0, 0, 0, 0.2); /* Цвет тени */
+        width: 50px; /* Фиксированная ширина тени */
+        height: 50px; /* Фиксированная высота тени */
+        background: rgba(0, 0, 0, 0.1); /* Цвет тени */
         border-radius: 20%; /* Для создания круглой тени */
         transform: translate(-50%, -50%); /* Центрирование тени относительно кнопки */
         z-index: -1;
@@ -350,8 +336,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 37px; /* Задайте необходимый размер */
-    height: 50px; /* Высота для одного изображения в спрайте */
+    width: 30px; /* Задайте необходимый размер */
+    height: 40px; /* Высота для одного изображения в спрайте */
     transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -361,7 +347,7 @@ button {
 
 
     .image-add-template:hover {
-        background-position: 0 -47px; /* Позиция для состояния при наведении */
+        background-position: 0 -38px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
@@ -387,8 +373,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 40px; /* Задайте необходимый размер */
-    height: 24px; /* Высота для одного изображения в спрайте */
+    width: 30px; /* Задайте необходимый размер */
+    height: 18px; /* Высота для одного изображения в спрайте */
     transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -398,7 +384,7 @@ button {
 
 
     .image-xml:hover {
-        background-position: 0 -24px; /* Позиция для состояния при наведении */
+        background-position: 0 -18px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
@@ -443,8 +429,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 38px; /* Задайте необходимый размер */
-    height: 40px; /* Высота для одного изображения в спрайте */
+    width: 30px; /* Задайте необходимый размер */
+    height: 31px; /* Высота для одного изображения в спрайте */
     transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -454,7 +440,7 @@ button {
 
 
     .image-quotes:hover {
-        background-position: 0 -40px; /* Позиция для состояния при наведении */
+        background-position: 0 -31px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
@@ -479,8 +465,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 38px; /* Задайте необходимый размер */
-    height: 40px; /* Высота для одного изображения в спрайте */
+    width: 30px; /* Задайте необходимый размер */
+    height: 31px; /* Высота для одного изображения в спрайте */
     transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -490,7 +476,7 @@ button {
 
 
     .image-comma:hover {
-        background-position: 0 -40px; /* Позиция для состояния при наведении */
+        background-position: 0 -31px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */
@@ -519,8 +505,8 @@ button {
     background-color: transparent; /* Убрать фоновый цвет */
     border: none; /* Убрать границу */
     cursor: pointer; /* Курсор в виде указателя */
-    width: 37px; /* Задайте необходимый размер */
-    height: 42px; /* Высота для одного изображения в спрайте */
+    width: 30px; /* Задайте необходимый размер */
+    height: 34px; /* Высота для одного изображения в спрайте */
     transition: transform 0.2s ease; /* Обновите transition */
     position: relative;
     padding: 0; /* Убрать внутренние отступы */
@@ -530,7 +516,7 @@ button {
 
 
     .image-pdf:hover {
-        background-position: 0 -42px; /* Позиция для состояния при наведении */
+        background-position: 0 -34px; /* Позиция для состояния при наведении */
         background-color: transparent; /* Убрать фоновый цвет */
         border: none; /* Убрать границу */
         cursor: pointer; /* Курсор в виде указателя */

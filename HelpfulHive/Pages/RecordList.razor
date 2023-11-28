@@ -32,7 +32,7 @@
         <input type="text" @bind="searchQuery" @oninput="HandleInput" placeholder="Поиск шаблонов..." />
     </div>
 
-    <div class="actions-area">
+ @*   <div class="actions-area">
         @if (PopularRecords != null && PopularRecords.Any())
         {
             <div class="popular-record-list">
@@ -48,7 +48,7 @@
         {
        
         }
-    </div>
+    </div>*@
 </div>
 
 @if (ShowGroupedSearchResults && GroupedRecords != null)
@@ -359,7 +359,7 @@ else
 
     private async Task HandleClick(RecordModel record)
     {
-        isLoadingAnimation = true; // Активация индикатора загрузки
+     //   isLoadingAnimation = true; // Активация индикатора загрузки
 
         try
         {
@@ -383,8 +383,8 @@ else
         }
         finally
         {
-            isLoadingAnimation = false; // Деактивация индикатора загрузки
-            await InvokeAsync(StateHasChanged); // Используйте InvokeAsync
+            //isLoadingAnimation = false; // Деактивация индикатора загрузки
+           // await InvokeAsync(StateHasChanged); // Используйте InvokeAsync
         }
     }
 
@@ -392,7 +392,7 @@ else
     private string ConvertRelativeUrlsToAbsolute(string html)
     {
         // var baseUrl = "https://localhost:7058/";
-       var baseUrl = "https://supportools.ru/";
+      var baseUrl = "https://supportools.ru/";
         // Регулярное выражение для поиска относительных URL
         var regex = new Regex("src=\"(.*?)\"");
         var matches = regex.Matches(html);

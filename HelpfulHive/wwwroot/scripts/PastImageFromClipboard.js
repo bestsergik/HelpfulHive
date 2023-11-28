@@ -53,26 +53,20 @@
                         reader.readAsText(textBlob);
                     });
 
-                    if (document.activeElement === editor) {
-                        const selection = window.getSelection();
-                        if (selection.rangeCount > 0) {
-                            const range = selection.getRangeAt(0);
-                            range.deleteContents();
-                            const textNode = document.createTextNode(text);
-                            range.insertNode(textNode);
-
-                            const newLine = document.createElement('br');
-                            range.insertNode(newLine);
-
-                            range.setStartAfter(textNode);
-                            range.collapse(true);
-                            selection.removeAllRanges();
-                            selection.addRange(range);
-                        }
-                    } else {
-                        editor.appendChild(document.createTextNode(text));
+                    // Разбиваем текст на строки и вставляем каждую строку отдельно
+                    const lines = text.split('\n');
+                    for (const line of lines) {
+                        editor.appendChild(document.createTextNode(line));
                         editor.appendChild(document.createElement('br'));
                     }
+
+                    // После вставки переместим курсор после вставленного текста
+                    const range = document.createRange();
+                    range.setStartAfter(editor.lastChild); // последний вставленный <br>
+                    range.collapse(true);
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
                 }
             }
             editor.scrollTop = editor.scrollHeight;

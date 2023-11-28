@@ -58,7 +58,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddSignalR(hubOptions => {
     // Установка интервала поддержания активного соединения
-    hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(2);
+   // hubOptions.KeepAliveInterval = TimeSpan.FromMinutes(2);
 
     // Увеличение максимального размера принимаемого сообщения до 10 МБ
     hubOptions.MaximumReceiveMessageSize = 10 * 1024 * 1024; // 10MB
@@ -67,7 +67,7 @@ builder.Services.AddSignalR(hubOptions => {
     hubOptions.EnableDetailedErrors = true;
 
     // Установка тайм-аута для клиента
-    hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(1);
+   // hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
 
     // Установка тайм-аута для рукопожатия
     hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(30);

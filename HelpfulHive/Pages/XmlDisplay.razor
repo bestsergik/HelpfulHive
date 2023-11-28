@@ -216,6 +216,11 @@
         {
             await ShowTabularView(tab);
         }
+        else
+        {
+            // Если возвращаемся к структурированию запросов
+            await FormatXmlOnPasteUniversal(tab.UniversalEditorRef, tab.SendEditorRef, tab.CheckEditorRef);
+        }
 
         StateHasChanged();
     }

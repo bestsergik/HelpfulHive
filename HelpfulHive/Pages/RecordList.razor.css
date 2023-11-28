@@ -105,9 +105,9 @@
 
 
 .record-content {
-    font-size: 16px;
+    font-size: 18px;
     line-height: 1.5; /* Улучшение читаемости */
-    font-size: 20px;
+   
 }
 
 
@@ -269,9 +269,9 @@ body, html {
 }
 
 .record-item {
-    margin-top: 10px;
+    margin-top: 5px;
     border: 1px solid #ddd;
-    padding: 10px;
+    padding: 5px;
     background-color: #fff;
     display: flex;
     align-items: center;
