@@ -91,6 +91,88 @@ namespace HelpfulHive.Services
 
             await context.SaveChangesAsync();
         }
+
+
+        public async Task<List<UserPreferences>> GetUserPreferences(string userId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var preferences = await context.UserPreferences
+                                           .Where(up => up.UserId == userId)
+                                           .ToListAsync();
+
+            Console.WriteLine($"Загружено {preferences.Count} предпочтений для пользователя с ID {userId}");
+            foreach (var pref in preferences)
+            {
+                Console.WriteLine($"RecordId: {pref.RecordId}, HasViewedNewCommonRecord: {pref.HasViewedNewCommonRecord}");
+            }
+
+            return preferences;
+        }
+
+
+        public async Task<Dictionary<int, int>> GetUnviewedRecordsCountByTab(string userId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var unviewedCountByTab = new Dictionary<int, int>();
+
+            var unviewedPreferences = await context.UserPreferences
+                .Include(up => up.Record)
+                .ThenInclude(r => r.SubTab)
+                .Where(up => up.UserId == userId && !up.HasViewedNewCommonRecord)
+                .ToListAsync();
+
+            foreach (var pref in unviewedPreferences)
+            {
+                if (pref.Record != null && pref.Record.SubTab != null)
+                {
+                    // Увеличиваем счетчик для подвкладки
+                    int subTabId = pref.Record.SubTabId;
+                    unviewedCountByTab[subTabId] = unviewedCountByTab.GetValueOrDefault(subTabId) + 1;
+
+                    // Увеличиваем счетчик для родительской вкладки, если она есть
+                    int? parentTabId = pref.Record.SubTab.ParentTabId;
+                    if (parentTabId.HasValue)
+                    {
+                        unviewedCountByTab[parentTabId.Value] = unviewedCountByTab.GetValueOrDefault(parentTabId.Value) + 1;
+                    }
+                }
+            }
+
+            return unviewedCountByTab;
+        }
+
+
+
+
+
+        public async Task MarkAsViewed(string userId, int recordId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var preference = await context.UserPreferences
+                .FirstOrDefaultAsync(up => up.UserId == userId && up.RecordId == recordId);
+
+            if (preference == null)
+            {
+                // Создание новой записи в UserPreferences, если она не найдена
+                var newUserPreference = new UserPreferences
+                {
+                    UserId = userId,
+                    RecordId = recordId,
+                    HasViewedNewCommonRecord = true, // Установка флага просмотра
+                    ClickCount = 0, // Инициализация других полей по умолчанию
+                    IsFavorite = false
+                };
+                context.UserPreferences.Add(newUserPreference);
+            }
+            else
+            {
+                // Обновление существующей записи
+                preference.HasViewedNewCommonRecord = true;
+            }
+
+            await context.SaveChangesAsync();
+        }
+
     }
 
 

@@ -32,6 +32,11 @@ namespace HelpfulHive.ViewModels
             return await _userPreferencesService.IsFavoriteAsync(userId, recordId);
         }
 
+        public async Task MarkAsViewed(string userId, int recordId)
+        {
+            await _userPreferencesService.MarkAsViewed(userId, recordId);
+        }
+
 
     }
 }

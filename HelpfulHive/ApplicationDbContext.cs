@@ -66,6 +66,11 @@ namespace HelpfulHive
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<UserPreferences>()
+      .Property(up => up.HasViewedNewCommonRecord)
+      .IsRequired(); // Добавление нового поля HasViewed
+
+
 
             modelBuilder.Entity<IdentityUser>()
             .Property<string>("ProfileImagePath")

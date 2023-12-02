@@ -7,6 +7,9 @@
     margin: auto;
     font-family: 'NavMenuChildtLinkFont';
     flex-grow: 1;
+    max-height: 75vh;
+    overflow-y: auto;
+
 }
 @keyframes gradientAnimation {
     0% {
@@ -34,7 +37,7 @@
 }
 
     .record-item:hover {
-        opacity: 0.7; /* Немного уменьшаем прозрачность при наведении */
+        opacity: 0.8; /* Немного уменьшаем прозрачность при наведении */
         box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* Увеличиваем тень для добавления глубины */
     }
 
@@ -99,7 +102,7 @@
 }
 
 .edit-icon:hover {
-    color: #c87714; /* Изменить на другой цвет при наведении */
+    color: #c17714; /* Изменить на другой цвет при наведении */
 }
 
 
@@ -124,96 +127,6 @@ body, html {
     display: flex;
     flex-direction: column;
 }
-
-
-
-
-.search-and-actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: #f7f7f7;
-}
-
-.search-area {
-    display: flex;
-    flex-direction: column; /* Добавлено для вертикального выравнивания */
-    align-items: flex-start; /* Изменено для выравнивания элементов влево */
-    gap: 15px;
-   
-}
-
-.checkbox-area label {
-    font-size: 12px; /* или другой размер, который вам нравится */
-    margin-left: 5px; /* добавляет пространство между текстом и чекбоксом */
-
-}
-
-.checkbox-area {
-    display: flex;
-    align-items: center; /* Выравнивание по центру по вертикали */
-}
-
-
-
-    .search-area input[type="text"] {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        width: 400px;
-        outline: none;
-        transition: border-color 0.3s;
-
-    }
-
-        .search-area input[type="text"]:focus {
-            border-color: #007bff;
-        }
-
-.search-area input[type="checkbox"] {
-    width: 16px; /* или другой размер, который вам нравится */
-    height: 16px; /* или другой размер, который вам нравится */
-    margin-right: 10px; /* добавляет пространство между чекбоксом и текстом */
-   
-}
-
-.actions-area {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    align-items: center; /* Выравнивание по центру по вертикали */
-}
-
-.popular-record-list {
-    display: flex;
-    gap: 10px;
-    background-color: transparent; /* Убрать фоновый цвет */
-}
-
-.popular-record-item {
-    position: relative;
-    transition: transform 0.3s;
-    background-color: transparent; /* Убрать фоновый цвет */
-    border: none; /* Убрать границу */
-    cursor: pointer; /* Курсор в виде указателя */
-
-    padding: 0; /* Убрать внутренние отступы */
-    display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
-}
-
-    .popular-record-item:hover {
-        transform: scale(1.05);
-        position: relative;
-        transition: transform 0.3s;
-        background-color: transparent; /* Убрать фоновый цвет */
-        border: none; /* Убрать границу */
-        cursor: pointer; /* Курсор в виде указателя */
-        padding: 0; /* Убрать внутренние отступы */
-        display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
-    }
 
 
 
@@ -296,3 +209,114 @@ body, html {
 .edit-icon {
     cursor: pointer;
 }
+
+
+
+
+
+
+.search-and-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+}
+
+.search-area {
+    display: flex;
+    flex-direction: column; /* Добавлено для вертикального выравнивания */
+    align-items: flex-start; /* Изменено для выравнивания элементов влево */
+    gap: 15px;
+}
+
+.checkbox-area label {
+    font-size: 12px; /* или другой размер, который вам нравится */
+    margin-left: 5px; /* добавляет пространство между текстом и чекбоксом */
+}
+
+.checkbox-area {
+    display: flex;
+    align-items: center; /* Выравнивание по центру по вертикали */
+}
+
+.new-record-indicator {
+ 
+}
+
+
+.new-record-indicator-img {
+    width: 22px; /* Размеры изображения */
+    height: 22px;
+    content: url('/serviceimages/newCommonRecord.png'); /* Укажите путь к изображению здесь */
+    background-size: cover;
+    margin-left: -6px; /* Половина ширины изображения */
+    margin-top: -45px; /* Половина высоты изображения */
+    display: none; /* Сначала скрываем элемент */
+    position: absolute;
+    /*transform: rotate(-10deg);*/ /* Наклон на 10 градусов */
+
+}
+
+.record-item.new-record-indicator .new-record-indicator-img {
+    display: block; /* Отображаем изображение только в новых записях */
+}
+
+
+.search-area input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 400px;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+    .search-area input[type="text"]:focus {
+        border-color: #007bff;
+    }
+
+.search-area input[type="checkbox"] {
+    width: 16px; /* или другой размер, который вам нравится */
+    height: 16px; /* или другой размер, который вам нравится */
+    margin-right: 10px; /* добавляет пространство между чекбоксом и текстом */
+}
+
+.actions-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center; /* Выравнивание по центру по вертикали */
+}
+
+.popular-record-list {
+    display: flex;
+    gap: 10px;
+    background-color: transparent; /* Убрать фоновый цвет */
+}
+
+.popular-record-item {
+    position: relative;
+    transition: transform 0.3s;
+    background-color: transparent; /* Убрать фоновый цвет */
+    border: none; /* Убрать границу */
+    cursor: pointer; /* Курсор в виде указателя */
+
+    padding: 0; /* Убрать внутренние отступы */
+    display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+}
+
+    .popular-record-item:hover {
+        transform: scale(1.05);
+        position: relative;
+        transition: transform 0.3s;
+        background-color: transparent; /* Убрать фоновый цвет */
+        border: none; /* Убрать границу */
+        cursor: pointer; /* Курсор в виде указателя */
+        padding: 0; /* Убрать внутренние отступы */
+        display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    }
+
+

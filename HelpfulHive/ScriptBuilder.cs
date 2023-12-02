@@ -93,8 +93,7 @@ namespace HelpfulHive
             }
             catch (Exception ex)
             {
-                // Здесь можно добавить логирование исключения, если это необходимо
-                // Например: Console.WriteLine(ex.ToString());
+
             }
             finalScript.Clear();
         }

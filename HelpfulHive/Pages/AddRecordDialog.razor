@@ -355,7 +355,7 @@
 
                 };
 
-            await RecordVM.AddRecordAsync(newRecord);
+            await RecordVM.AddRecordAsync(newRecord, SelectedSubTabId);
             await OnRecordAdded.InvokeAsync(newRecord);
 
 

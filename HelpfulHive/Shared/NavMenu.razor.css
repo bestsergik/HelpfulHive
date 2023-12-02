@@ -286,7 +286,10 @@
 
 
 
-
+.modern-tab-item, .modern-sub-tabs div {
+    position: relative;
+    /* Остальные стили... */
+}
 
 
 
@@ -324,6 +327,7 @@ body {
 .modern-sub-tabs div {
     background: linear-gradient(145deg, #3498db, #9b59b6);
     margin-left: 20px;
+    margin-right: 4px;
     margin-bottom: 7px; /* Добавление пространства между подвкладками */
     margin-top: 10px;
     border-radius: 10px;
@@ -350,7 +354,7 @@ body {
     }
 
 .modern-tab-content {
-    max-height: 85vh; /* Adjust the value as needed */
+    max-height: 78vh; /* Adjust the value as needed */
     overflow-y: auto; /* Enable vertical scrolling if the content exceeds the max height */
     padding: 16px 10px 6px 10px;
 }
@@ -456,6 +460,8 @@ body {
         background: linear-gradient(145deg, #377f9b 0%, #4ecdc4 100%); /* Фон для активной вкладки */
     }
 
+
+
 /* Адаптация для мобильных устройств */
 @media (max-width: 768px) {
     .tab-button-container {
@@ -479,4 +485,42 @@ body {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.5s ease-out;
+}
+
+
+
+
+
+
+
+
+.new-record-count {
+    background-image: url('/serviceimages/bgCounterNewRecords.png');
+    background-size: cover; /* Это гарантирует, что картинка покроет весь элемент */
+    background-position: center; /* Центрирует картинку */
+    color: white; /* Цвет текста */
+    padding: 2px 9px; /* Отступы вокруг текста */
+    font-size: 0.8em; /* Размер шрифта */
+    position: absolute;
+    z-index: 10; /* Указывает, что элемент должен быть поверх других */
+    top: -2px; /* Отрицательное значение для выступания за границы сверху */
+    right: -2px; /* Отрицательное значение для выступания за границы справа */
+    border-radius: 50%; /* Делает картинку круглой */
+    font-family: Tahoma;
+    display: block; /* Убедитесь, что индикаторы всегда видны */
+}
+
+
+.sub-tab-new-indicator {
+    position: relative;
+}
+
+    .sub-tab-new-indicator::after {
+     
+    }
+
+
+
+.tab-button .new-record-count {
+    display: none; /* Скрывает индикатор в контексте .tab-button */
 }

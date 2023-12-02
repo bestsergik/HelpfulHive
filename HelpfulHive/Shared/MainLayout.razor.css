@@ -36,6 +36,8 @@ button {
 
 
 .top-row {
+
+
     border-bottom: none; /* или '0', чтобы убрать границу */
     position: relative; /* Для корректного позиционирования псевдоэлемента */
     border-bottom-left-radius: 16px; /* Закругление снизу слева */

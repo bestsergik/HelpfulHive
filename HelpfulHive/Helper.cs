@@ -12,7 +12,7 @@ namespace HelpfulHive
         // dotnet ef migrations add InitialCreate -c HelpfulHive.ApplicationDbContext  
 
         // добавление миграции
-        //     dotnet ef migrations add DeleteiscanedittabsInAspnetusers -c HelpfulHive.ApplicationDbContext  
+        //     dotnet ef migrations add HasViewedNewCommonRecord -c HelpfulHive.ApplicationDbContext  
 
         // обновление после добавления миграции
         //  dotnet ef database update -c HelpfulHive.ApplicationDbContext

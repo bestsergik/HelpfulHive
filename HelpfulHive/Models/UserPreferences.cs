@@ -13,6 +13,8 @@
         public bool IsFavorite { get; set; } // Запись добавлена в избранное пользователем
 
         public int ClickCount { get; set; } // Количество кликов по записи пользователем
+
+        public bool HasViewedNewCommonRecord { get; set; } = false; // Новое поле
     }
 
 }

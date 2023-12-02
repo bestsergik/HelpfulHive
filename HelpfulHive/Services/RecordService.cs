@@ -13,18 +13,53 @@ namespace HelpfulHive.Services
             _contextFactory = contextFactory;
         }
 
-        public async Task AddRecordAsync(RecordModel newRecord)
+        public async Task AddRecordAsync(RecordModel newRecord, int subTabId)
         {
             using var context = _contextFactory.CreateDbContext();
             try
             {
                 context.Records.Add(newRecord);
                 await context.SaveChangesAsync();
+
+                // Проверяем, относится ли запись к общей вкладке
+                var subTab = await context.Tabs.FindAsync(subTabId);
+                if (subTab != null && subTab.TabType == TabType.Common)
+                {
+                    // Создаем записи в UserPreferences для всех пользователей
+                    var allUsers = context.Users.ToList();
+                    foreach (var user in allUsers)
+                    {
+                        var userPreference = new UserPreferences
+                        {
+                            UserId = user.Id,
+                            RecordId = newRecord.Id,
+                            HasViewedNewCommonRecord = false, // Пользователь еще не видел эту запись
+                                                              // Другие свойства UserPreferences
+                        };
+                        context.UserPreferences.Add(userPreference);
+                    }
+                }
+
+                await context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
+                // Обработка исключения
             }
         }
+
+
+        public async Task<int> GetUnviewedRecordCountAsync(string userId, int subTabId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+            return await context.UserPreferences
+                                .CountAsync(up => up.UserId == userId
+                                                  && up.Record.SubTabId == subTabId
+                                                  && !up.HasViewedNewCommonRecord);
+        }
+
+
+
         public async Task<List<RecordModel>> GetRecordsBySubTabUriAsync(string subTabUri, string userId)
         {
             using var context = _contextFactory.CreateDbContext();
@@ -139,7 +174,6 @@ namespace HelpfulHive.Services
                     .AsNoTracking()
                     .AsQueryable();
 
-                Console.WriteLine($"Before filters - Count: {records.Count()}");
 
                 // Фильтр по строке запроса
                 if (!string.IsNullOrWhiteSpace(query))
@@ -158,18 +192,13 @@ namespace HelpfulHive.Services
                 }
 
                 var result = await records.ToListAsync();
-                Console.WriteLine($"After filters - Count: {result.Count}");
 
-                foreach (var record in result)
-                {
-                    Console.WriteLine($"Record Id: {record.Id}, TabType: {record.SubTab.TabType}, UserId: {record.SubTab.UserId}");
-                }
+           
 
                 return result;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in SearchRecordsAsync: {ex.Message}");
                 return new List<RecordModel>();
             }
         }

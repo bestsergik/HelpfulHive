@@ -16,15 +16,6 @@
 @inject RecordUpdateService recordUpdateService
 
 
-<svg id="checkmark" xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 50 50" style="position: fixed; visibility: hidden;">
-    <defs>
-        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" style="stop-color:rgb(39,93,195);stop-opacity:1" />
-            <stop offset="100%" style="stop-color:rgb(153,87,45);stop-opacity:1" />
-        </linearGradient>
-    </defs>
-    <path d="M5 25L20 40L45 5" stroke="url(#grad1)" stroke-width="8" fill="none" stroke-linecap="round" />
-</svg>
 
 
 <div class="search-and-actions">
@@ -96,14 +87,15 @@
 }
 else
 {
-  @if (Records != null && Records.Any())
-{
+    @if (Records != null && Records.Any())
+    {
     <div class="record-list">
         <div class="record-group">
             <h4>@(GetActiveSubTabName())</h4>
             @foreach (var record in Records)
             {
-                    <div class="record-item" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
+                    <div class="record-item @(newRecordIndicators.ContainsKey(record.Id) && !newRecordIndicators[record.Id] ? "" : "new-record-indicator")" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
+                        <div class="new-record-indicator-img"></div>
                         <div class="record-item-content">
                             <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
                             <div class="record-content">@record.Title</div>
@@ -122,10 +114,6 @@ else
     }
 
 }
-
-
-
-
 
 <LoadingAnimation IsLoadingAnimation="@isLoadingAnimation" />
 
@@ -160,6 +148,19 @@ else
     private bool isSingleClick = false;
     private bool isLoadingAnimation = false;
 
+    private Dictionary<int, bool> newRecordIndicators = new Dictionary<int, bool>();
+
+
+    private async Task<Dictionary<int, bool>> GetUserNewRecordIndicators(string userId)
+    {
+        var userPreferences = await upVM.GetUserPreferences(userId);
+        var newRecordIndicators = userPreferences.ToDictionary(
+            up => up.RecordId,
+            up => !up.HasViewedNewCommonRecord);
+
+        return newRecordIndicators;
+    }
+
 
     private string FormatGroupTitle(string groupKey)
     {
@@ -192,7 +193,7 @@ else
         }
         catch
         {
-            
+
         }
     }
 
@@ -203,8 +204,7 @@ else
             var activeSubTab = GetSubTabById(SelectedSubTabId);
             if (activeSubTab != null)
             {
-                Console.WriteLine($"ActiveSubTabId: {SelectedSubTabId}");
-                Console.WriteLine($"ActiveSubTabName: {activeSubTab.Name}");
+
 
                 return activeSubTab.Name ?? "Все записи";
             }
@@ -215,19 +215,11 @@ else
 
     private TabItem GetSubTabById(string subTabId)
     {
-        Console.WriteLine($"Trying to find SubTab with Id: {subTabId}");
 
         // Ваш код для поиска подвкладки по идентификатору
         var subTab = GetAllSubTabs().FirstOrDefault(tab => tab.Uri.Equals(subTabId, StringComparison.OrdinalIgnoreCase));
 
-        if (subTab != null)
-        {
-            Console.WriteLine($"Found SubTab: {subTab.Name}");
-        }
-        else
-        {
-            Console.WriteLine($"SubTab not found!");
-        }
+  
 
         return subTab;
     }
@@ -281,25 +273,39 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if (!user.Identity.IsAuthenticated)
         {
             NavManager.NavigateTo("/Identity/Account/Login", forceLoad: true);
+            return; // Выход из метода, если пользователь не аутентифицирован
         }
-     
+
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId == null)
+        {
+            throw new InvalidOperationException("User ID is not found.");
+        }
 
         Records = new List<RecordModel>(); // Инициализация пустого списка
-
         await LoadPopularRecords();
 
         if (LoadFavorites)
         {
             await LoadFavoriteRecords();
         }
+
+        // Загружаем предпочтения пользователя
+        var userPreferences = await upVM.GetUserPreferences(userId);
+
+        newRecordIndicators = userPreferences.ToDictionary(
+            up => up.RecordId,
+            up => !up.HasViewedNewCommonRecord);
+ 
     }
+
 
     private async Task LoadFavoriteRecords()
     {
@@ -359,7 +365,7 @@ else
 
     private async Task HandleClick(RecordModel record)
     {
-     //   isLoadingAnimation = true; // Активация индикатора загрузки
+        //   isLoadingAnimation = true; // Активация индикатора загрузки
 
         try
         {
@@ -379,12 +385,12 @@ else
         }
         catch
         {
-            
+
         }
         finally
         {
             //isLoadingAnimation = false; // Деактивация индикатора загрузки
-           // await InvokeAsync(StateHasChanged); // Используйте InvokeAsync
+            // await InvokeAsync(StateHasChanged); // Используйте InvokeAsync
         }
     }
 
@@ -392,7 +398,7 @@ else
     private string ConvertRelativeUrlsToAbsolute(string html)
     {
         // var baseUrl = "https://localhost:7058/";
-      var baseUrl = "https://supportools.ru/";
+        var baseUrl = "https://supportools.ru/";
         // Регулярное выражение для поиска относительных URL
         var regex = new Regex("src=\"(.*?)\"");
         var matches = regex.Matches(html);
@@ -406,7 +412,7 @@ else
                 html = html.Replace(relativeUrl, absoluteUrl);
             }
         }
-   
+
         return html;
     }
 
@@ -426,10 +432,22 @@ else
     }
 
 
-    private void OnDoubleClick(RecordModel record)
+    private async Task OnDoubleClick(RecordModel record)
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId != null)
+        {
+            await upVM.MarkAsViewed(userId, record.Id);
+            // Обновление newRecordIndicators для данной записи
+            newRecordIndicators[record.Id] = false;
+        }
         isSingleClick = false;
         EditRecord(record);
+
+        StateHasChanged(); // Обновите состояние компонента для отображения изменений
     }
 
     

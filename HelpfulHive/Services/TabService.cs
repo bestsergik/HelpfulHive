@@ -117,12 +117,6 @@ namespace HelpfulHive.Services
             // Вкладку можно удалять только если нет дочерних вкладок и записей
             return !hasChildTabs && !hasRecords;
         }
-
-
-    
-
-
-
     }
 
 }

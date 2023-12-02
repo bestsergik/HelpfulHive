@@ -5,7 +5,9 @@
 @inject TabViewModel TabVM
 @inject NavigationManager NavManager
 @inject RecordViewModel RecordVM
+@inject RecordService rSRV
 @inject TabService TabSrv
+@inject UserPreferencesService upSRV
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserService uSRV
 @inject IJSRuntime JsRuntime
@@ -26,10 +28,16 @@
 <div class="modern-tab-content">
     @foreach (var tab in TabVM.Tabs)
     {
+        var tabNewRecordCount = newTabRecordCounts.GetValueOrDefault(tab.Id, 0);
+        var tabClass = tabNewRecordCount > 0 ? "tab-new-indicator" : ""; // Класс для визуальной индикации новых записей
 
-        <div class="modern-tab-item" @onclick:preventDefault="true" style="@GetTabStyle(tab)" @onclick="() => SelectTab(tab)">
+        <div class="modern-tab-item @tabClass" @onclick:preventDefault="true" @onclick="() => SelectTab(tab)">
             <NavLink style="color: antiquewhite; font-size: 18px; font-family: 'NavMenuParentLinkFont';" class="@GetModernNavLinkClass(tab)" href="@tab.Uri">
-                @TruncateString(tab.Name, 36)
+                @TruncateString(tab.Name, 40)
+                @if (tabNewRecordCount > 0)
+                {
+                    <span class="new-record-count">@tabNewRecordCount</span> <!-- Индикатор количества непросмотренных записей -->
+                }
             </NavLink>
 
             @if (tab.SubTabs != null && tab.SubTabs.Any() && tabsVisibility.ContainsKey(tab.Id) && tabsVisibility[tab.Id])
@@ -37,9 +45,16 @@
                 <div id="sub-tabs-@tab.Id" class="modern-sub-tabs">
                     @foreach (var subTab in tab.SubTabs)
                     {
-                        <div @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@GetSubTabStyle(subTab)" >
-                            <NavLink  style="color: antiquewhite; font-size: 17px; font-family: 'NavMenuChildtLinkFont';" class="@GetModernNavLinkClass(subTab)" href="@subTab.Uri" @onclick="() => SelectSubTab(subTab)">
-                                @TruncateString(subTab.Name, 40)
+                        var subTabNewRecordCount = newTabRecordCounts.GetValueOrDefault(subTab.Id, 0);
+                        var subTabClass = subTabNewRecordCount > 0 ? "sub-tab-new-indicator" : ""; // Класс для визуальной индикации новых записей
+
+                        <div class="@subTabClass" @onclick:stopPropagation="true" @onclick:preventDefault="true" style="@GetSubTabStyle(subTab)">
+                            <NavLink style="color: antiquewhite; font-size: 17px; font-family: 'NavMenuChildtLinkFont';" class="@GetModernNavLinkClass(subTab)" href="@subTab.Uri" @onclick="() => SelectSubTab(subTab)">
+                                @TruncateString(subTab.Name, 44)
+                                @if (subTabNewRecordCount > 0)
+                                {
+                                    <span class="new-record-count">@subTabNewRecordCount</span> <!-- Индикатор количества непросмотренных записей -->
+                                }
                             </NavLink>
                         </div>
                     }
@@ -47,6 +62,9 @@
             }
         </div>
     }
+
+
+ 
 </div>
 
 
@@ -169,12 +187,97 @@
         return user.IsInRole(role);
     }
 
+    private async Task<Dictionary<int, int>> GetTabNewRecordIndicators(string userId)
+    {
+        var userPreferences = await upSRV.GetUserPreferences(userId);
+        var newTabRecordCounts = new Dictionary<int, int>();
 
+        foreach (var preference in userPreferences)
+        {
+            if (!preference.HasViewedNewCommonRecord)
+            {
+                var records = await rSRV.GetRecordsByUserAndTabTypeAsync(true, userId);
+                foreach (var record in records)
+                {
+                    if (record.Id == preference.RecordId)
+                    {
+                        // Увеличиваем счетчик для подвкладки
+                        int subTabId = record.SubTabId;
+                        newTabRecordCounts[subTabId] = newTabRecordCounts.GetValueOrDefault(subTabId) + 1;
+
+                        // Увеличиваем счетчик для родительской вкладки, если она есть
+                        if (record.SubTab.ParentTabId != null)
+                        {
+                            int parentTabId = record.SubTab.ParentTabId.Value;
+                            newTabRecordCounts[parentTabId] = newTabRecordCounts.GetValueOrDefault(parentTabId) + 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        return newTabRecordCounts;
+    }
+
+
+
+    private Dictionary<int, int> newTabIndicators = new Dictionary<int, int>();
 
 
     private Dictionary<int, bool> tabsVisibility = new Dictionary<int, bool>();
+    private Dictionary<int, int> newTabRecordCounts = new Dictionary<int, int>();
 
 
+
+
+
+    private async Task InitializeNewTabIndicators(string userId)
+    {
+        var userPreferences = await upSRV.GetUserPreferences(userId);
+        var records = await rSRV.GetRecordsByUserAndTabTypeAsync(true, userId);
+        Console.WriteLine($"[InitializeNewTabIndicators] Загружено {records.Count} записей");
+
+        var newTabRecordCounts = new Dictionary<int, int>();
+
+        foreach (var record in records)
+        {
+            if (!userPreferences.Any(up => up.RecordId == record.Id && up.HasViewedNewCommonRecord))
+            {
+                // Увеличиваем счетчик для подвкладки
+                int subTabId = record.SubTabId;
+                newTabRecordCounts[subTabId] = newTabRecordCounts.GetValueOrDefault(subTabId) + 1;
+
+                // Увеличиваем счетчик для родительской вкладки, если она есть
+                if (record.SubTab.ParentTabId.HasValue)
+                {
+                    int parentTabId = record.SubTab.ParentTabId.Value;
+                    newTabRecordCounts[parentTabId] = newTabRecordCounts.GetValueOrDefault(parentTabId) + 1;
+                }
+            }
+        }
+
+        foreach (var kvp in newTabRecordCounts)
+        {
+            Console.WriteLine($"[NewTabIndicators] TabID: {kvp.Key}, UnviewedCount: {kvp.Value}");
+        }
+
+        // Теперь newTabRecordCounts содержит количество непросмотренных записей для каждой вкладки
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        if (!string.IsNullOrEmpty(userId))
+        {
+            await InitializeNewTabIndicators(userId);
+           // newTabIndicators = await GetTabNewRecordIndicators(userId);
+            newTabRecordCounts = await upSRV.GetUnviewedRecordsCountByTab(userId);
+
+            // Дополнительная логика инициализации...
+        }
+    }
 
 
     private string TruncateString(string input, int length)
@@ -310,30 +413,38 @@
 
 
 
-private async void DeleteTab()
-{
-    errorMessage = string.Empty;
-
-    bool isDeleted = await TabVM.DeleteTab(selectedTab);
-
-    if (isDeleted)
+    private async void DeleteTab()
     {
-        selectedTab = null;
-        isEditModalOpen = false;
-        StateHasChanged();
-    }
-    else
-    {
-        if (selectedTab.SubTabs != null && selectedTab.SubTabs.Any())
+        try
         {
-            errorMessage = "Не удалось удалить вкладку, так как она содержит подвкладки";
+            errorMessage = string.Empty;
+
+            bool isDeleted = await TabVM.DeleteTab(selectedTab);
+
+            if (isDeleted)
+            {
+                selectedTab = null;
+                isEditModalOpen = false;
+                StateHasChanged();
+            }
+            else
+            {
+                if (selectedTab.SubTabs != null && selectedTab.SubTabs.Any())
+                {
+                    errorMessage = "Не удалось удалить вкладку, так как она содержит подвкладки";
+                }
+                else
+                {
+                    errorMessage = "Не удалось удалить вкладку, так как она содержит записи";
+                }
+            }
         }
-        else
+        catch
         {
-            errorMessage = "Не удалось удалить вкладку, так как она содержит записи";
+
         }
+
     }
-}
 
 
     private void UpdateUI()

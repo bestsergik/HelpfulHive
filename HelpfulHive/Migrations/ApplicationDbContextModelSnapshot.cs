@@ -115,6 +115,9 @@ namespace HelpfulHive.Migrations
                     b.Property<int>("ClickCount")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("HasViewedNewCommonRecord")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsFavorite")
                         .HasColumnType("boolean");
 

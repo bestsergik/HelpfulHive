@@ -46,9 +46,9 @@ namespace HelpfulHive.ViewModels
             return await _recordService.GetRecordsBySubTabUriAsync(subTabUri, UserId);
         }
 
-        public async Task AddRecordAsync(RecordModel newRecord)
+        public async Task AddRecordAsync(RecordModel newRecord, int subTabId)
         {
-            await _recordService.AddRecordAsync(newRecord);
+            await _recordService.AddRecordAsync(newRecord, subTabId);
             if (Records == null)
             {
                 Records = new List<RecordModel>();
@@ -56,6 +56,7 @@ namespace HelpfulHive.ViewModels
             Records.Add(newRecord);
             OnRecordChanged?.Invoke();
         }
+
 
         public async Task HandleClick(RecordModel record)
         {
@@ -101,6 +102,17 @@ namespace HelpfulHive.ViewModels
         {
             return await _recordService.GetTopNClickedRecordsAsync(n, UserId);
         }
+
+
+        public async Task RecordViewed(RecordModel record)
+        {
+            await _userPreferencesVM.MarkAsViewed(UserId, record.Id);
+            // Обновите любые нужные данные или вызовите OnRecordChanged, если это необходимо
+        }
+
+
+      
+
 
     }
 
