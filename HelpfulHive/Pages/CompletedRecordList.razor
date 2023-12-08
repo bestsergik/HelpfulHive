@@ -1,0 +1,64 @@
+﻿@page "/completed-record-list"
+@using HelpfulHive.Services
+@inject LuceneSearchService lcSRV
+@using HelpfulHive.Models
+
+
+<h3 style="font-family: 'NavMenuParentLinkFont';">Поиск готовых решений</h3>
+
+<div class="search-and-actions">
+    <div class="search-area">
+        <textarea @bind="searchQuery" @oninput="HandleInput" placeholder="Поиск..."></textarea>
+    </div>
+</div>
+
+@if (searchResults != null && searchResults.Any())
+{
+    <div class="record-list">
+        @foreach (var result in searchResults)
+        {
+            <div class="record-item">
+                <div class="record-content">@result.RequestNumber</div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p><h5>Ничего не найдено...</h5></p>
+}
+
+@code {
+    private string searchQuery = string.Empty;
+    private List<RawData> searchResults;
+
+
+
+    private async Task HandleInput(ChangeEventArgs e)
+    {
+        searchQuery = e.Value.ToString();
+        await SearchRecords();
+    }
+
+    private async Task SearchRecords()
+    {
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                var requestNumbers = lcSRV.Search(searchQuery);
+                searchResults = await lcSRV.GetRecordsByRequestNumbers(requestNumbers);
+            }
+            else
+            {
+                searchResults = new List<RawData>();
+            }
+        }
+        catch{}
+    }
+        
+   
+
+   
+
+}

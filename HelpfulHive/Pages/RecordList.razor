@@ -14,16 +14,17 @@
 @using System.Text
 @using System.Text.RegularExpressions;
 @inject RecordUpdateService recordUpdateService
+@inject LuceneSearchService lcSRV
 
 
 
 
-<div class="search-and-actions">
+@*<div class="search-and-actions">
     <div class="search-area">
         <input type="text" @bind="searchQuery" @oninput="HandleInput" placeholder="Поиск шаблонов..." />
     </div>
 
- @*   <div class="actions-area">
+   <div class="actions-area">
         @if (PopularRecords != null && PopularRecords.Any())
         {
             <div class="popular-record-list">
@@ -39,81 +40,114 @@
         {
        
         }
-    </div>*@
+    </div>
+</div>*@
+
+
+
+<div class="search-and-actions">
+    <div class="search-area">
+        <input type="text" @bind="searchQuery" @oninput="HandleInput" placeholder="Поиск шаблонов..." />
+    </div>
 </div>
 
-@if (ShowGroupedSearchResults && GroupedRecords != null)
+@if (isSearchPerformed)
 {
-    <div class="record-list">
-        @foreach (var topLevelGroup in GroupedRecords.GroupBy(g => g.Key.Split('/')[0]))
-        {
-            <div class="tab-group">
-                @{
-                    var tabType = topLevelGroup.Key == "Personal" ? "Личные" : "Общие";
-                }
-                <div class="center-container">
-                    <h4 class="tab-title">@tabType</h4>
-                </div>
-                <div class="group-divider"></div>
-                @foreach (var subTabGroup in topLevelGroup.GroupBy(g => g.Key.Split('/')[1]))
-                {
-                    <div class="subtab-group">
-                        <h5 class="subtab-title">@subTabGroup.Key</h5>
-                        <div class="group-divider"></div>
-                        @foreach (var recordGroup in subTabGroup)
-                        {
-                            <div class="record-group">
-                                <h6 class="group-title">@FormatGroupTitle(recordGroup.Key)</h6>
-                                <div class="group-divider"></div>
-                                @foreach (var record in recordGroup)
-                                {
-                                    <div class="record-item" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
-                                        <div class="record-item-content">
-                                            <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
-                                            <div class="record-content">@record.Title</div>
-                                        </div>
-                                        <span class="edit-icon" @onclick="() => EditRecord(record)">
-                                            <i class="oi oi-pencil"></i>
-                                        </span>
-                                    </div>
-                                }
+    <div class="split-view">
+        <div class="left-pane">
+            @if (ShowGroupedSearchResults && GroupedRecords != null)
+            {
+                <div class="record-list">
+                    @foreach (var topLevelGroup in GroupedRecords.GroupBy(g => g.Key.Split('/')[0]))
+                    {
+                        <div class="tab-group">
+                            @{
+                                var tabType = topLevelGroup.Key == "Personal" ? "Личные" : "Общие";
+                            }
+                            <div class="center-container">
+                                <h4 class="tab-title">@tabType</h4>
                             </div>
-                        }
-                    </div>
-                }
-            </div>
-        }
+                            <div class="group-divider"></div>
+                            @foreach (var subTabGroup in topLevelGroup.GroupBy(g => g.Key.Split('/')[1]))
+                            {
+                                <div class="subtab-group">
+                                    <h5 class="subtab-title">@subTabGroup.Key</h5>
+                                    <div class="group-divider"></div>
+                                    @foreach (var recordGroup in subTabGroup)
+                                    {
+                                        <div class="record-group">
+                                            <h6 class="group-title">@FormatGroupTitle(recordGroup.Key)</h6>
+                                            <div class="group-divider"></div>
+                                            @foreach (var record in recordGroup)
+                                            {
+                                                <div class="record-item" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
+                                                    <div class="record-item-content">
+                                                        <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
+                                                        <div class="record-content">@record.Title</div>
+                                                    </div>
+                                                    <span class="edit-icon" @onclick="() => EditRecord(record)">
+                                                        <i class="fas fa-pencil-alt"><span class="tooltip-text">Редактировать запись</span></i> <!-- Иконка карандаша от Font Awesome -->
+                                                 
+                                                    </span>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+        <div class="right-pane">
+            @if (luceneSearchResults != null)
+            {
+                <div class="record-list">
+                    @foreach (var result in luceneSearchResults)
+                    {
+                        <div class="record-item">
+                            <div class="record-content">@result.RequestNumber</div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
     </div>
 }
 else
 {
-    @if (Records != null && Records.Any())
-    {
-    <div class="record-list">
-        <div class="record-group">
-            <h4>@(GetActiveSubTabName())</h4>
-            @foreach (var record in Records)
-            {
-                    <div class="record-item @(newRecordIndicators.ContainsKey(record.Id) && !newRecordIndicators[record.Id] ? "" : "new-record-indicator")" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
-                        <div class="new-record-indicator-img"></div>
-                        <div class="record-item-content">
-                            <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
-                            <div class="record-content">@record.Title</div>
+    <div class="full-width-pane">
+        @if (Records != null && Records.Any())
+        {
+            <div class="record-list">
+                <div class="record-group">
+                    <h4>@(GetActiveSubTabName())</h4>
+                    @foreach (var record in Records)
+                    {
+                        <div class="record-item @(newRecordIndicators.ContainsKey(record.Id) && !newRecordIndicators[record.Id] ? "" : "new-record-indicator")" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
+                            <div class="new-record-indicator-img"></div>
+                            <div class="record-item-content">
+                                <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
+                                <div class="record-content">@record.Title</div>
+                            </div>
+                            <span class="edit-icon" @onclick="() => EditRecord(record)">
+                                <i class="fas fa-pencil-alt">       <span class="tooltip-text">Редактировать запись</span></i> <!-- Иконка карандаша от Font Awesome -->
+                            </span>
                         </div>
-                        <span class="edit-icon" @onclick="() => EditRecord(record)">
-                            <i class="oi oi-pencil"></i>
-                        </span>
-                    </div>
-                }
+                    }
+                </div>
             </div>
-        </div>
-    }
-    else
-    {
-        <p><h5>Здесь пока пусто..</h5></p>
-    }
-
+        }
+        else
+        {
+            <p><h5>Здесь пока пусто..</h5></p>
+        }
+    </div>
 }
+
+
+
 
 <LoadingAnimation IsLoadingAnimation="@isLoadingAnimation" />
 
@@ -127,6 +161,29 @@ else
 <AddRecordDialog OnRecordAdded="HandleNewRecordAdded" AvailableSubTabs="@GetAllSubTabs()"  />
 
 @code {
+
+
+    private bool isSearchPerformed = false;
+
+
+    private async Task SearchLuceneRecords()
+    {
+        if (!string.IsNullOrWhiteSpace(searchQuery))
+        {
+            var requestNumbers = lcSRV.Search(searchQuery);
+            luceneSearchResults = await lcSRV.GetRecordsByRequestNumbers(requestNumbers);
+        }
+        else
+        {
+            luceneSearchResults = new List<RawData>();
+        }
+    }
+
+
+    private List<RawData> luceneSearchResults;
+
+
+
     [Parameter] public List<RecordModel> Records { get; set; }
     [Parameter] public string SelectedSubTabId { get; set; }
     [Parameter] public bool LoadFavorites { get; set; } = false;
@@ -225,18 +282,12 @@ else
     }
 
 
-
-
-
-
-
-
-
-
     private void HandleInput(ChangeEventArgs e)
     {
         searchQuery = e.Value.ToString();
+        isSearchPerformed = !string.IsNullOrWhiteSpace(searchQuery);
         SearchRecords();
+        SearchLuceneRecords();
     }
 
     private void CloseEditDialog()
@@ -244,6 +295,8 @@ else
         isEditDialogVisible = false;
         StateHasChanged(); // Чтобы убедиться, что состояние компонента обновлено
     }
+
+
 
     private async Task OnRecordDeleted(RecordModel deletedRecord)
     {

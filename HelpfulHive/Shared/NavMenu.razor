@@ -235,7 +235,6 @@
     {
         var userPreferences = await upSRV.GetUserPreferences(userId);
         var records = await rSRV.GetRecordsByUserAndTabTypeAsync(true, userId);
-        Console.WriteLine($"[InitializeNewTabIndicators] Загружено {records.Count} записей");
 
         var newTabRecordCounts = new Dictionary<int, int>();
 
@@ -256,10 +255,7 @@
             }
         }
 
-        foreach (var kvp in newTabRecordCounts)
-        {
-            Console.WriteLine($"[NewTabIndicators] TabID: {kvp.Key}, UnviewedCount: {kvp.Value}");
-        }
+    
 
         // Теперь newTabRecordCounts содержит количество непросмотренных записей для каждой вкладки
     }

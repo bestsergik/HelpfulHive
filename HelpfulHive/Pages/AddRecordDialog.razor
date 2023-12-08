@@ -262,9 +262,9 @@
 
     private async Task Close()
     {
-        IsVisible = false;  // Добавьте эту строку
+        IsVisible = false;  
         await IsVisibleChanged.InvokeAsync(false);
-        await OnCloseDialog.InvokeAsync(); // Это событие должно вызываться
+        await OnCloseDialog.InvokeAsync(); 
         await InvokeAsync(StateHasChanged);
     }
 

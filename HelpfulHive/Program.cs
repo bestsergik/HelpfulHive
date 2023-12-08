@@ -21,9 +21,25 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddRoles<IdentityRole>() // Добавляем поддержку ролей
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+//builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+//    .AddRoles<IdentityRole>() // Добавляем поддержку ролей
+//    .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+
+    // Настройки пароля
+    options.Password.RequireDigit = false; // Не требовать цифры
+    options.Password.RequiredLength = 6; // Минимальная длина пароля
+    options.Password.RequireNonAlphanumeric = false; // Не требовать неалфавитные символы
+    options.Password.RequireUppercase = false; // Не требовать заглавные буквы
+    options.Password.RequireLowercase = false; // Не требовать строчные буквы
+})
+.AddRoles<IdentityRole>() // Добавляем поддержку ролей
+.AddEntityFrameworkStores<ApplicationDbContext>();
 
 
 builder.Services.AddServerSideBlazor().AddHubOptions(o =>
@@ -49,6 +65,8 @@ builder.Services.AddScoped<TabService>();
 builder.Services.AddScoped<RecordService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RecordViewModel>();
+builder.Services.AddScoped<LuceneSearchService>();
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
@@ -67,10 +85,10 @@ builder.Services.AddSignalR(hubOptions => {
     hubOptions.EnableDetailedErrors = true;
 
     // Установка тайм-аута для клиента
-   // hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
+   // hubOptions.ClientTimeoutInterval = TimeSpan.FromMinutes(5); 
 
     // Установка тайм-аута для рукопожатия
-    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(30);
+    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(230);
 });
 
 var app = builder.Build();

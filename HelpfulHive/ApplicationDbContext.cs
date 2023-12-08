@@ -24,7 +24,9 @@ namespace HelpfulHive
         public DbSet<RecordModel> Records { get; set; }
         public DbSet<TabItem> Tabs { get; set; }
         public DbSet<RecordContent> RecordsContent { get; set; }
-        public DbSet<UserPreferences> UserPreferences { get; set; }  // Добавить эту строку
+        public DbSet<UserPreferences> UserPreferences { get; set; }
+        public DbSet<ProcessedData> ProcessedDatas { get; set; }
+        public DbSet<RawData> RawDatas { get; set; }
 
 
 
@@ -39,6 +41,7 @@ namespace HelpfulHive
           .OnDelete(DeleteBehavior.Cascade);
 
 
+
             modelBuilder.Entity<RecordContent>()
          .Property(e => e.ImageUrls)
          .HasColumnType("jsonb")
@@ -50,7 +53,8 @@ namespace HelpfulHive
              c => c.ToList()));
 
 
-
+            modelBuilder.Entity<ProcessedData>()
+       .HasKey(pd => pd.ProcessedDataId);
 
             modelBuilder.Entity<UserPreferences>()
  .HasOne(up => up.User)
@@ -68,7 +72,7 @@ namespace HelpfulHive
 
             modelBuilder.Entity<UserPreferences>()
       .Property(up => up.HasViewedNewCommonRecord)
-      .IsRequired(); // Добавление нового поля HasViewed
+      .IsRequired();
 
 
 

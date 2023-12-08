@@ -84,7 +84,7 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Запомнить меня?")]
             public bool RememberMe { get; set; }
         }
 
@@ -124,6 +124,15 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
                 else
                 {
                     userName = userNameOrEmail; // Если "@" нет, предполагаем, что это UserName
+                }
+
+                // Находим пользователя по имени или email
+                var user = await _userManager.FindByNameAsync(userName) ?? await _userManager.FindByEmailAsync(userName);
+                if (user != null && !user.Email.EndsWith("@goznak.ru"))
+                {
+                    // Если email пользователя не заканчивается на @goznak.ru
+                    ModelState.AddModelError(string.Empty, "Доступ ограничен!");
+                    return Page();
                 }
 
                 // Теперь попытка входа с использованием имени пользователя

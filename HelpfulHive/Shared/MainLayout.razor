@@ -12,7 +12,7 @@
 @inject UserService uSRV
 @inject IJSRuntime JSRuntime
 @inject RecordUpdateService recordUpdateService
-
+@inject LuceneSearchService lsSRV
 
 <svg id="checkmark" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 50 50" style="position: fixed; visibility: hidden;">
     <defs>
@@ -46,6 +46,11 @@
                     <button class="image-favorite" @onclick="NavigateToFavorite" aria-label="Избранное">
                         <span class="tooltip-text">Избранные шаблоны</span>
                     </button>
+
+                    <button class="image-pdf" @onclick="NavigateToCompletedRecordList">
+                        <span class="tooltip-text">Поиск готовых решений</span>
+                    </button>
+
                     <button class="image-comma" @onclick="@(e => GetCommaClick(e, "comma"))">
                         <span class="tooltip-text">Добавить запятые</span>
                     </button>
@@ -57,6 +62,12 @@
                     <button class="image-quotes" @onclick="@(e => GetCommaClick(e, "{NUMERIC_VARCHAR}"))">
                         <span class="tooltip-text">Добавить кавычки</span>
                     </button>
+
+                    <button class="image-pdf" @onclick="StartProcess">
+                        <span class="tooltip-text">Обработка</span>
+                    </button>
+
+                 
              
 
 
@@ -88,8 +99,6 @@
 
 
 
-
-
 @if (isAddRecordDialogOpen)
 {
     <AddRecordDialog IsVisible="true" AvailableSubTabs="@GetAllSubTabs()"  OnRecordAdded="HandleRecordAdded" OnCloseDialog="CloseAddRecordDialog" SelectedTab="selectedTab"></AddRecordDialog>
@@ -113,7 +122,22 @@
         NavigationManager.NavigateTo("/pdf-display");
     }
 
+
+    private void NavigateToCompletedRecordList()
+    {
+        NavigationManager.NavigateTo("/completed-record-list");
+    }
+
     public event Func<Task> RecordsUpdated;
+
+
+    private async Task StartProcess()
+    {
+        // Здесь вызываем сервис для обработки данных
+       await lsSRV.StartIndexingProcess();
+       Console.WriteLine("-------------------=-==-=-=-=-=--=-=-=-=-==-=-=-=-=-==-=-=-=-=-=-=-");
+    }
+   
 
 
     private async void OnRecordsUpdated()

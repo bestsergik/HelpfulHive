@@ -320,3 +320,60 @@ body, html {
     }
 
 
+
+
+
+.split-view {
+    display: flex;
+    justify-content: space-between;
+}
+
+.left-pane, .right-pane {
+    flex: 1;
+    margin: 10px;
+}
+
+.full-width-pane {
+    width: 100%;
+}
+
+
+
+.edit-icon .fa-pencil-alt {
+    font-size: 22px; /* Изменение размера иконки */
+
+}
+
+.fa-pencil-alt {
+    position: relative; /* Для позиционирования подсказки относительно кнопки */
+}
+    .tooltip-text {
+    visibility: hidden;
+    background-color: dimgray;
+    color: white; /* Белый текст */
+    text-align: center;
+    border-radius: 3px;
+    padding: 7px;
+    /* Позиционирование */
+    position: absolute;
+    z-index: 1;
+    top: 100%; /* Под кнопкой */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 10px; /* Отступ от кнопки */
+    /* Анимация */
+    opacity: 0;
+    transition: opacity 0.2s, visibility 0.2s;
+    transition-delay: 0.1s;
+    font-size: 13px !important;
+    font-weight: 100;
+    font-family: 'Tahoma';
+    line-height:16px;
+}
+
+
+.fa-pencil-alt:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0.6s;
+}

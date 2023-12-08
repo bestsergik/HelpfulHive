@@ -71,33 +71,35 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
         public class InputModel
         {
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            ///     Ётот API поддерживает инфраструктуру стандартного пользовательского интерфейса ASP.NET Core Identity и не предназначен 
+            ///     дл€ пр€мого использовани€ в вашем коде. Ётот API может изменитьс€ или быть удаленным в будущих релизах.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "Email об€зателен дл€ заполнени€.")]
+            [EmailAddress(ErrorMessage = "Ќеверный формат электронной почты.")]
             [Display(Name = "Email")]
             public string Email { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            ///     Ётот API поддерживает инфраструктуру стандартного пользовательского интерфейса ASP.NET Core Identity и не предназначен 
+            ///     дл€ пр€мого использовани€ в вашем коде. Ётот API может изменитьс€ или быть удаленным в будущих релизах.
             /// </summary>
-            [Required]
-            [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+            [Required(ErrorMessage = "ѕароль об€зателен дл€ заполнени€.")]
+            [StringLength(100, ErrorMessage = "ƒлина {0} должна быть не менее {2} и не более {1} символов.", MinimumLength = 6)]
             [DataType(DataType.Password)]
-            [Display(Name = "Password")]
+            [Display(Name = "ѕарол€")]
             public string Password { get; set; }
 
             /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
+            ///     Ётот API поддерживает инфраструктуру стандартного пользовательского интерфейса ASP.NET Core Identity и не предназначен 
+            ///     дл€ пр€мого использовани€ в вашем коде. Ётот API может изменитьс€ или быть удаленным в будущих релизах.
             /// </summary>
             [DataType(DataType.Password)]
-            [Display(Name = "Confirm password")]
-            [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+            [Display(Name = "ѕодтверждение парол€")]
+            [Compare("Password", ErrorMessage = "ѕароль и подтверждение парол€ не совпадают.")]
             public string ConfirmPassword { get; set; }
         }
+
+
 
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -112,6 +114,12 @@ namespace HelpfulHive.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                if (!Input.Email.EndsWith("@goznak.ru"))
+                {
+                    ModelState.AddModelError(string.Empty, "Ќекорректный email");
+                    return Page(); // ¬озвращаем страницу, если домен не соответствует
+                }
+
                 var user = CreateUser();
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);

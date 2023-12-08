@@ -9,8 +9,8 @@
     background-color: #76648d;
     border: none; 
     border-radius: 50%; 
-    width: 60px; 
-    height: 60px; 
+    width: 45px; 
+    height: 45px; 
     cursor: pointer; 
     outline: none; 
     box-shadow: 0 4px 8px rgba(0,0,0,0.3); 
@@ -56,8 +56,8 @@
     background-color: #72b8cb;
     border: none; /* Убираем границу */
     border-radius: 50%; /* Делаем кнопку круглой */
-    width: 60px; /* Ширина */
-    height: 60px; /* Высота */
+    width: 45px; /* Ширина */
+    height: 45px; /* Высота */
     cursor: pointer; /* Курсор в виде руки, указывающей, что это кнопка */
     outline: none; /* Убираем контур при фокусе */
     box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Добавляем небольшую тень */
@@ -92,7 +92,7 @@
 
 
 .edit-fab-button .fa-pencil-alt {
-    font-size: 24px; /* Изменение размера иконки */
+    font-size: 18px; /* Изменение размера иконки */
     color: #555; /* Цвет иконки */
 }
 
@@ -357,6 +357,12 @@ body {
     max-height: 78vh; /* Adjust the value as needed */
     overflow-y: auto; /* Enable vertical scrolling if the content exceeds the max height */
     padding: 16px 10px 6px 10px;
+    -webkit-mask-image: linear-gradient( to bottom, transparent, black 1%, /* начало черного цвета ближе к верху */
+    black 95%, /* конец черного цвета, начиная снизу */
+    transparent );
+    mask-image: linear-gradient( to bottom, transparent, black 1%, /* начало черного цвета ближе к верху */
+    black 95%, /* конец черного цвета, начиная снизу */
+    transparent );
 }
 
 

@@ -1,0 +1,330 @@
+﻿.record-list {
+    background-color: #fff; /* Прозрачный или единый фон */
+    border-radius: 5px;
+    padding: 20px 15px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    margin: auto;
+    font-family: 'NavMenuChildtLinkFont';
+    flex-grow: 1;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 100% 50%;
+    }
+}
+
+.record-item {
+    color: white;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 4px;
+    cursor: pointer;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    background-image: linear-gradient(to right, #4a8c9b, #4abfbd, #4a8c9b, #4abfbd);
+    background-size: 400% 400%;
+    display: flex; /* Используем flexbox */
+    justify-content: space-between; /* Распределяем содержимое и иконку по бокам */
+    align-items: center; /* Центрируем элементы по вертикали */
+    transition: opacity 0.4s ease, box-shadow 0.4s ease; /* Плавное изменение */
+}
+
+    .record-item:hover {
+        opacity: 0.8; /* Немного уменьшаем прозрачность при наведении */
+        box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2); /* Увеличиваем тень для добавления глубины */
+    }
+
+
+    .record-item:last-child {
+        margin-bottom: 0; /* Убираем отступ у последнего элемента */
+    }
+
+@keyframes gradientAnimation {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.record-item-content {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Позволяет содержимому занимать все доступное пространство */
+}
+
+.record-img {
+    width: 45px;
+    height: 45px;
+    margin-right: 15px;
+    object-fit: cover;
+    padding: 5px;
+    border: none; /* Убрать границу */
+    background-color: transparent; /* Убрать фоновый цвет */
+    display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+}
+
+
+
+    .record-img:hover {
+        transform: scale(1.05);
+    }
+
+
+.record-item:hover {
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.edit-icon {
+    display: none;
+    margin-right: 10px;
+    color: #7334e9;
+    cursor: pointer;
+    transition: transform 2s ease; /* Плавный переход */
+}
+
+.record-item:hover .edit-icon {
+    display: inline-block; /* или block, в зависимости от того, как вам нужно */
+}
+
+.edit-icon:hover {
+    color: #c17714; /* Изменить на другой цвет при наведении */
+}
+
+
+
+.record-content {
+    font-size: 18px;
+    line-height: 1.5; /* Улучшение читаемости */
+}
+
+
+
+
+
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-image: linear-gradient(to right, #dae2e5, #e9ebec);
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
+.record-list {
+    margin-top: 20px;
+}
+
+.center-container {
+    text-align: center;
+}
+
+.record-group {
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #f5f5f5;
+}
+
+.group-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+}
+
+.tab-group {
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #fff;
+}
+
+.tab-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    font-size: 19px;
+}
+
+.subtab-group {
+    margin-top: 10px;
+    border: 1px solid #eee;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.subtab-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #777;
+}
+
+.record-item {
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    padding: 5px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.record-item-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.record-img {
+    max-width: 50px;
+    max-height: 50px;
+    margin-right: 10px;
+}
+
+.record-content {
+    color: #333;
+}
+
+.edit-icon {
+    cursor: pointer;
+}
+
+
+
+
+
+
+.search-and-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background-color: #f7f7f7;
+}
+
+.search-area {
+    display: flex;
+    flex-direction: column; /* Добавлено для вертикального выравнивания */
+    align-items: flex-start; /* Изменено для выравнивания элементов влево */
+    gap: 15px;
+}
+
+.checkbox-area label {
+    font-size: 12px; /* или другой размер, который вам нравится */
+    margin-left: 5px; /* добавляет пространство между текстом и чекбоксом */
+}
+
+.checkbox-area {
+    display: flex;
+    align-items: center; /* Выравнивание по центру по вертикали */
+}
+
+.new-record-indicator {
+}
+
+
+.new-record-indicator-img {
+    width: 22px; /* Размеры изображения */
+    height: 22px;
+    content: url('/serviceimages/newCommonRecord.png'); /* Укажите путь к изображению здесь */
+    background-size: cover;
+    margin-left: -6px; /* Половина ширины изображения */
+    margin-top: -45px; /* Половина высоты изображения */
+    display: none; /* Сначала скрываем элемент */
+    position: absolute;
+    /*transform: rotate(-10deg);*/ /* Наклон на 10 градусов */
+}
+
+.record-item.new-record-indicator .new-record-indicator-img {
+    display: block; /* Отображаем изображение только в новых записях */
+}
+
+
+.search-and-actions {
+    display: flex;
+    justify-content: center; /* Центрирование по горизонтали */
+    align-items: center; /* Центрирование по вертикали */
+}
+
+.search-area {
+    width: 600px; /* Ширина области поиска */
+    overflow: auto; /* Добавление скролла при необходимости */
+}
+
+    .search-area textarea {
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        width: 600px; /* Ширина текстового поля */
+        height: 200px; /* Высота текстового поля */
+        font-size: 16px; /* Размер шрифта */
+        box-sizing: border-box; /* Учитывание padding и border в размерах */
+        outline: none;
+        resize: none; /* Отключение возможности изменения размера пользователем */
+    }
+
+        .search-area textarea:focus {
+            border-color: #007bff;
+        }
+
+    .search-area input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        margin-right: 10px;
+    }
+
+.actions-area {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+
+.popular-record-list {
+    display: flex;
+    gap: 10px;
+    background-color: transparent; /* Убрать фоновый цвет */
+}
+
+.popular-record-item {
+    position: relative;
+    transition: transform 0.3s;
+    background-color: transparent; /* Убрать фоновый цвет */
+    border: none; /* Убрать границу */
+    cursor: pointer; /* Курсор в виде указателя */
+
+    padding: 0; /* Убрать внутренние отступы */
+    display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+}
+
+    .popular-record-item:hover {
+        transform: scale(1.05);
+        position: relative;
+        transition: transform 0.3s;
+        background-color: transparent; /* Убрать фоновый цвет */
+        border: none; /* Убрать границу */
+        cursor: pointer; /* Курсор в виде указателя */
+        padding: 0; /* Убрать внутренние отступы */
+        display: block; /* Убедитесь, что кнопка не имеет дополнительных отступов */
+    }

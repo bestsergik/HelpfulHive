@@ -22,6 +22,79 @@ namespace HelpfulHive.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("HelpfulHive.Models.ProcessedData", b =>
+                {
+                    b.Property<int>("ProcessedDataId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ProcessedDataId"));
+
+                    b.Property<int>("DislikesCount")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("LikesCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ProcessedComments")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProcessedInquiry")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProcessedResponse")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ProcessedSubject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("RawDataId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ProcessedDataId");
+
+                    b.HasIndex("RawDataId");
+
+                    b.ToTable("ProcessedDatas");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.RawData", b =>
+                {
+                    b.Property<int>("RawDataId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RawDataId"));
+
+                    b.Property<string>("Comments")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Inquiry")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RequestNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Response")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Subject")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("RawDataId");
+
+                    b.ToTable("RawDatas");
+                });
+
             modelBuilder.Entity("HelpfulHive.Models.RecordContent", b =>
                 {
                     b.Property<int>("Id")
@@ -353,6 +426,17 @@ namespace HelpfulHive.Migrations
                     b.HasBaseType("Microsoft.AspNetCore.Identity.IdentityUser");
 
                     b.HasDiscriminator().HasValue("ApplicationUser");
+                });
+
+            modelBuilder.Entity("HelpfulHive.Models.ProcessedData", b =>
+                {
+                    b.HasOne("HelpfulHive.Models.RawData", "RawData")
+                        .WithMany()
+                        .HasForeignKey("RawDataId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("RawData");
                 });
 
             modelBuilder.Entity("HelpfulHive.Models.RecordModel", b =>

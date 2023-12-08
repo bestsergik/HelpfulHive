@@ -100,11 +100,7 @@ namespace HelpfulHive.Services
                                            .Where(up => up.UserId == userId)
                                            .ToListAsync();
 
-            Console.WriteLine($"Загружено {preferences.Count} предпочтений для пользователя с ID {userId}");
-            foreach (var pref in preferences)
-            {
-                Console.WriteLine($"RecordId: {pref.RecordId}, HasViewedNewCommonRecord: {pref.HasViewedNewCommonRecord}");
-            }
+       
 
             return preferences;
         }
