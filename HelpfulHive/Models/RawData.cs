@@ -9,6 +9,8 @@
         public string Inquiry { get; set; } // Запрос
         public string Response { get; set; } // Ответ
         public string Link { get; set; } // Ответ
+        public bool IsObsolete { get; set; } // Поле для отметки, что запись устарела
+        public int? Useful { get; set; }
 
     }
 }

@@ -12,7 +12,6 @@
 @inject UserService uSRV
 @inject IJSRuntime JSRuntime
 @inject RecordUpdateService recordUpdateService
-@inject LuceneSearchService lsSRV
 
 <svg id="checkmark" xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 50 50" style="position: fixed; visibility: hidden;">
     <defs>
@@ -30,64 +29,65 @@
 
 
 <div class="page">
-    <div class="main-content">
-        <div class="sidebar">
-            <NavMenu />
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+    <div class="right-section">
+        <div class="top-row px-4">
+            <button class="image-xml" @onclick="NavigateToXmlDisplay">
+                <span class="tooltip-text2">Xml редактор</span>
+            </button>
+            <button class="image-add-template" @onclick="OpenAddRecordDialog">
+                <span class="tooltip-text">Добавить шаблон</span>
+            </button>
+            <button class="image-favorite" @onclick="NavigateToFavorite" aria-label="Избранное">
+                <span class="tooltip-text">Избранное</span>
+            </button>
+
+       
+
+            <button class="image-comma" @onclick="@(e => GetCommaClick(e, "comma"))">
+                <span class="tooltip-text">Добавить запятые</span>
+            </button>
+
+            <button class="image-pdf" @onclick="NavigateToPdfDisplay">
+                <span class="tooltip-text">Руководство пользователя</span>
+            </button>
+
+            <button class="image-quotes" @onclick="@(e => GetCommaClick(e, "{NUMERIC_VARCHAR}"))">
+                <span class="tooltip-text">Добавить кавычки</span>
+            </button>
+@*
+            <button class="image-pdf" @onclick="StartProcess">
+                <span class="tooltip-text">Обработка</span>
+            </button>
+
+*@
+
+
+
+            <button @onclick="Logout" class="user-btn">
+                @if (!string.IsNullOrEmpty(userName))
+                {
+                    if (!string.IsNullOrEmpty(profileImagePath) && profileImagePath != "/default-profile.png")
+                    {
+                        <img src="@profileImagePath" alt="Profile Image" class="user-img" />
+                    }
+                    <span class="user-name" style="color: #E0FFFF; font-size: 19px !important; font-family: 'NavMenuChildtLinkFont';">@userName</span>
+                }
+                else
+                {
+                    <span class="user-name">Профиль</span>
+                }
+            </button>
         </div>
+
+  
+
+    <div class="main-content">
+     
         <main class="main-container">
-            <div class="top-container">
-                <div class="top-row px-4">
-                    <button class="image-xml" @onclick="NavigateToXmlDisplay" >
-                        <span class="tooltip-text">Xml редактор</span>
-                    </button>
-                    <button class="image-add-template" @onclick="OpenAddRecordDialog">
-                        <span class="tooltip-text">Добавить шаблон</span>
-                    </button>
-                    <button class="image-favorite" @onclick="NavigateToFavorite" aria-label="Избранное">
-                        <span class="tooltip-text">Избранные шаблоны</span>
-                    </button>
-
-                    <button class="image-pdf" @onclick="NavigateToCompletedRecordList">
-                        <span class="tooltip-text">Поиск готовых решений</span>
-                    </button>
-
-                    <button class="image-comma" @onclick="@(e => GetCommaClick(e, "comma"))">
-                        <span class="tooltip-text">Добавить запятые</span>
-                    </button>
-
-                    <button class="image-pdf" @onclick="NavigateToPdfDisplay">
-                        <span class="tooltip-text">Руководство пользователя</span>
-                    </button>
-
-                    <button class="image-quotes" @onclick="@(e => GetCommaClick(e, "{NUMERIC_VARCHAR}"))">
-                        <span class="tooltip-text">Добавить кавычки</span>
-                    </button>
-
-                    <button class="image-pdf" @onclick="StartProcess">
-                        <span class="tooltip-text">Обработка</span>
-                    </button>
-
-                 
-             
-
-
-                    <button @onclick="Logout" class="user-btn" >
-                        @if (!string.IsNullOrEmpty(userName))
-                        {
-                            if (!string.IsNullOrEmpty(profileImagePath) && profileImagePath != "/default-profile.png")
-                            {
-                                <img src="@profileImagePath" alt="Profile Image" class="user-img" />
-                            }
-                                                    <span class="user-name" style="color: #E0FFFF; font-size: 19px !important; font-family: 'NavMenuChildtLinkFont';">@userName</span>
-                        }
-                        else
-                        {
-                            <span class="user-name">Профиль</span>
-                        }
-                    </button>
-                </div>
-        
-            </div>
+          
             <article class="content px-4">
                 @Body
             </article>
@@ -96,7 +96,7 @@
         </main>
     </div>
 </div>
-
+</div>
 
 
 @if (isAddRecordDialogOpen)
@@ -116,6 +116,7 @@
     private string userName;
     private string profileImagePath;
 
+    private bool isIndexed = false;
 
     private void NavigateToPdfDisplay()
     {
@@ -131,13 +132,14 @@
     public event Func<Task> RecordsUpdated;
 
 
-    private async Task StartProcess()
-    {
-        // Здесь вызываем сервис для обработки данных
-       await lsSRV.StartIndexingProcess();
-       Console.WriteLine("-------------------=-==-=-=-=-=--=-=-=-=-==-=-=-=-=-==-=-=-=-=-=-=-");
-    }
-   
+    //private async Task StartProcess()
+    //{
+    //    // Здесь вызываем сервис для обработки данных
+    //    await lsSRV.StartIndexingRawData();
+    //    await lsSRV.StartIndexingRecords();
+    //    Console.WriteLine("-------------------=-==-=-=-=-=--=-=-=-=-==-=-=-=-=-==-=-=-=-=-=-=-");
+    //}
+
 
 
     private async void OnRecordsUpdated()
@@ -150,6 +152,11 @@
 
     protected override async Task OnInitializedAsync()
     {
+        //if (!isIndexed)
+        //{
+        //    await StartProcess();
+        //    isIndexed = true;
+        //}
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 

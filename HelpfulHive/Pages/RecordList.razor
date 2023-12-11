@@ -2,6 +2,8 @@
 @using HelpfulHive.Models
 @using HelpfulHive.Services
 @using HelpfulHive.ViewModels
+@using System.Text
+@using System.Text.RegularExpressions;
 @inject RecordService RecordSV
 @inject TabViewModel TabVM
 @inject RecordViewModel RecordVM
@@ -11,10 +13,9 @@
 @inject IJSRuntime JSRuntime
 @inject UserPreferencesService upVM
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@using System.Text
-@using System.Text.RegularExpressions;
 @inject RecordUpdateService recordUpdateService
 @inject LuceneSearchService lcSRV
+
 
 
 
@@ -45,76 +46,135 @@
 
 
 
+
 <div class="search-and-actions">
-    <div class="search-area">
-        <input type="text" @bind="searchQuery" @oninput="HandleInput" placeholder="Поиск шаблонов..." />
+    <div class="rx-search">
+        <textarea class="rx-search-input" @oninput="HandleInput" @onpaste="HandlePaste" @onclick="HideTooltip" name="search" id="search" title=""
+                  oninvalid="this.setCustomValidity('Ваше пользовательское сообщение здесь')"
+        placeholder="Поиск" required></textarea>
+        <label for="search" class="rx-search-handle"></label>
+        @if (showTooltip)
+        {
+            <span class="tooltip-text">Универсальный поиск</span>
+        }
+
     </div>
+   
 </div>
+
+
 
 @if (isSearchPerformed)
 {
-    <div class="split-view">
-        <div class="left-pane">
-            @if (ShowGroupedSearchResults && GroupedRecords != null)
-            {
-                <div class="record-list">
-                    @foreach (var topLevelGroup in GroupedRecords.GroupBy(g => g.Key.Split('/')[0]))
-                    {
-                        <div class="tab-group">
-                            @{
-                                var tabType = topLevelGroup.Key == "Personal" ? "Личные" : "Общие";
-                            }
-                            <div class="center-container">
-                                <h4 class="tab-title">@tabType</h4>
-                            </div>
-                            <div class="group-divider"></div>
-                            @foreach (var subTabGroup in topLevelGroup.GroupBy(g => g.Key.Split('/')[1]))
+    <div class="section exact-search-section">
+     
+        <h4 style="font-family: 'NavMenuChildtLinkFont'">Результаты точного поиска</h4>
+
+        <div class="split-view">
+            <div class="left-pane">
+                @if (ShowGroupedSearchResults && GroupedRecords != null)
+                {
+                    <div class="record-list">
+                        @foreach (var topLevelGroup in GroupedRecords.GroupBy(g => g.Key.Split('/')[0]))
+                        {
+                            @if (topLevelGroup.Key == "Personal")
                             {
-                                <div class="subtab-group">
-                                    <h5 class="subtab-title">@subTabGroup.Key</h5>
+                                <div class="tab-group">
+                                    <div class="center-container">
+                                        <h4 style="font-family: 'NavMenuChildtLinkFont'" class="tab-title">Личные</h4>
+                                    </div>
                                     <div class="group-divider"></div>
-                                    @foreach (var recordGroup in subTabGroup)
+                                    @foreach (var subTabGroup in topLevelGroup.GroupBy(g => g.Key.Split('/')[1]))
                                     {
-                                        <div class="record-group">
-                                            <h6 class="group-title">@FormatGroupTitle(recordGroup.Key)</h6>
+                                        <div class="subtab-group">
+                                            <h5 style="font-family: 'NavMenuChildtLinkFont'" class="subtab-title">@subTabGroup.Key</h5>
                                             <div class="group-divider"></div>
-                                            @foreach (var record in recordGroup)
+                                            @foreach (var recordGroup in subTabGroup)
                                             {
-                                                <div class="record-item" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
-                                                    <div class="record-item-content">
-                                                        <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
-                                                        <div class="record-content">@record.Title</div>
-                                                    </div>
-                                                    <span class="edit-icon" @onclick="() => EditRecord(record)">
-                                                        <i class="fas fa-pencil-alt"><span class="tooltip-text">Редактировать запись</span></i> <!-- Иконка карандаша от Font Awesome -->
-                                                 
-                                                    </span>
+                                                <div class="record-group">
+                                                    <h6 style="font-family: 'NavMenuChildtLinkFont'" class="group-title">@FormatGroupTitle(recordGroup.Key)</h6>
+                                                    <div class="group-divider"></div>
+                                                    @foreach (var record in recordGroup)
+                                                    {
+                                                        <div class="record-item" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
+                                                            <div class="record-item-content">
+                                                                <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
+                                                                <div class="record-content">@record.Title</div>
+                                                            </div>
+                                                            <span class="edit-icon" @onclick="() => EditRecord(record)">
+                                                                <i class="fas fa-pencil-alt"><span class="tooltip-text">Редактировать запись</span></i> <!-- Иконка карандаша от Font Awesome -->
+                                                            </span>
+                                                        </div>
+                                                    }
                                                 </div>
                                             }
                                         </div>
                                     }
                                 </div>
                             }
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-        <div class="right-pane">
-            @if (luceneSearchResults != null)
-            {
-                <div class="record-list">
-                    @foreach (var result in luceneSearchResults)
-                    {
-                        <div class="record-item">
-                            <div class="record-content">@result.RequestNumber</div>
-                        </div>
-                    }
-                </div>
-            }
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>Данные не найдены</p>
+                }
+            </div>
+
+            <div class="right-pane">
+                @if (ShowGroupedSearchResults && GroupedRecords != null)
+                {
+                    <div class="record-list">
+                        @foreach (var topLevelGroup in GroupedRecords.GroupBy(g => g.Key.Split('/')[0]))
+                        {
+                            @if (topLevelGroup.Key != "Personal")
+                            {
+                                <div class="tab-group">
+                                    <div class="center-container">
+                                        <h4 style="font-family: 'NavMenuChildtLinkFont'" class="tab-title">Общие</h4>
+                                    </div>
+                             
+                                    <div class="group-divider"></div>
+                                    @foreach (var subTabGroup in topLevelGroup.GroupBy(g => g.Key.Split('/')[1]))
+                                    {
+                                        <div class="subtab-group">
+                                            <h5 style="font-family: 'NavMenuChildtLinkFont'" class="subtab-title">@subTabGroup.Key</h5>
+                                            <div class="group-divider"></div>
+                                            @foreach (var recordGroup in subTabGroup)
+                                            {
+                                                <div class="record-group">
+                                                    <h6 style="font-family: 'NavMenuChildtLinkFont'" class="group-title">@FormatGroupTitle(recordGroup.Key)</h6>
+                                                    <div class="group-divider"></div>
+                                                    @foreach (var record in recordGroup)
+                                                    {
+                                                        <div class="record-item" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
+                                                            <div class="record-item-content">
+                                                                <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
+                                                                <div class="record-content">@record.Title</div>
+                                                            </div>
+                                                            <span class="edit-icon" @onclick="() => EditRecord(record)">
+                                                                <i class="fas fa-pencil-alt"><span class="tooltip-text">Редактировать запись</span></i> <!-- Иконка карандаша от Font Awesome -->
+                                                            </span>
+                                                        </div>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>Данные не найдены</p>
+                }
+            </div>
         </div>
     </div>
 }
+
 else
 {
     <div class="full-width-pane">
@@ -122,7 +182,16 @@ else
         {
             <div class="record-list">
                 <div class="record-group">
-                    <h4>@(GetActiveSubTabName())</h4>
+                    <div class="flex-container">
+                        <h4>@(GetActiveSubTabName())</h4>
+                        @if (ShowNotificationIcon)
+                        {
+                            <div class="top-right" @onclick="ConfirmAndMarkAllAsViewed">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" fill="currentColor" class="bi bi-bell" viewBox="0 0 16 16"> <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zM8 1.918l-.797.161A4.002 4.002 0 0 0 4 6c0 .628-.134 2.197-.459 3.742-.16.767-.376 1.566-.663 2.258h10.244c-.287-.692-.502-1.49-.663-2.258C12.134 8.197 12 6.628 12 6a4.002 4.002 0 0 0-3.203-3.92L8 1.917zM14.22 12c.223.447.481.801.78 1H1c.299-.199.557-.553.78-1C2.68 10.2 3 6.88 3 6c0-2.42 1.72-4.44 4.005-4.901a1 1 0 1 1 1.99 0A5.002 5.002 0 0 1 13 6c0 .88.32 4.2 1.22 6z" /> </svg>
+                        <span class="tooltip-text">Просмотреть все записи</span>
+                    </div>
+                    }
+                    </div>
                     @foreach (var record in Records)
                     {
                         <div class="record-item @(newRecordIndicators.ContainsKey(record.Id) && !newRecordIndicators[record.Id] ? "" : "new-record-indicator")" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
@@ -138,13 +207,96 @@ else
                     }
                 </div>
             </div>
-        }
+              }
         else
         {
             <p><h5>Здесь пока пусто..</h5></p>
+            <br/>
         }
     </div>
 }
+
+@if ((luceneSearchRecordResults != null && luceneSearchRecordResults.Any()) || (luceneSearchResults != null && luceneSearchResults.Any()))
+{
+    <div class="section smart-search-section">
+        <h4 style="font-family: 'NavMenuChildtLinkFont'">Рекомендации</h4>
+
+        <div class="split-view">
+            <div class="left-pane">
+                @if (luceneSearchRecordResults != null && luceneSearchRecordResults.Any())
+                {
+
+                    foreach (var record in luceneSearchRecordResults)
+                    {
+                        <div class="record-item" @ondblclick="() => OnDoubleClick(record)" @onclick="@(e => OnSingleClick(e, record))">
+                            <div class="record-item-content">
+                                <img src="@($"images/{FindFolderForImage(record.ImagePath)}/{record.ImagePath}")" alt="Record image" class="record-img" />
+                                <div class="record-content">@record.Title</div>
+                            </div>
+                            <span class="edit-icon" @onclick="() => EditRecord(record)">
+                                <i class="fas fa-pencil-alt"><span class="tooltip-text">Редактировать запись</span></i> <!-- Иконка карандаша от Font Awesome -->
+
+                            </span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p>Данные не найдены</p>
+                }
+                 </div>
+            <div class="right-pane">
+                @if (luceneSearchResults != null)
+                {
+                    <div class="record-list">
+                        @foreach (var result in luceneSearchResults)
+                        {
+                            <div class="record-item record-item-special">
+                                <a href="@result.Link" target="_blank" style="text-decoration: none;">
+
+                                <div class="record-content">
+                                    @result.RequestNumber
+
+                                    @if (result.IsObsolete)
+                                    {
+                                        <span class="obsolete-indicator">Неактуальная</span>
+                                    }
+
+                                    @if (result.Useful > 0)
+                                    {
+                                        <div class="likes-count">
+                                            <i class="fas fa-thumbs-up"></i> @result.Useful
+                                        </div>
+                                    }
+                                </div>
+                                </a>
+
+                                <div class="icons-container">
+                                    <span @onclick="() => IncrementUseful(result.RawDataId)" data-tooltip="Отлично">
+                                        <i class="fas fa-thumbs-up"></i>
+                                    </span>
+                                    <span @onclick="() => ConfirmMarkAsObsolete(result.RawDataId)" data-tooltip="Неактуальная">
+                                        <i class="fas fa-times-circle"></i>
+                                    </span>
+
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                }
+                else
+                {
+                    <p>Данные не найдены</p>
+                }
+
+            </div>
+        </div>
+    </div>
+}
+
+
+
 
 
 
@@ -162,15 +314,22 @@ else
 
 @code {
 
+    private bool showTooltip = true;
+
+    private void HideTooltip()
+    {
+        showTooltip = false;
+    }
+    private bool ShowNotificationIcon { get; set; } = false;
+
 
     private bool isSearchPerformed = false;
 
-
-    private async Task SearchLuceneRecords()
+    private async Task SearchLuceneRawData()
     {
         if (!string.IsNullOrWhiteSpace(searchQuery))
         {
-            var requestNumbers = lcSRV.Search(searchQuery);
+            var requestNumbers = lcSRV.LuceneSearchProcessRawData(searchQuery);
             luceneSearchResults = await lcSRV.GetRecordsByRequestNumbers(requestNumbers);
         }
         else
@@ -179,10 +338,40 @@ else
         }
     }
 
+    private async Task ConfirmAndMarkAllAsViewed()
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Отметить все записи как просмотренные?");
+        if (confirmed)
+        {
+          await  MarkAllAsViewed();
+            ShowNotificationIcon = false; // Обновляем состояние, чтобы значок исчез
+            StateHasChanged(); // Вызывает перерисовку компонента
+        }
+    }
+
+
+    private async Task ConfirmMarkAsObsolete(int rawDataId)
+    {
+        if (await JSRuntime.InvokeAsync<bool>("confirm", "Вы уверены, что хотите пометить запись как неактуальную?"))
+        {
+            await MarkAsObsolete(rawDataId);
+        }
+    }
 
     private List<RawData> luceneSearchResults;
 
 
+    private async Task IncrementUseful(int rawDataId)
+    {
+        await lcSRV.IncrementUsefulAsync(rawDataId);
+        // Опционально: обновить luceneSearchResults для отображения изменений.
+    }
+
+    private async Task MarkAsObsolete(int rawDataId)
+    {
+        await lcSRV.MarkAsObsoleteAsync(rawDataId);
+        // Опционально: обновить luceneSearchResults для отображения изменений.
+    }
 
     [Parameter] public List<RecordModel> Records { get; set; }
     [Parameter] public string SelectedSubTabId { get; set; }
@@ -193,7 +382,6 @@ else
     private List<RecordModel> PopularRecords { get; set; }
     private ScriptBuilder scriptBuilder;
     private RecordModel? selectedRecord;
-
     private bool isEditDialogVisible = false;
     private bool isSearchAll = false;
     private string searchQuery = string.Empty;
@@ -204,9 +392,7 @@ else
     private bool ShowGroupedSearchResults => !string.IsNullOrEmpty(searchQuery) && Records != null && Records.Any();
     private bool isSingleClick = false;
     private bool isLoadingAnimation = false;
-
     private Dictionary<int, bool> newRecordIndicators = new Dictionary<int, bool>();
-
 
     private async Task<Dictionary<int, bool>> GetUserNewRecordIndicators(string userId)
     {
@@ -219,6 +405,8 @@ else
     }
 
 
+
+
     private string FormatGroupTitle(string groupKey)
     {
         var parts = groupKey.Split('/');
@@ -226,6 +414,49 @@ else
         // Возвращаем только последнюю часть ключа (подвкладку)
         return parts.LastOrDefault()?.Trim() ?? "N/A";
     }
+
+
+    private List<RawData> luceneSearchRawDataResults;
+    private List<RecordModel> luceneSearchRecordResults;
+
+    private async Task SearchLuceneRawDataAndRecords()
+    {
+        //if (searchQuery.Length > 12)
+        //{
+        //    luceneSearchRawDataResults = await lcSRV.SearchRawData(searchQuery);
+
+        //    // Далее ваш код для поиска записей...
+        //}
+        //else
+        //{
+        //    // Очищаем результаты, если длина запроса меньше 8 символов
+        //    luceneSearchRawDataResults = new List<RawData>();
+        //}
+        var recordIds = lcSRV.LuceneSearchProcessRecords(searchQuery);
+
+        var allCommonRecords = await RecordVM.GetCommonRecordsAsync();
+        luceneSearchRecordResults = allCommonRecords.Where(r => recordIds.Contains(r.Id)).ToList();
+
+        // Обновление интерфейса для отображения результатов
+    }
+
+
+
+
+    private async Task MarkAllAsViewed()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        if (userId != null)
+        {
+            await upVM.MarkAllRecordsAsViewed(userId);
+            // После обновления, перезагрузить данные на странице
+            await OnInitializedAsync();
+        }
+    }
+
 
 
     private async Task SearchRecords()
@@ -276,9 +507,22 @@ else
         // Ваш код для поиска подвкладки по идентификатору
         var subTab = GetAllSubTabs().FirstOrDefault(tab => tab.Uri.Equals(subTabId, StringComparison.OrdinalIgnoreCase));
 
-  
+
 
         return subTab;
+    }
+
+    private async Task HandlePaste()
+    {
+        // Возможно, потребуется небольшая задержка для получения обновленного значения поля ввода
+        await Task.Delay(100);
+
+        // Затем повторите ту же логику, что и в HandleInput
+        isSearchPerformed = !string.IsNullOrWhiteSpace(searchQuery);
+        await SearchRecords();
+        await SearchLuceneRawData();
+        await SearchLuceneRawDataAndRecords();
+        StateHasChanged();
     }
 
 
@@ -287,8 +531,12 @@ else
         searchQuery = e.Value.ToString();
         isSearchPerformed = !string.IsNullOrWhiteSpace(searchQuery);
         SearchRecords();
-        SearchLuceneRecords();
+        SearchLuceneRawData();
+        SearchLuceneRawDataAndRecords();
+
     }
+
+  
 
     private void CloseEditDialog()
     {
@@ -322,6 +570,13 @@ else
         }
         return string.Empty;
     }
+
+    private async Task<bool> HasUnviewedRecords(string userId)
+    {
+        var userPreferences = await upVM.GetUserPreferences(userId);
+        return userPreferences.Any(up => !up.HasViewedNewCommonRecord);
+    }
+
 
 
     protected override async Task OnInitializedAsync()
@@ -357,6 +612,11 @@ else
             up => up.RecordId,
             up => !up.HasViewedNewCommonRecord);
  
+
+        bool hasUnviewedRecords = await HasUnviewedRecords(userId);
+        ShowNotificationIcon = hasUnviewedRecords; // ShowNotificationIcon - это свойство, которое контролирует отображение значка
+
+
     }
 
 
@@ -404,7 +664,7 @@ else
 
     private bool ContainsKeyWords(string text)
     {
-        var keyWords = new List<string> { "{NUMERIC}", "select", "SELECT", "{NUMERIC_VARCHAR}", "{SPECIFIC_VARCHAR}", "comma" };
+        var keyWords = new List<string> { "{NUMERIC}", "{NUMERIC_VARCHAR}", "{SPECIFIC_VARCHAR}", "comma" };
         return keyWords.Any(keyword => text.Contains(keyword));
     }
 

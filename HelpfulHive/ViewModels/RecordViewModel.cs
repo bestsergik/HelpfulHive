@@ -11,9 +11,6 @@ namespace HelpfulHive.ViewModels
         private readonly RecordService _recordService;
         public List<RecordModel> Records { get; private set; }
 
-
-
-
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         public string UserId { get; private set; }
 
@@ -40,7 +37,6 @@ namespace HelpfulHive.ViewModels
             // Вы можете здесь вызвать метод загрузки записей или другие методы, которые зависят от UserId
         }
 
-
         public async Task<List<RecordModel>> GetRecordsBySubTabUriAsync(string subTabUri)
         {
             return await _recordService.GetRecordsBySubTabUriAsync(subTabUri, UserId);
@@ -57,17 +53,16 @@ namespace HelpfulHive.ViewModels
             OnRecordChanged?.Invoke();
         }
 
-
         public async Task HandleClick(RecordModel record)
         {
             await _userPreferencesVM.UpdateOrCreateUserPreference(UserId, record.Id);
             await UpdateRecordAsync(record);
             OnRecordChanged?.Invoke();
         }
-      public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string selectedSubTabId)
-    {
-        return await _recordService.SearchRecordsAsync(query, isSearchAll, UserId, selectedSubTabId);
-    }
+        public async Task<List<RecordModel>> SearchRecordsAsync(string query, bool isSearchAll, string selectedSubTabId)
+        {
+            return await _recordService.SearchRecordsAsync(query, isSearchAll, UserId, selectedSubTabId);
+        }
 
 
 
@@ -104,16 +99,17 @@ namespace HelpfulHive.ViewModels
         }
 
 
+        public async Task<List<RecordModel>> GetCommonRecordsAsync()
+        {
+            return await _recordService.GetCommonRecordsAsync();
+        }
+
+
+
         public async Task RecordViewed(RecordModel record)
         {
             await _userPreferencesVM.MarkAsViewed(UserId, record.Id);
             // Обновите любые нужные данные или вызовите OnRecordChanged, если это необходимо
         }
-
-
-      
-
-
     }
-
 }

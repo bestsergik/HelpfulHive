@@ -12,6 +12,8 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+
 // Add services to the container.
 builder.Services.AddRazorPages();
 // builder.Services.AddServerSideBlazor();
@@ -65,7 +67,7 @@ builder.Services.AddScoped<TabService>();
 builder.Services.AddScoped<RecordService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RecordViewModel>();
-builder.Services.AddScoped<LuceneSearchService>();
+builder.Services.AddSingleton<LuceneSearchService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -92,6 +94,14 @@ builder.Services.AddSignalR(hubOptions => {
 });
 
 var app = builder.Build();
+
+
+//using (var scope = app.Services.CreateScope())
+//{
+//    var luceneService = scope.ServiceProvider.GetRequiredService<LuceneSearchService>();
+//    await luceneService.InitializeIndex();
+//}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

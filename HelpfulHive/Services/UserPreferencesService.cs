@@ -93,6 +93,54 @@ namespace HelpfulHive.Services
         }
 
 
+        public async Task MarkAllRecordsAsViewed(string userId)
+        {
+            using var context = _contextFactory.CreateDbContext();
+
+            // Получение всех общих записей
+            var commonRecords = await context.Records
+                                             .Where(r => r.SubTab.TabType == TabType.Common)
+                                             .ToListAsync();
+
+            // Получение всех личных записей для текущего пользователя
+            var personalRecords = await context.Records
+                                               .Where(r => r.SubTab.TabType == TabType.Personal && r.SubTab.UserId == userId)
+                                               .ToListAsync();
+
+            // Объединение списков записей
+            var allRelevantRecords = commonRecords.Concat(personalRecords);
+
+            foreach (var record in allRelevantRecords)
+            {
+                var preference = await context.UserPreferences
+                    .FirstOrDefaultAsync(up => up.UserId == userId && up.RecordId == record.Id);
+
+                if (preference == null)
+                {
+                    // Создание новой записи в UserPreferences
+                    var newUserPreference = new UserPreferences
+                    {
+                        UserId = userId,
+                        RecordId = record.Id,
+                        HasViewedNewCommonRecord = true,
+                        ClickCount = 0,
+                        IsFavorite = false
+                    };
+                    context.UserPreferences.Add(newUserPreference);
+                }
+                else
+                {
+                    // Обновление существующей записи
+                    preference.HasViewedNewCommonRecord = true;
+                }
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+
+
+
         public async Task<List<UserPreferences>> GetUserPreferences(string userId)
         {
             using var context = _contextFactory.CreateDbContext();

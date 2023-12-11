@@ -246,6 +246,18 @@ namespace HelpfulHive.Services
                 .ToListAsync();
         }
 
- 
+
+        public async Task<List<RecordModel>> GetCommonRecordsAsync()
+        {
+            using var context = _contextFactory.CreateDbContext();
+            var records = await context.Records
+                                       .Include(r => r.SubTab)
+                                       .Where(r => r.SubTab.TabType == TabType.Common)
+                                       .ToListAsync();
+
+            return records;
+        }
+
+
     }
 }

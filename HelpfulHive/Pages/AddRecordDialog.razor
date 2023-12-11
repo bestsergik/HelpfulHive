@@ -156,7 +156,6 @@
     [Parameter]
     public bool IsLoading { get; set; }
 
-
     private Dictionary<string, List<string>> AvailableImagesByFolders { get; set; }
     private string SelectedFolder { get; set; }
     private string SelectedImage { get; set; } = "";
@@ -171,15 +170,11 @@
     private bool showSuccessMessageAnimation = false;
     private bool showErrorMessageAnimation = false;
 
-
-
-
     private void HandleImageSelected(string selectedImagePath)
     {
         SelectedImage = selectedImagePath; // Обновите переменную с выбранным путем изображения
                                            // Любая дополнительная логика
     }
-
 
     private bool isImageSelectionVisible = false;
 
@@ -193,7 +188,6 @@
         isImageSelectionVisible = isVisible;
         StateHasChanged(); // Обновите состояние
     }
-
 
     private int fontSize = 3; // Начальный размер шрифта, предполагая, что это средний размер
 
@@ -209,10 +203,6 @@
     {
         await JSRuntime.InvokeVoidAsync("executeCommand", editorRef, command, argument);
     }
-
-
-
-
 
     private async Task ExecuteCommand(string command)
     {
@@ -233,7 +223,6 @@
 
         await JSRuntime.InvokeVoidAsync("insertImageFromClipboard", editorRef, e);
     }
-
 
     private async Task UpdateContentText()
     {
@@ -284,7 +273,6 @@
         // Логика для активации анимации
     }
 
-
     // Функция для проверки валидности Base64 строки
     public bool IsValidBase64String(string s)
     {
@@ -306,7 +294,6 @@
         SelectedSubTabId = subTabId;
         // Тут ваша логика после выбора вкладки, возможно обновление состояния компонента или вызов StateHasChanged если это необходимо.
     }
-
 
     private async Task AddRecord()
     {
@@ -378,7 +365,6 @@
             await InvokeAsync(StateHasChanged); // Используйте InvokeAsync
 
         }
-
     }
 
     public class JsonbListConverter : ValueConverter<List<string>, string>
@@ -388,6 +374,5 @@
             v => JsonConvert.DeserializeObject<List<string>>(v))
         { }
     }
-
 }
 

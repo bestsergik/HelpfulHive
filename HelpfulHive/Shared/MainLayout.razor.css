@@ -3,20 +3,30 @@
     display: flex;
     flex-direction: column;
     /* другие стили */
-
+    
 }
 
 .main-content {
+    flex: 1; /* Занимает оставшееся место под .top-row */
+
     display: flex;
     flex-direction: row;
     width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
 }
 
 main {
     flex: 1; /* Занимает все оставшееся пространство */
     /* другие стили */
-   
+    overflow-y: auto; /* Добавьте прокрутку, если контент превышает высоту экрана */
 }
+
+
+
+
+
 
 button {
     background-color: #4a148c;
@@ -36,23 +46,40 @@ button {
 
 
 .top-row {
-
-
     border-bottom: none; /* или '0', чтобы убрать границу */
-    position: relative; /* Для корректного позиционирования псевдоэлемента */
     border-bottom-left-radius: 16px; /* Закругление снизу слева */
-    gap: 5%; 
+    gap: 5%;
     flex-wrap: wrap;
     border-bottom: 2px solid #e0e0e0;
     justify-content: center;
-    height: 80px;
+    height: 72px;
     display: flex;
     align-items: center;
     box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.1);
     background: linear-gradient(12deg, #4ba1a8 0%, #47728b 100%);
-
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
 }
 
+
+
+.sidebar {
+    border-bottom: none; /* или '0', чтобы убрать границу */
+    background: var(--primary-gradient);
+    width: 275px;
+    box-shadow: var(--box-shadow);
+    color: var(--secondary-color);
+    overflow-y: auto; /* Это позволит прокрутку по вертикали при необходимости */
+}
+
+.right-section {
+    flex: 1; /* Занимает все оставшееся пространство справа */
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
 
 
 
@@ -64,6 +91,7 @@ button {
     border-radius: 0.5rem;
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
     flex: 1;
+    overflow-y: auto;
 }
 
 @media (max-width: 640.98px) {
@@ -195,7 +223,7 @@ button {
 .user-btn {
     background-color: transparent; /* Убрать фоновый цвет */
     border-radius: 8px; /* Закругление углов */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Тень */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* Тень */
     cursor: pointer; /* Курсор в виде указателя */
     transition: transform 0.1s ease, background-image 0.1s ease; /* Обновите transition */
     display: flex; /* Использование flexbox */
@@ -205,13 +233,13 @@ button {
     position: absolute; /* Абсолютное позиционирование */
     right: 10px; /* Правый отступ */
     width: auto; /* Ширина подстраивается под содержимое */
-    padding: 10px;
+    padding: 4px;
 }
 
     .user-btn:hover {
         background-color: transparent; /* Убрать фоновый цвет */
         border-color: #e74c3c; /* Изменить цвет рамки при наведении */
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2); /* Изменить тень при наведении */
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.4); /* Изменить тень при наведении */
         cursor: pointer; /* Курсор в виде указателя */
         display: flex; /* Использование flexbox */
         align-items: center; /* Выравнивание по центру по вертикали */
@@ -220,7 +248,7 @@ button {
         position: absolute; /* Абсолютное позиционирование */
         right: 10px; /* Правый отступ */
         width: auto; /* Ширина подстраивается под содержимое */
-        padding: 10px;
+        padding: 4px;
     }
 
     .user-btn .user-img {
@@ -237,7 +265,7 @@ button {
         margin-right: 14px;
         font-size: 16px; /* Или другой размер, который вам подходит */
         white-space: nowrap; /* Предотвращаем перенос текста на новую строку */
-      
+      padding: 5px;
     }
 
 
@@ -251,15 +279,6 @@ button {
 
 
 
-
-.sidebar {
-    border-bottom: none; /* или '0', чтобы убрать границу */
-    background: var(--primary-gradient);
-    width: 275px;
-    box-shadow: var(--box-shadow);
-    color: var(--secondary-color);
-    overflow-y: auto; /* Это позволит прокрутку по вертикали при необходимости */
-}
 
 
 
@@ -419,10 +438,34 @@ button {
     
 }
 
-.image-xml:hover .tooltip-text {
+
+.tooltip-text2 {
+    visibility: hidden;
+    background-color: dimgray;
+    color: white; /* Белый текст */
+    text-align: center;
+    border-radius: 3px;
+    padding: 7px;
+    /* Позиционирование */
+    position: absolute;
+    z-index: 1;
+    top: 160%; /* Под кнопкой */
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 10px; /* Отступ от кнопки */
+    /* Анимация */
+    opacity: 0;
+    transition: opacity 0.2s, visibility 0.2s;
+    transition-delay: 0.1s;
+    font-size: 13px !important;
+}
+
+
+.image-xml:hover .tooltip-text2 {
     visibility: visible;
     opacity: 1;
     transition-delay: 0.6s;
+
 }
 
 
@@ -530,3 +573,45 @@ button {
             opacity: 1;
             transition-delay: 0.6s;
         }
+
+
+
+
+
+
+
+
+
+
+.top-right {
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    position: relative; /* Добавлено относительное позиционирование */
+}
+
+.notification-icon {
+    width: 24px; /* Размер иконки */
+    height: 24px; /* Размер иконки */
+}
+
+.bi-bell {
+    fill: #007bff; /* Цвет при наведении, например, синий */
+}
+
+    .bi-bell:hover {
+        fill: #e29b1a; /* Цвет при наведении, например, синий */
+        transform: scale(1.04);
+    }
+
+
+
+
+
+
+
+.top-right:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0.6s;
+}

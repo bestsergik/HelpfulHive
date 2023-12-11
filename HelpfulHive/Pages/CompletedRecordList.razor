@@ -46,7 +46,7 @@ else
         {
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
-                var requestNumbers = lcSRV.Search(searchQuery);
+                var requestNumbers = lcSRV.LuceneSearchProcessRawData(searchQuery);
                 searchResults = await lcSRV.GetRecordsByRequestNumbers(requestNumbers);
             }
             else

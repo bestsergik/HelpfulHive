@@ -1,13 +1,9 @@
 ﻿.record-list {
-    background-color: #fff; /* Прозрачный или единый фон */
-    border-radius: 5px;
-    padding: 20px 15px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 11px 15px;
     width: 100%;
     margin: auto;
     font-family: 'NavMenuChildtLinkFont';
     flex-grow: 1;
-    max-height: 75vh;
     overflow-y: auto;
 
 }
@@ -67,8 +63,8 @@
 }
 
 .record-img {
-    width: 45px;
-    height: 45px;
+    width: 38px;
+    height: 38px;
     margin-right: 15px;
     object-fit: cover;
     padding: 5px;
@@ -93,7 +89,7 @@
 .edit-icon {
     display: none;
     margin-right:10px;
-    color: #7334e9;
+    color: #3c7a75;
     cursor: pointer;
     transition: transform 2s ease; /* Плавный переход */
 }
@@ -102,7 +98,7 @@
 }
 
 .edit-icon:hover {
-    color: #c17714; /* Изменить на другой цвет при наведении */
+    color: #6c7071; /* Изменить на другой цвет при наведении */
 }
 
 
@@ -162,7 +158,7 @@ body, html {
 }
 
 .tab-title {
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     color: #555;
     font-size: 19px;
@@ -219,10 +215,7 @@ body, html {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: #f7f7f7;
+
 }
 
 .search-area {
@@ -323,19 +316,57 @@ body, html {
 
 
 
+
+
+/* Базовые стили для разделов поиска */
+.section {
+    border-radius: 15px;
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(249, 249, 249, 0.9); /* светлый фон с прозрачностью */
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1); /* мягкая тень */
+    border: 1px solid rgba(224, 224, 224, 0.9); /* тонкая граница с прозрачностью */
+}
+
+/* Стили для раздела точного поиска */
+.exact-search-section {
+    background: linear-gradient(to right, rgba(77, 198, 172, 0.2), rgba(67, 198, 172, 0.2)); /* градиентный фон зеленого цвета с прозрачностью */
+
+    overflow-y: auto;
+}
+
+/* Стили для раздела умного поиска */
+.smart-search-section {
+    background: linear-gradient(to right, rgba(109, 213, 237, 0.2), rgba(33, 147, 176, 0.2)); /* градиентный фон синего цвета с прозрачностью */
+    overflow-y: auto;
+}
+
+/* Стили для панелей в разделах */
 .split-view {
     display: flex;
-    justify-content: space-between;
+    gap: 20px;
 }
 
 .left-pane, .right-pane {
     flex: 1;
-    margin: 10px;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
 }
 
 .full-width-pane {
     width: 100%;
 }
+
+/* Стили заголовков */
+h3, h4 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+
 
 
 
@@ -375,5 +406,292 @@ body, html {
 .fa-pencil-alt:hover .tooltip-text {
     visibility: visible;
     opacity: 1;
+    transition-delay: 0.3s;
+}
+
+
+
+
+
+
+
+.search-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35%;
+}
+
+#animated-search {
+    width: 100%;
+    height: 50px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    padding: 10px 20px 10px 40px; /* Добавляем место под иконку */
+    transition: height 0.5s ease;
+    resize: none;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.search-icon {
+    position: absolute;
+    left: 10px;
+    font-size: 20px;
+    transition: transform 0.5s ease, color 0.5s ease;
+    color: #aaa;
+}
+
+#animated-search:focus {
+    height: 100px;
+    background-color: #ffffff;
+}
+
+    #animated-search:focus + .search-icon {
+        transform: rotate(360deg);
+        color: #007BFF;
+    }
+
+
+
+
+
+
+
+.rx-search {
+    display: inline-block;
+    margin: auto;
+    position: relative;
+
+}
+
+.rx-search-input {
+    border: 6px solid #128286;
+    background: transparent;
+    border-radius: 50%; /* Убедитесь, что элемент остается круглым */
+    padding: 1em 1em;
+    outline: none;
+    color: #fff;
+    width: 100px; /* Минимальная ширина, она изменится при фокусе */
+    height: 100px; /* Новая высота */
+    cursor: pointer;
+    transform: scale(.5);
+    transition: .3s all ease-in;
+    box-shadow: 3px 4px 3px rgba(0, 0, 0, 0.4); /* Добавляем тень для объема */
+    background: radial-gradient(circle, #fff 40%, #cdebf8 99%, white 100%); /* Радиальный градиент для объема */
+    resize: none; /* Отключение возможности изменения размера пользователем */
+    position: relative;
+
+}
+
+    /* Стили для состояний фокуса и валидности, изменение ширины на 400px */
+    .rx-search-input:focus,
+    .rx-search-input:valid {
+        cursor: text;
+        border-radius: 10px;
+        border: 2px solid #3498db;
+        width: 600px; /* Новая ширина */
+        transform: scale(1);
+        color: black;
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.7); /* Увеличиваем тень для акцента на фокусе */
+        background: transparent;
+        cursor: text;
+    }
+
+
+
+.rx-search-handle {
+    transition: .3s all ease-in;
+    width: 4px;
+    height: 24px;
+    background: red; /* Изменённый цвет лупы */
+    display: block;
+    transform: rotate(-45deg);
+    position: absolute;
+    right: 22px;
+    top: 64px;
+    box-shadow: 3px 3px 4px rgba(0, 0, 0, 0.2); /* Добавляем тень для лупы */
+    background: linear-gradient(to right, #1e8071, #c0c0c0); /* Градиент для объема */
+    
+}
+
+.rx-search-input:focus + .rx-search-handle,
+.rx-search-input:valid + .rx-search-handle {
+    height: 0;
+    transform: rotate(-90deg);
+    background: red; /* Изменённый цвет лупы при фокусе/валидности */
+
+}
+
+.rx-search-input:not(:focus)::placeholder {
+    color: transparent;
+}
+
+
+
+@keyframes spinHandle {
+    0% {
+        transform: rotate(-45deg); /* Начальное положение */
+    }
+
+    45% {
+        transform: rotate(315deg); /* Полный оборот */
+    }
+
+    50%, 55% {
+        transform: rotate(315deg); /* Пауза на 315 градусов */
+    }
+    95% {
+        transform: rotate(-45deg); /* Возвращение в начальное положение */
+    }
+
+    100% {
+        transform: rotate(-45deg); /* Кратковременная пауза перед началом нового цикла */
+    }
+}
+
+.rx-search-handle {
+    transform-origin: center; /* Устанавливаем точку вращения в центр ручки */
+}
+
+.rx-search-input:hover + .rx-search-handle {
+    animation: spinHandle 6s linear infinite; /* Применяем анимацию при наведении */
+}
+
+
+
+
+.rx-search:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
     transition-delay: 0.6s;
+}
+
+
+
+.tooltip-text {
+    visibility: hidden;
+    background-color: dimgray;
+    color: white; /* Белый текст */
+    text-align: center;
+    border-radius: 3px;
+    padding: 7px;
+    /* Позиционирование */
+    position: absolute;
+    z-index: 1;
+    top: -10%; /* Под кнопкой */
+    left: 50%;
+    transform: translateX(-130%);
+    margin-top: 10px; /* Отступ от кнопки */
+    /* Анимация */
+    opacity: 0;
+    transition: opacity 0.2s, visibility 0.2s;
+    transition-delay: 0.1s;
+    font-size: 13px !important;
+}
+
+
+
+.record-item-special {
+    transition: transform 0.2s ease;
+}
+
+    .record-item-special:hover {
+        transform: translateX(-10px); /* Небольшой сдвиг влево */
+    }
+
+.icons-container {
+    display: flex;
+    gap: 10px; /* Изменение расстояния между иконками */
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.record-item-special:hover .icons-container {
+    opacity: 1;
+}
+
+.icons-container span {
+    transition: transform 0.2s ease;
+    position: relative;
+    color:#9fe8f5
+}
+
+    .icons-container span:hover {
+        color: #134ca5
+    }
+
+        .icons-container span:hover::after {
+            content: attr(data-tooltip); /* Всплывающая подсказка */
+            position: absolute;
+            bottom: 81%;
+            left: 50%;
+            transform: translateX(-120%);
+            background-color: black;
+            color: white;
+            padding: 5px;
+            border-radius: 5px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .icons-container span:hover i {
+            color: #цвет; /* Цвет при наведении */
+        }
+
+.obsolete-indicator {
+    color: orange;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.likes-count {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+    color: green;
+}
+
+
+
+
+.top-right {
+    cursor: pointer;
+    position: relative; /* Добавлено относительное позиционирование */
+}
+
+.notification-icon {
+    width: 24px; /* Размер иконки */
+    height: 24px; /* Размер иконки */
+}
+
+.bi-bell {
+    fill: #007bff; /* Цвет при наведении, например, синий */
+}
+
+    .bi-bell:hover {
+        fill: #e29b1a; /* Цвет при наведении, например, синий */
+        transform: scale(1.04);
+    }
+
+
+
+
+
+
+
+.top-right:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0.6s;
+}
+
+
+
+.flex-container {
+    display: flex;
+    align-items: center; /* Выравнивание по вертикали */
+    justify-content: space-between; /* Распределение пространства между элементами */
 }

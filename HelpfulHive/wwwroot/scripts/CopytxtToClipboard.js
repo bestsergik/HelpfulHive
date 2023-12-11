@@ -44,3 +44,7 @@ function copyHtmlToClipboard(htmlContent) {
     document.body.removeChild(tempDiv);
 }
 
+
+
+
+
